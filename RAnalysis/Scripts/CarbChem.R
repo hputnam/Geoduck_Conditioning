@@ -1,8 +1,8 @@
-#Coral Larval Biomineralization
+#Geoduck Conditioning
 #Data published in X
 #Title: 
 #Contact: Hollie Putnam hollieputnam@gmail.com
-#Supported by: BSF
+#Supported by: FFAR
 #See Readme file for details on data files and metadata
 
 rm(list=ls()) # removes all prior objects

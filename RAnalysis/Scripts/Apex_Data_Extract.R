@@ -1,11 +1,11 @@
-#http://166.122.78.194:80/cgi-bin/datalog.xml?sdate=1806030000&days=2
 #http://www.informit.com/articles/article.aspx?p=2215520
 
 
 
 library("XML")
+library("plyr")
 
-xmlfile <- xmlParse("http://166.122.78.194:80/cgi-bin/datalog.xml?sdate=1806010000&days=3") #read in the date plus x days of Apex data
+xmlfile <- xmlParse("http://192.168.1.100:80/cgi-bin/datalog.xml?sdate=1806010000&days=3") #read in the date plus x days of Apex data
 
 Apex.Data <- ldply(xmlToList(xmlfile), data.frame) #convert xml to dataframe
 
