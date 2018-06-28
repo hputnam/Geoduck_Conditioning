@@ -1,6 +1,6 @@
-setwd("~/MyProjects/BioMin_HIS/RAnalysis/Data/pH_Calibration_Files/") #set working directory
+setwd("~/MyProjects/Geoduck_Conditioning/RAnalysis/Data/pH_Calibration_Files/") #set working directory
 
-Calib.Data <-read.table("20180530.csv", header=TRUE, sep=",", na.string="NA", as.is=TRUE) #reads in the data files
+Calib.Data <-read.table("20180627.csv", header=TRUE, sep=",", na.string="NA", as.is=TRUE) #reads in the data files
 model <-lm(mVTris ~ TTris, data=Calib.Data) #runs a linear regression of mV as a function of temperature
 coe <- coef(model) #extracts the coeffecients
 R2<-summary(model)$r.squared

@@ -10,12 +10,12 @@
 # 
 
 #Created by Nyssa Silbiger 03/28/2014
-#modified 20180529 Hollie Putnam
+#modified 20180627 Hollie Putnam
 #------------------------------------------------------------
 rm(list=ls())
 
 #set working directory---------------------------------------------------------------------------------------------
-setwd("/Users/hputnam/MyProjects/BioMin_HIS/RAnalysis/")
+setwd("/Users/hputnam/MyProjects/Geoduck_Conditioning/RAnalysis/")
 main<-getwd()
 
 #load libraries----------------------------------------------
@@ -23,12 +23,12 @@ library(seacarb) #used to calculate TA
 library(tidyverse)
 
 #CHANGE THESE VALUES EVERY DAY----------------------------------------------
-path<-"Data/20180602" #the location of all your titration files
-massfile<-"20180602massall.csv" # name of your file with masses
-titrationfile<-'20180602_CRM.csv'# name of the last titration file run
+path<-"Data/20180627" #the location of all your titration files
+massfile<-"20180627mass_Run1.csv" # name of your file with masses
+titrationfile<-'20180627_Run1.csv'# name of the last titration file run
 
 # Date that the data were run
-date<-'20180602'
+date<-'20180627'
 
 
 #DO NOT CHANGE ANYTHING BELOW THIS LINE UNLESS A NEW BOTTLE OF ACID IS USED
@@ -67,10 +67,10 @@ colnames(TA)<-c("SampleID",'TA','Mass')
 #run a for loop to bring in the titration files one at a time and calculate TA
 # read in the mega concatenated titration results file
 filename<-file.path(path,titrationfile)
-AllData<-read.csv(filename, sep=",", na.string="NA",as.is=T, skip=8)[ ,1:5] 
-AllData <- AllData[-1,]
-# Identifies rows starting with zero seconds "0" in column 1
-sample_name_positions <- c(1,grep("^0", AllData[,1]), nrow(AllData))
+AllData<-read.csv(filename, sep=",", na.string="NA",as.is=T, skip=12)[ ,1:5] 
+#AllData <- AllData[-1,]
+# Identifies rows starting with zero seconds "0" in column 2
+sample_name_positions <- c(1,grep("^0", AllData[,2]), nrow(AllData))
 sample_name_positions <- sample_name_positions[-1] #remove first report of duplicated 1
 
 ## parse through all the data in the one file ###
@@ -85,7 +85,7 @@ for (item in 1:length(sample_names)){
 # fill the list with the data from each sample
 for (i in 1:nrows){
 sample_names_list[[i]]<-data.frame(AllData[sample_name_positions[i]:sample_name_positions[i+1],])
-colnames(sample_names_list[[i]])<-c("Time","Volume","mV", "dV/dt",	"Temperature")
+colnames(sample_names_list[[i]])<-c("Volume","Time","mV","Temperature","dV/dt")
 }
 
 
@@ -108,11 +108,11 @@ for(i in 1:nrows) {
   #Bottle A3 - acid titrant# , 
   #density of your titrant: change every time acid is changed
   
-  d<-(-0.00000335*mean(Data$Temperature[mV], na.rm=T)^2-0.0001356*mean(Data$Temperature[mV], na.rm=T)+1.02613) #bottle changed 20180528
-  #20180529 batch A3
+  d<-(-0.0001067*mean(Data$Temperature[mV], na.rm=T)^2-0.0000041*mean(Data$Temperature[mV], na.rm=T)+1.02882) 
+  #Batch A10
   
   #concentration of your titrant: CHANGE EVERYTIME ACID IS CHANGED 
-  c<-0.099793 #20180529 batch A3
+  c<-0.100215 #Batch A10
   
   #------------------------------------------------------------------------------
   
