@@ -1,1 +1,25 @@
-Date,Calib.Date,Time,Sample.ID,Treatment,Temperature,pH.MV,Salinity,Period1,Notes201800626,20180530,16:20,Low_Header,Low,27.65,-44.5,35,Test,
+Date,Calib.Date,Time,Sample.ID,Treatment,Temperature,pH.MV,Salinity,Period1,Notes
+20180627,20180627,11:00,T2,na,14.8,-40.7,28.92,,prep for next spawn
+20180627,20180627,11:00,T3,na,14.8,-40.9,29.06,,prep for next spawn
+20180627,20180627,11:00,T4,na,14.8,-41.6,290.8,,prep for next spawn
+20180627,20180627,11:00,T5,na,14.8,-41.2,29.09,,prep for next spawn
+20180627,20180627,11:00,T6,Low,15,-42.3,29.11,,"pH low, settled larvae in ambient"
+20180627,20180627,11:00,T7,Control,15.1,-42,29.1,,"control, settled larvae in ambient"
+20180627,20180627,11:00,T9,Control,15.2,-42.2,29.17,,"control, settled larvae  in ambient"
+20180627,20180627,11:00,spawn_tank,na,13.5,-35.6,28.93,,thirteen adult geoducks
+20180627,20180627,11:00,inflow_sump,na,15,-41.4,29.06,,
+20180627,20180627,11:00,raceway,na,18.4,-48.9,26.52,,settled larvae fed by lagoon water
+20180627,20180627,11:00,downweller,na,15.2,-42.4,28.97,,settled larvae 
+20180628,20180628,10:02,spawn_tank,na,13.8,-37.5,28.9,,"took a TA sample ""spawn tank (1)"""
+20180628,20180628,12:48,spawn_tank,na,14.4,-37.7,29.07,,
+20180628,20180628,18:00,T2,Control,15.1,-27.1,29.06,,prep for next spawn
+20180628,20180628,18:00,T3,Low,15,-8.1,29.11,,prep for next spawn
+20180628,20180628,18:00,T4,Control,15.1,-40.8,29.11,,prep for next spawn
+20180628,20180628,18:00,T5,Low,15.1,-13.7,29.12,,prep for next spawn
+20180628,20180628,18:00,T6,Low,15.7,-40.6,29.17,,"pH low, settled larvae in ambient"
+20180628,20180628,18:00,T7,Control,15.7,-40.1,29.16,,"control, settled larvae in ambient"
+20180628,20180628,18:00,T9,Control,16,-42.2,29.15,,"control, settled larvae  in ambient"
+20180628,20180628,18:00,inflow_sump,na,15.7,-40.9,29.11,,
+20180628,20180628,18:00,spawn_tank,na,16,-43.3,29.16,,
+20180628,20180628,18:00,raceway,na,18.7,-56.5,27.33,,
+20180628,20180628,18:00,downweller,na,15.8,-42.6,29.17,,
