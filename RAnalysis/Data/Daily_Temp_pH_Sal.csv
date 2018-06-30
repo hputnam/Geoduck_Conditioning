@@ -23,3 +23,14 @@ Date,Calib.Date,Time,Sample.ID,Treatment,Temperature,pH.MV,Salinity,Period1,Note
 20180628,20180628,18:00,spawn_tank,na,16,-43.3,29.16,,
 20180628,20180628,18:00,raceway,na,18.7,-56.5,27.33,,
 20180628,20180628,18:00,downweller,na,15.8,-42.6,29.17,,
+20180629,20180629,11:45,T2,Control,15,-41.9,28.9,,
+20180629,20180629,11:45,T3,Low,15,-9.6,29,,"turned off Apex control after TA samples, spawn unsuccessful "
+20180629,20180629,11:45,T4,Control,15.1,-44,29.04,,
+20180629,20180629,11:45,T5,Low,15.2,-15,29.06,,"turned off Apex control after TA samples, spawn unsuccessful "
+20180629,20180629,11:45,T6,Low,15.4,-41.2,29.05,,"pH low, settled larvae in ambient"
+20180629,20180629,11:45,T7,Control,15.5,-33.9,29.06,,"control, settled larvae in ambient"
+20180629,20180629,11:45,T9,Control,15.3,-44.1,29.05,,"control, settled larvae  in ambient"
+20180629,20180629,11:45,spawn_tank,na,14.4,-37.9,28.91,,
+20180629,20180629,11:45,raceway,na,18.4,-50.7,26.73,,
+20180629,20180629,11:45,downweller,na,14.8,-44.8,28.9,,
+20180629,20180629,11:45,inflow_sump,na,14.5,-44.5,28.92,,
