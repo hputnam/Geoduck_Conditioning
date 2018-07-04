@@ -67,3 +67,18 @@ Date,Calib.Date,Time,Sample.ID,Treatment,Temperature,pH.MV,Salinity,Period1,Note
 20180702,20180702,10:40,raceway,na,17.1,-51.8,27.04,,
 20180702,20180702,10:40,downweller,na,15.2,-41.6,29.36,,
 20180702,20180702,10:40,inflow_sump,na,14.5,-37.3,29.38,,
+20180703,20180703,11:15,T0,Low,14.5,-12.4, ,,test for heath tray experiment
+20180703,20180703,11:15,H0,Low,14.5,-12.7,29.3,,test for heath tray experiment
+20180703,20180703,11:15,T1,Control,14.5,-38.8,29.39,,test for heath tray experiment
+20180703,20180703,11:15,H1,Control,14.5,-39.3,29.37,,test for heath tray experiment
+20180703,20180703,11:15,T2,Control,14.5,-38.7,29.39,,test for heath tray experiment
+20180703,20180703,11:15,H2,Control,14.5,-38.9,29.38,,test for heath tray experiment
+20180703,20180703,11:15,T3,Low,14.5,-16.9,29.42,,test for heath tray experiment
+20180703,20180703,11:15,H3,Low,14.5,-17.9,29.38,,test for heath tray experiment
+20180703,20180703,11:15,T6,Low,14.9,-39.5,29.45,,"pH low, settled larvae in ambient"
+20180703,20180703,11:15,T7,Control,14.9,-39.9,29.45,,"control, settled larvae in ambient"
+20180703,20180703,11:15,T9,Control,14.9,-38.6,29.43,,"control, settled larvae  in ambient"
+20180703,20180703,11:15,spawn_tank,na,13.2,-35.6,29.21,,
+20180703,20180703,11:15,raceway,na,17,-53.6,26.89,,
+20180703,20180703,11:15,downweller,na,15.1,-42.2,29.4,,
+20180703,20180703,11:15,inflow_sump,na,14.7,-37.2,29.42,,
