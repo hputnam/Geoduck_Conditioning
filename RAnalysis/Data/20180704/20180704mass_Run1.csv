@@ -1,0 +1,10 @@
+sample,mass,salinity,Sample.ID,Type
+20180704_H3_low,60.5631,29.32,H3_low,Heath_tray
+20180704_inflow_sump,60.9028,29.24,inflow_sump,Sump
+20180704_H2_control,59.1849,29.3,H2_control,Heath_tray
+20180704_H0_low,60.2708,29.07,H0_low,Heath_tray
+20180704_T9,60.6335,29.31,T9,Conical
+20180704_H1_control,60.4439,29.33,H1_control,Heath_tray
+20180704_spawn_tank,59.6518,29.23,spawn_tank,Tank
+20180704_T7,60.2818,29.3,T7,Conical
+20180704_T6,60.2051,29.37,T6,Conical
