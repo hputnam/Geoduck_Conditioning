@@ -1,103 +1,1 @@
-<<<<<<< HEAD
-Date,Calib.Date,Time,Sample.ID,Treatment,Temperature,pH.MV,Salinity,Period1,Notes201800626,20180530,16:20,Low_Header,Low,27.65,-44.5,35,Test,
-=======
-Date,Calib.Date,Time,Sample.ID,Treatment,Temperature,pH.MV,Salinity,Period1,Notes
-20180627,20180627,11:00,T2,na,14.8,-40.7,28.92,,prep for next spawn
-20180627,20180627,11:00,T3,na,14.8,-40.9,29.06,,prep for next spawn
-20180627,20180627,11:00,T4,na,14.8,-41.6,290.8,,prep for next spawn
-20180627,20180627,11:00,T5,na,14.8,-41.2,29.09,,prep for next spawn
-20180627,20180627,11:00,T6,Low,15,-42.3,29.11,,"pH low, settled larvae in ambient"
-20180627,20180627,11:00,T7,Control,15.1,-42,29.1,,"control, settled larvae in ambient"
-20180627,20180627,11:00,T9,Control,15.2,-42.2,29.17,,"control, settled larvae  in ambient"
-20180627,20180627,11:00,spawn_tank,na,13.5,-35.6,28.93,,thirteen adult geoducks
-20180627,20180627,11:00,inflow_sump,na,15,-41.4,29.06,,
-20180627,20180627,11:00,raceway,na,18.4,-48.9,26.52,,settled larvae fed by lagoon water
-20180627,20180627,11:00,downweller,na,15.2,-42.4,28.97,,settled larvae 
-20180628,20180628,10:02,spawn_tank,na,13.8,-37.5,28.9,,"took a TA sample ""spawn tank (1)"""
-20180628,20180628,12:48,spawn_tank,na,14.4,-37.7,29.07,,
-20180628,20180628,18:00,T2,Control,15.1,-27.1,29.06,,prep for next spawn
-20180628,20180628,18:00,T3,Low,15,-8.1,29.11,,prep for next spawn
-20180628,20180628,18:00,T4,Control,15.1,-40.8,29.11,,prep for next spawn
-20180628,20180628,18:00,T5,Low,15.1,-13.7,29.12,,prep for next spawn
-20180628,20180628,18:00,T6,Low,15.7,-40.6,29.17,,"pH low, settled larvae in ambient"
-20180628,20180628,18:00,T7,Control,15.7,-40.1,29.16,,"control, settled larvae in ambient"
-20180628,20180628,18:00,T9,Control,16,-42.2,29.15,,"control, settled larvae  in ambient"
-20180628,20180628,18:00,inflow_sump,na,15.7,-40.9,29.11,,
-20180628,20180628,18:00,spawn_tank,na,16,-43.3,29.16,,
-20180628,20180628,18:00,raceway,na,18.7,-56.5,27.33,,
-20180628,20180628,18:00,downweller,na,15.8,-42.6,29.17,,
-20180629,20180629,11:45,T2,Control,15,-41.9,28.9,,
-20180629,20180629,11:45,T3,Low,15,-9.6,29,,"turned off Apex control after TA samples, spawn unsuccessful "
-20180629,20180629,11:45,T4,Control,15.1,-44,29.04,,
-20180629,20180629,11:45,T5,Low,15.2,-15,29.06,,"turned off Apex control after TA samples, spawn unsuccessful "
-20180629,20180629,11:45,T6,Low,15.4,-41.2,29.05,,"pH low, settled larvae in ambient"
-20180629,20180629,11:45,T7,Control,15.5,-33.9,29.06,,"control, settled larvae in ambient"
-20180629,20180629,11:45,T9,Control,15.3,-44.1,29.05,,"control, settled larvae  in ambient"
-20180629,20180629,11:45,spawn_tank,na,14.4,-37.9,28.91,,
-20180629,20180629,11:45,raceway,na,18.4,-50.7,26.73,,
-20180629,20180629,11:45,downweller,na,14.8,-44.8,28.9,,
-20180629,20180629,11:45,inflow_sump,na,14.5,-44.5,28.92,,
-20180630,20180630,16:22,T2,na,15,-40.8,29.02,,
-20180630,20180630,16:22,T3,na,15,-40.7,29.05,,
-20180630,20180630,16:22,T4,na,15,-41.4,29.09,,
-20180630,20180630,16:22,T5,na,15.1,-39.5,29.14,,
-20180630,20180630,16:22,T6,Low,14.9,-42.3,29.22,,"pH low, settled larvae in ambient"
-20180630,20180630,16:22,T7,Control,15,-42.4,29.23,,"control, settled larvae in ambient"
-20180630,20180630,16:22,T9,Control,15,-41.4,29.26,,"control, settled larvae  in ambient"
-20180630,20180630,16:22,spawn_tank,na,14,-36.2,28.86,,
-20180630,20180630,16:22,raceway,na,18.2,-51.2,26.84,,
-20180630,20180630,16:22,downweller,na,14.9,-41.3,29.23,,
-20180630,20180630,16:22,inflow_sump,na,14.7,-40.8,29.18,,
-20180701,20180701,12:08,T2,na,14.6,-36.9,29.1,"calibrated mettler toledo 4,7,10 20180701",
-20180701,20180701,12:08,T3,na,14.5,-38,29.28,,
-20180701,20180701,12:08,T4,na,14.5,-37.3,29.32,,
-20180701,20180701,12:08,T5,na,14.5,-37.4,29.33,,
-20180701,20180701,12:08,T6,Low,14.5,-38.3,29.33,,"pH low, settled larvae in ambient"
-20180701,20180701,12:08,T7,Control,14.6,-39.2,29.37,,"control, settled larvae in ambient"
-20180701,20180701,12:08,T9,Control,14.8,-38.7,29.35,,"control, settled larvae  in ambient"
-20180701,20180701,12:08,spawn_tank,na,13.7,-35.5,29.11,,
-20180701,20180701,12:08,raceway,na,17.6,-51.4,26.93,,
-20180701,20180701,12:08,downweller,na,14.5,-38.6,29.38,,
-20180701,20180701,12:08,inflow_sump,na,14.2,-37.4,29.34,,
-20180702,20180702,10:40,T2,na,14.7,-35,29.17,,
-20180702,20180702,10:40,T3,na,14.7,-38.7,29.32,,
-20180702,20180702,10:40,T4,na,14.7,-37.8,29.37,,
-20180702,20180702,10:40,T5,na,14.7,-37.8,29.39,,
-20180702,20180702,10:40,T6,Low,15,-41.3,29.46,,"pH low, settled larvae in ambient"
-20180702,20180702,10:40,T7,Control,15,-41.5,29.45,,"control, settled larvae in ambient"
-20180702,20180702,10:40,T9,Control,14.9,-38.7,29.43,,"control, settled larvae  in ambient"
-20180702,20180702,10:40,spawn_tank,na,13.4,-35.4,29.29,,
-20180702,20180702,10:40,raceway,na,17.1,-51.8,27.04,,
-20180702,20180702,10:40,downweller,na,15.2,-41.6,29.36,,
-20180702,20180702,10:40,inflow_sump,na,14.5,-37.3,29.38,,
-20180703,20180703,11:15,T0,Low,14.5,-12.4, ,,test for heath tray experiment
-20180703,20180703,11:15,H0,Low,14.5,-12.7,29.3,,test for heath tray experiment
-20180703,20180703,11:15,T1,Control,14.5,-38.8,29.39,,test for heath tray experiment
-20180703,20180703,11:15,H1,Control,14.5,-39.3,29.37,,test for heath tray experiment
-20180703,20180703,11:15,T2,Control,14.5,-38.7,29.39,,test for heath tray experiment
-20180703,20180703,11:15,H2,Control,14.5,-38.9,29.38,,test for heath tray experiment
-20180703,20180703,11:15,T3,Low,14.5,-16.9,29.42,,test for heath tray experiment
-20180703,20180703,11:15,H3,Low,14.5,-17.9,29.38,,test for heath tray experiment
-20180703,20180703,11:15,T6,Low,14.9,-39.5,29.45,,"pH low, settled larvae in ambient"
-20180703,20180703,11:15,T7,Control,14.9,-39.9,29.45,,"control, settled larvae in ambient"
-20180703,20180703,11:15,T9,Control,14.9,-38.6,29.43,,"control, settled larvae  in ambient"
-20180703,20180703,11:15,spawn_tank,na,13.2,-35.6,29.21,,
-20180703,20180703,11:15,raceway,na,17,-53.6,26.89,,
-20180703,20180703,11:15,downweller,na,15.1,-42.2,29.4,,
-20180703,20180703,11:15,inflow_sump,na,14.7,-37.2,29.42,,
-20180704,20180704,10:08,T0,Low,14.6,-13.4,29.28,,test for heath tray experiment
-20180704,20180704,10:08,H0,Low,14.7,-13.3,29.07,,test for heath tray experiment
-20180704,20180704,10:08,T1,Control,14.7,-42.8,29.33,,test for heath tray experiment
-20180704,20180704,10:08,H1,Control,14.6,-42.3,29.33,,test for heath tray experiment
-20180704,20180704,10:08,T2,Control,14.6,-42.3,29.3,,test for heath tray experiment
-20180704,20180704,10:08,H2,Control,14.7,-42.5,29.3,,test for heath tray experiment
-20180704,20180704,10:08,T3,Low,14.6,-17.8,29.31,,test for heath tray experiment
-20180704,20180704,10:08,H3,Low,14.7,-18.5,29.32,,test for heath tray experiment
-20180704,20180704,10:08,T6,Low,14.9,-42.2,29.37,,"pH low, settled larvae in ambient"
-20180704,20180704,10:08,T7,Control,14.9,-41.9,29.3,,"control, settled larvae in ambient"
-20180704,20180704,10:08,T9,Control,15,-41.7,29.31,,"control, settled larvae  in ambient"
-20180704,20180704,10:08,spawn_tank,na,14,-38,29.23,,
-20180704,20180704,10:08,raceway,na,17.8,-55.4,26.9,,
-20180704,20180704,10:08,downweller,na,15,-42.5,29.15,,
-20180704,20180704,10:08,inflow_sump,na,14.5,-41.1,29.24,,
->>>>>>> 8c55ac23d725fb02d1785fc0c0f5fa622748b89d
+Date,Calib.Date,Time,Sample.ID,Treatment,Temperature,pH.MV,Salinity,Period1,Notes201800626,20180530,16:20,Low_Header,Low,27.65,-44.5,35,Test,20180627,20180627,11:00,T2,na,14.8,-40.7,28.92,,prep for next spawn20180627,20180627,11:00,T3,na,14.8,-40.9,29.06,,prep for next spawn20180627,20180627,11:00,T4,na,14.8,-41.6,290.8,,prep for next spawn20180627,20180627,11:00,T5,na,14.8,-41.2,29.09,,prep for next spawn20180627,20180627,11:00,T6,Low,15,-42.3,29.11,,"pH low, settled larvae in ambient"20180627,20180627,11:00,T7,Control,15.1,-42,29.1,,"control, settled larvae in ambient"20180627,20180627,11:00,T9,Control,15.2,-42.2,29.17,,"control, settled larvae  in ambient"20180627,20180627,11:00,spawn_tank,na,13.5,-35.6,28.93,,thirteen adult geoducks20180627,20180627,11:00,inflow_sump,na,15,-41.4,29.06,,20180627,20180627,11:00,raceway,na,18.4,-48.9,26.52,,settled larvae fed by lagoon water20180627,20180627,11:00,downweller,na,15.2,-42.4,28.97,,settled larvae 20180628,20180628,10:02,spawn_tank,na,13.8,-37.5,28.9,,"took a TA sample ""spawn tank (1)"""20180628,20180628,12:48,spawn_tank,na,14.4,-37.7,29.07,,20180628,20180628,18:00,T2,Control,15.1,-27.1,29.06,,prep for next spawn20180628,20180628,18:00,T3,Low,15,-8.1,29.11,,prep for next spawn20180628,20180628,18:00,T4,Control,15.1,-40.8,29.11,,prep for next spawn20180628,20180628,18:00,T5,Low,15.1,-13.7,29.12,,prep for next spawn20180628,20180628,18:00,T6,Low,15.7,-40.6,29.17,,"pH low, settled larvae in ambient"20180628,20180628,18:00,T7,Control,15.7,-40.1,29.16,,"control, settled larvae in ambient"20180628,20180628,18:00,T9,Control,16,-42.2,29.15,,"control, settled larvae  in ambient"20180628,20180628,18:00,inflow_sump,na,15.7,-40.9,29.11,,20180628,20180628,18:00,spawn_tank,na,16,-43.3,29.16,,20180628,20180628,18:00,raceway,na,18.7,-56.5,27.33,,20180628,20180628,18:00,downweller,na,15.8,-42.6,29.17,,20180629,20180629,11:45,T2,Control,15,-41.9,28.9,,20180629,20180629,11:45,T3,Low,15,-9.6,29,,"turned off Apex control after TA samples, spawn unsuccessful "20180629,20180629,11:45,T4,Control,15.1,-44,29.04,,20180629,20180629,11:45,T5,Low,15.2,-15,29.06,,"turned off Apex control after TA samples, spawn unsuccessful "20180629,20180629,11:45,T6,Low,15.4,-41.2,29.05,,"pH low, settled larvae in ambient"20180629,20180629,11:45,T7,Control,15.5,-33.9,29.06,,"control, settled larvae in ambient"20180629,20180629,11:45,T9,Control,15.3,-44.1,29.05,,"control, settled larvae  in ambient"20180629,20180629,11:45,spawn_tank,na,14.4,-37.9,28.91,,20180629,20180629,11:45,raceway,na,18.4,-50.7,26.73,,20180629,20180629,11:45,downweller,na,14.8,-44.8,28.9,,20180629,20180629,11:45,inflow_sump,na,14.5,-44.5,28.92,,20180630,20180630,16:22,T2,na,15,-40.8,29.02,,20180630,20180630,16:22,T3,na,15,-40.7,29.05,,20180630,20180630,16:22,T4,na,15,-41.4,29.09,,20180630,20180630,16:22,T5,na,15.1,-39.5,29.14,,20180630,20180630,16:22,T6,Low,14.9,-42.3,29.22,,"pH low, settled larvae in ambient"20180630,20180630,16:22,T7,Control,15,-42.4,29.23,,"control, settled larvae in ambient"20180630,20180630,16:22,T9,Control,15,-41.4,29.26,,"control, settled larvae  in ambient"20180630,20180630,16:22,spawn_tank,na,14,-36.2,28.86,,20180630,20180630,16:22,raceway,na,18.2,-51.2,26.84,,20180630,20180630,16:22,downweller,na,14.9,-41.3,29.23,,20180630,20180630,16:22,inflow_sump,na,14.7,-40.8,29.18,,20180701,20180701,12:08,T2,na,14.6,-36.9,29.1,"calibrated mettler toledo 4,7,10 20180701",20180701,20180701,12:08,T3,na,14.5,-38,29.28,,20180701,20180701,12:08,T4,na,14.5,-37.3,29.32,,20180701,20180701,12:08,T5,na,14.5,-37.4,29.33,,20180701,20180701,12:08,T6,Low,14.5,-38.3,29.33,,"pH low, settled larvae in ambient"20180701,20180701,12:08,T7,Control,14.6,-39.2,29.37,,"control, settled larvae in ambient"20180701,20180701,12:08,T9,Control,14.8,-38.7,29.35,,"control, settled larvae  in ambient"20180701,20180701,12:08,spawn_tank,na,13.7,-35.5,29.11,,20180701,20180701,12:08,raceway,na,17.6,-51.4,26.93,,20180701,20180701,12:08,downweller,na,14.5,-38.6,29.38,,20180701,20180701,12:08,inflow_sump,na,14.2,-37.4,29.34,,20180702,20180702,10:40,T2,na,14.7,-35,29.17,,20180702,20180702,10:40,T3,na,14.7,-38.7,29.32,,20180702,20180702,10:40,T4,na,14.7,-37.8,29.37,,20180702,20180702,10:40,T5,na,14.7,-37.8,29.39,,20180702,20180702,10:40,T6,Low,15,-41.3,29.46,,"pH low, settled larvae in ambient"20180702,20180702,10:40,T7,Control,15,-41.5,29.45,,"control, settled larvae in ambient"20180702,20180702,10:40,T9,Control,14.9,-38.7,29.43,,"control, settled larvae  in ambient"20180702,20180702,10:40,spawn_tank,na,13.4,-35.4,29.29,,20180702,20180702,10:40,raceway,na,17.1,-51.8,27.04,,20180702,20180702,10:40,downweller,na,15.2,-41.6,29.36,,20180702,20180702,10:40,inflow_sump,na,14.5,-37.3,29.38,,20180703,20180703,11:15,T0,Low,14.5,-12.4, ,,test for heath tray experiment20180703,20180703,11:15,H0,Low,14.5,-12.7,29.3,,test for heath tray experiment20180703,20180703,11:15,T1,Control,14.5,-38.8,29.39,,test for heath tray experiment20180703,20180703,11:15,H1,Control,14.5,-39.3,29.37,,test for heath tray experiment20180703,20180703,11:15,T2,Control,14.5,-38.7,29.39,,test for heath tray experiment20180703,20180703,11:15,H2,Control,14.5,-38.9,29.38,,test for heath tray experiment20180703,20180703,11:15,T3,Low,14.5,-16.9,29.42,,test for heath tray experiment20180703,20180703,11:15,H3,Low,14.5,-17.9,29.38,,test for heath tray experiment20180703,20180703,11:15,T6,Low,14.9,-39.5,29.45,,"pH low, settled larvae in ambient"20180703,20180703,11:15,T7,Control,14.9,-39.9,29.45,,"control, settled larvae in ambient"20180703,20180703,11:15,T9,Control,14.9,-38.6,29.43,,"control, settled larvae  in ambient"20180703,20180703,11:15,spawn_tank,na,13.2,-35.6,29.21,,20180703,20180703,11:15,raceway,na,17,-53.6,26.89,,20180703,20180703,11:15,downweller,na,15.1,-42.2,29.4,,20180703,20180703,11:15,inflow_sump,na,14.7,-37.2,29.42,,20180704,20180704,10:08,T0,Low,14.6,-13.4,29.28,,test for heath tray experiment20180704,20180704,10:08,H0,Low,14.7,-13.3,29.07,,test for heath tray experiment20180704,20180704,10:08,T1,Control,14.7,-42.8,29.33,,test for heath tray experiment20180704,20180704,10:08,H1,Control,14.6,-42.3,29.33,,test for heath tray experiment20180704,20180704,10:08,T2,Control,14.6,-42.3,29.3,,test for heath tray experiment20180704,20180704,10:08,H2,Control,14.7,-42.5,29.3,,test for heath tray experiment20180704,20180704,10:08,T3,Low,14.6,-17.8,29.31,,test for heath tray experiment20180704,20180704,10:08,H3,Low,14.7,-18.5,29.32,,test for heath tray experiment20180704,20180704,10:08,T6,Low,14.9,-42.2,29.37,,"pH low, settled larvae in ambient"20180704,20180704,10:08,T7,Control,14.9,-41.9,29.3,,"control, settled larvae in ambient"20180704,20180704,10:08,T9,Control,15,-41.7,29.31,,"control, settled larvae  in ambient"20180704,20180704,10:08,spawn_tank,na,14,-38,29.23,,20180704,20180704,10:08,raceway,na,17.8,-55.4,26.9,,20180704,20180704,10:08,downweller,na,15,-42.5,29.15,,20180704,20180704,10:08,inflow_sump,na,14.5,-41.1,29.24,,
