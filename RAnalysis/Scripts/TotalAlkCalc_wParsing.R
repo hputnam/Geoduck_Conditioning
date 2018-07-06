@@ -136,4 +136,5 @@ TA[,2:3]<-sapply(TA[,2:3], as.numeric) # make sure the appropriate columns are n
 #exports your data as a CSV file
 write.table(TA,paste0(path,"/",date,"_TA_Output",".csv"),sep=",", row.names=FALSE)
 
+#Cumulative TA
 
