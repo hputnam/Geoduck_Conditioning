@@ -15,7 +15,8 @@
 rm(list=ls())
 
 #set working directory---------------------------------------------------------------------------------------------
-setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis")
+#setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis")
+setwd("~/MyProjects/Geoduck_Conditioning/RAnalysis/")
 main<-getwd()
 
 #load libraries----------------------------------------------
@@ -23,12 +24,12 @@ library(seacarb) #used to calculate TA
 library(tidyverse)
 
 #CHANGE THESE VALUES EVERY DAY----------------------------------------------
-path<-"Data/20180703" #the location of all your titration files
-massfile<-"20180703mass_Run2.csv" # name of your file with masses
-titrationfile<-'20180703_Run2.csv'# name of the last titration file run
+path<-"Data/20180704" #the location of all your titration files
+massfile<-"20180704mass_Run2.csv" # name of your file with masses
+titrationfile<-'20180704_Run2.csv'# name of the last titration file run
 
 # Date that the data were run
-date<-'20180703'
+date<-'20180704'
 
 
 #DO NOT CHANGE ANYTHING BELOW THIS LINE UNLESS A NEW BOTTLE OF ACID IS USED
@@ -108,7 +109,7 @@ for(i in 1:nrows) {
   #Bottle A3 - acid titrant# , 
   #density of your titrant: change every time acid is changed
   
-  d<-(-0.0001067*mean(Data$Temperature[mV], na.rm=T)^2-0.0000041*mean(Data$Temperature[mV], na.rm=T)+1.02882) 
+  d<-1.02882 -(0.0001067*mean(Data$Temperature[mV], na.rm=T)) - (0.0000041*(mean(Data$Temperature[mV], na.rm=T)^2)) 
   #Batch A10
   
   #concentration of your titrant: CHANGE EVERYTIME ACID IS CHANGED 
@@ -134,7 +135,10 @@ for(i in 1:nrows) {
 }
 TA[,2:3]<-sapply(TA[,2:3], as.numeric) # make sure the appropriate columns are numeric
 #exports your data as a CSV file
-write.table(TA,paste0(path,"/",date,"_TA_Output",".csv"),sep=",", row.names=FALSE)
+write.table(TA,paste0(path,"/","TA_Output_",titrationfile),sep=",", row.names=FALSE)
 
 #Cumulative TA
+cumu.data <- read.csv("Data/Cumulative_TA_Output.csv", header=TRUE, sep=",")
+update.data <- rbind(cumu.data, TA)
 
+write.table(update.data,"Data/Cumulative_TA_Output.csv",sep=",", row.names=FALSE)
