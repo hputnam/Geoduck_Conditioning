@@ -1,0 +1,8 @@
+sample,mass,salinity,Sample.ID,Type
+20180703_T9,60.8948,29.43,T9,Conical
+20180703_H0_low,60.7806,29.3,H0_low,Heath_tray
+20180703_H1_control,60.9274,29.37,H1_control,Heath_tray
+20180703_H2_control,60.3862,29.38,H2_control,Heath_tray
+20180703_T0_low,60.1703,29.38,T0_low,Conical
+20180703_T2_control,60.2607,29.39,T2_control,Conical
+20180703_T1_control,60.2688,29.39,T1_control,Conical

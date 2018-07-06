@@ -1,0 +1,6 @@
+sample,mass,salinity,Sample.ID,Type
+20180703_H3_low,59.6913,29.38,H3_low,Heath_tray
+20180703_T3_low,59.9597,29.42,T3_low,Conical
+20180703_spawn_tank,60.6972,29.21,spawn_tank,Tank
+20180703_T7,59.4879,29.45,T7,Conical
+20180703_T9,60.1907,29.45,T6,Conical

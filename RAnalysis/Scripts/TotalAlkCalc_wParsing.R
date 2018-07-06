@@ -15,7 +15,7 @@
 rm(list=ls())
 
 #set working directory---------------------------------------------------------------------------------------------
-setwd("/Users/hputnam/MyProjects/Geoduck_Conditioning/RAnalysis/")
+setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis")
 main<-getwd()
 
 #load libraries----------------------------------------------
@@ -23,12 +23,12 @@ library(seacarb) #used to calculate TA
 library(tidyverse)
 
 #CHANGE THESE VALUES EVERY DAY----------------------------------------------
-path<-"Data/20180627" #the location of all your titration files
-massfile<-"20180627mass_Run1.csv" # name of your file with masses
-titrationfile<-'20180627_Run1.csv'# name of the last titration file run
+path<-"Data/20180703" #the location of all your titration files
+massfile<-"20180703mass_Run2.csv" # name of your file with masses
+titrationfile<-'20180703_Run2.csv'# name of the last titration file run
 
 # Date that the data were run
-date<-'20180627'
+date<-'20180703'
 
 
 #DO NOT CHANGE ANYTHING BELOW THIS LINE UNLESS A NEW BOTTLE OF ACID IS USED

@@ -1,0 +1,10 @@
+sample,mass,salinity,Sample.ID,Type
+20180702_spawn_tank,60.0564,29.29,spawn_tank,Tank
+20180702_T9,60.5455,29.43,T9,Conical
+20180702_T6,60.4412,29.46,T6,Conical
+20180701_T6,60.3386,29.33,T6,Conical
+20180702_T7,60.9411,29.45,T7,Conical
+20180701_spawn_tank,60.8836,29.11,spawn_tank,Tank
+20180701_T9,60.1249,29.35,T9,Conical
+20180701_T7,60.7191,29.37,T7,Conical
+20180702_inflow_sump,60.6563,29.38,inflow_sump,Sump
