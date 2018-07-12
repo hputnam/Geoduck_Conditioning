@@ -17,7 +17,7 @@ rm(list=ls())
 
 #set working directory---------------------------------------------------------------------------------------------
 #setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis")
-setwd("~/MyProjects/UW_TA2016/RAnalysis/")
+setwd("~/MyProjects/UW_TA_2016/RAnalysis/")
 main<-getwd()
 
 #load libraries----------------------------------------------
