@@ -26,8 +26,8 @@ library(tidyverse)
 
 #CHANGE THESE VALUES EVERY DAY----------------------------------------------
 path<-"Data/20180712" #the location of all your titration files
-massfile<-"20180712mass_CRM.csv" # name of your file with masses
-titrationfile<-'20180712_CRM.csv'# name of the last titration file run
+massfile<-"20180712mass_Run2.csv" # name of your file with masses
+titrationfile<-'20180712_Run2.csv'# name of the last titration file run
 
 # Date that the data were run
 date<-'20180712'
@@ -112,9 +112,11 @@ for(i in 1:nrows) {
   
   d<-1.02887 -(0.0001106*mean(Data$Temperature[mV], na.rm=T)) - (0.00000400*(mean(Data$Temperature[mV], na.rm=T)^2)) 
   #Batch A12 20180712 ES 
+  #Batch A10 d<-1.02882 -(0.0001067*mean(Data$Temperature[mV], na.rm=T)) - (0.0000041*(mean(Data$Temperature[mV], na.rm=T)^2))
   
   #concentration of your titrant: CHANGE EVERYTIME ACID IS CHANGED 
   c<-0.099962 #Batch A12 20180712 ES 
+  # Batch A10: c<-0.100215
   
   #------------------------------------------------------------------------------
   
