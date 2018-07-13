@@ -5,6 +5,8 @@
 #Supported by: FFAR
 #See Readme file for details on data files and metadata
 
+# path changes made on 20180712 sor SJG personal comp at Pt Whitney - original paths kept with #
+
 rm(list=ls()) # removes all prior objects
 
 #R Version: R version 3.3.1
@@ -34,13 +36,16 @@ library(MuMIn) #version: 1.15.6 Date/Publication: 2016-01-07 Depends: R (>= 3.0.
 
 
 #############################################################
-setwd("~/MyProjects/Geoduck_Conditioning/RAnalysis/Data") #set working directory
-mainDir<-'~/MyProjects/Geoduck_Conditioning/RAnalysis/' #set main directory
+setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Data") #set working directory
+#setwd("~/MyProjects/Geoduck_Conditioning/RAnalysis/Data") #set working directory
+mainDir<-'C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/' #set main directory
+# mainDir<-'~/MyProjects/Geoduck_Conditioning/RAnalysis/' #set main directory
 #############################################################
 
 
 ##### DISCRETE pH CALCULATIONS #####
-path <-("~/MyProjects/Geoduck_Conditioning/RAnalysis/Data/pH_Calibration_Files/")
+# path <-("~/MyProjects/Geoduck_Conditioning/RAnalysis/Data/pH_Calibration_Files/")
+path <-("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Data/pH_Calibration_Files/")
 file.names<-list.files(path = path, pattern = "csv$") #list all the file names in the folder to get only get the csv files
 pH.cals <- data.frame(matrix(NA, nrow=length(file.names), ncol=3, dimnames=list(file.names,c("Date", "Intercept", "Slope")))) #generate a 3 column dataframe with specific column names
 
@@ -71,14 +76,17 @@ STris<-34.5 #salinity of the Tris
 phTris<- (11911.08-18.2499*STris-0.039336*STris^2)*(1/(SW.chem$Temperature+273.15))-366.27059+ 0.53993607*STris+0.00016329*STris^2+(64.52243-0.084041*STris)*log(SW.chem$Temperature+273.15)-0.11149858*(SW.chem$Temperature+273.15) #calculate the pH of the tris (Dickson A. G., Sabine C. L. and Christian J. R., SOP 6a)
 SW.chem$pH.Total<-phTris+(mvTris/1000-SW.chem$pH.MV/1000)/(R*(SW.chem$Temperature+273.15)*log(10)/F) #calculate the pH on the total scale (Dickson A. G., Sabine C. L. and Christian J. R., SOP 6a)
 
-pdf("~/MyProjects/Geoduck_Conditioning/RAnalysis/Output/Daily_Treatment_Measures.pdf")
+
+# pdf("~/MyProjects/Geoduck_Conditioning/RAnalysis/Output/Daily_Treatment_Measures.pdf")
+pdf("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Output/Daily_Treatment_Measures.pdf")
 par(mfrow=c(3,2))
 plot(SW.chem$Treatment, SW.chem$Temperature, xlab="Treatment", ylab="Temperature°C", ylim=c(12,20))
 plot(SW.chem$Treatment, SW.chem$pH.Total, xlab="Treatment", ylab="pH Total Scale", ylim=c(7.0,8.2))
 plot(SW.chem$Treatment, SW.chem$Salinity, xlab="Treatment", ylab="Salinity psu", ylim=c(26,30))
 dev.off()
 
-pdf("~/MyProjects/Geoduck_Conditioning/RAnalysis/Output/Daily_Tank_Measures.pdf")
+# pdf("~/MyProjects/Geoduck_Conditioning/RAnalysis/Output/Daily_Tank_Measures.pdf")
+pdf("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Output/Daily_Treatment_Measures.pdf")
 par(mfrow=c(3,2))
 plot(SW.chem$Sample.ID, SW.chem$Temperature, xlab="Tank", ylab="Temperature°C", ylim=c(12,20),las=2)
 plot(SW.chem$Sample.ID, SW.chem$pH.Total, xlab="Tank", ylab="pH Total Scale", ylim=c(7.0,8.2),las=2)
@@ -96,6 +104,7 @@ SW.chem$Sample.ID <- paste(SW.chem$Date, SW.chem$Sample.ID, sep='_') #generate n
 SW.chem <- merge(SW.chem,TA, by="Sample.ID", all = TRUE, sort = T) #merge seawater chemistry with total alkalinity
 SW.chem <- na.omit(SW.chem) #remove NA
 
+
 #Calculate CO2 parameters using seacarb
 carb.output <- carb(flag=8, var1=SW.chem$pH.Total, var2=SW.chem$TA/1000000, S= SW.chem$Salinity, T=SW.chem$Temperature, P=0, Pt=0, Sit=0, pHscale="T", kf="pf", k1k2="l", ks="d") #calculate seawater chemistry parameters using seacarb
 carb.output$ALK <- carb.output$ALK*1000000 #convert to µmol kg-1
@@ -106,7 +115,8 @@ carb.output$DIC <- carb.output$DIC*1000000 #convert to µmol kg-1
 carb.output <- carb.output[,-c(1,4,5,8,10:13,19)] #subset variables of interest
 carb.output <- cbind(SW.chem$Date,  SW.chem$Sample.ID,  SW.chem$Treatment, carb.output) #combine the sample information with the seacarb output
 colnames(carb.output) <- c("Date",  "Tank",  "Treatment",	"Salinity",	"Temperature", "pH",	"CO2",	"pCO2","HCO3",	"CO3",	"DIC", "TA",	"Aragonite.Sat") #Rename columns to describe contents
-write.table(carb.output, "~/MyProjects/BioMin_HIS/RAnalysis/Output/Seawater_chemistry_table_Output_All.csv", sep=",", row.names = FALSE) #save data
+# write.table(carb.output, "~/MyProjects/BioMin_HIS/RAnalysis/Output/Seawater_chemistry_table_Output_All.csv", sep=",", row.names = FALSE) #save data
+write.table(carb.output, "C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Output/Seawater_chemistry_table_Output_All.csv", sep=",", row.names = FALSE) #save data
 
 carbo.melted <- melt(carb.output) #reshape the dataframe to more easily summarize all output parameters
 mean.carb.output <-ddply(carbo.melted, .(Treatment, variable), summarize, #For each subset of a data frame, apply function then combine results into a data frame.
@@ -115,13 +125,15 @@ mean.carb.output <-ddply(carbo.melted, .(Treatment, variable), summarize, #For e
                          sem = (sd(value)/sqrt(N))) #calculate the SEM as the sd/sqrt of the count or data length
 mean.carb.output # display mean and sem 
 
-pdf("~/MyProjects/Geoduck_Conditioning/RAnalysis/Output/Water_Chem_withTA.pdf")
+# pdf("~/MyProjects/Geoduck_Conditioning/RAnalysis/Output/Water_Chem_withTA.pdf")
+# CHECK YOUR Y AXIS!
+pdf("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Output/Water_Chem_withTA.pdf")
 par(mfrow=c(3,2))
-plot(carb.output$Treatment, carb.output$Temperature, xlab="Treatment", ylab="Temperature°C", ylim=c(23,28))
+plot(carb.output$Treatment, carb.output$Temperature, xlab="Treatment", ylab="Temperature°C", ylim=c(12,20))
 plot(carb.output$Treatment, carb.output$pH, xlab="Treatment", ylab="pH Total Scale", ylim=c(7.2,8.2))
 plot(carb.output$Treatment, carb.output$pCO2, xlab="Treatment", ylab="pCO2 µmol kg-1", ylim=c(350,2500))
-plot(carb.output$Treatment, carb.output$Salinity, xlab="Treatment", ylab="Salinity psu", ylim=c(33,35))
-plot(carb.output$Treatment, carb.output$TA, xlab="Treatment", ylab="Total Alkalinity µmol kg-1", ylim=c(2100,2400))
+plot(carb.output$Treatment, carb.output$Salinity, xlab="Treatment", ylab="Salinity psu", ylim=c(25,30))
+plot(carb.output$Treatment, carb.output$TA, xlab="Treatment", ylab="Total Alkalinity µmol kg-1", ylim=c(1800,2400))
 plot(carb.output$Treatment, carb.output$Aragonite.Sat, xlab="Treatment", ylab="Aragonite Saturation State", ylim=c(0,4))
 dev.off()
 
