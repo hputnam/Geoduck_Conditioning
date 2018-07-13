@@ -11,6 +11,7 @@
 
 #Created by Nyssa Silbiger 03/28/2014
 #modified 20180627 Hollie Putnam
+#new acid bottle 20180712 Emma Strand
 #------------------------------------------------------------
 rm(list=ls())
 
@@ -24,12 +25,12 @@ library(seacarb) #used to calculate TA
 library(tidyverse)
 
 #CHANGE THESE VALUES EVERY DAY----------------------------------------------
-path<-"Data/20180711" #the location of all your titration files
-massfile<-"20180711mass_Run1.csv" # name of your file with masses
-titrationfile<-'20180711_Run1.csv'# name of the last titration file run
+path<-"Data/20180712" #the location of all your titration files
+massfile<-"20180712mass_CRM.csv" # name of your file with masses
+titrationfile<-'20180712_CRM.csv'# name of the last titration file run
 
 # Date that the data were run
-date<-'20180711'
+date<-'20180712'
 
 
 #DO NOT CHANGE ANYTHING BELOW THIS LINE UNLESS A NEW BOTTLE OF ACID IS USED
@@ -106,14 +107,16 @@ for(i in 1:nrows) {
   mV<-which(Data$mV<pH3 & Data$mV>pH35) 
   
   #CHANGE ONLY WHEN NEW BOTTLE OF ACID IS USED----------------------------------
-  #Bottle A3 - acid titrant# , 
+  #Bottle A12 20180712 ES  - acid titrant# , 
   #density of your titrant: change every time acid is changed
   
-  d<-1.02882 -(0.0001067*mean(Data$Temperature[mV], na.rm=T)) - (0.0000041*(mean(Data$Temperature[mV], na.rm=T)^2)) 
-  #Batch A10
+  d<-1.02887 -(0.0001106*mean(Data$Temperature[mV], na.rm=T)) - (0.00000400*(mean(Data$Temperature[mV], na.rm=T)^2)) 
+  #Batch A12 20180712 ES 
+  #Batch A10 d<-1.02882 -(0.0001067*mean(Data$Temperature[mV], na.rm=T)) - (0.0000041*(mean(Data$Temperature[mV], na.rm=T)^2))
   
   #concentration of your titrant: CHANGE EVERYTIME ACID IS CHANGED 
-  c<-0.100215 #Batch A10
+  c<-0.099962 #Batch A12 20180712 ES 
+  # Batch A10: c<-0.100215
   
   #------------------------------------------------------------------------------
   
