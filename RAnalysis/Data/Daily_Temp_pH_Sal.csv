@@ -172,3 +172,23 @@ Date,Calib.Date,Time,Sample.ID,Treatment,Temperature,pH.MV,Salinity,Period1,Note
 20180711,20180711,10:00,raceway,na,20,-65.7,27.69,,
 20180711,20180711,10:00,downweller,na,15.4,-55.5,28.47,,
 20180711,20180711,10:00,inflow_sump,na,14.4,-50.8,28.59,,
+20180712,20180712,10:50,T0,Low,14.4,-14.2,28.75,,test for heath tray experiment
+20180712,20180712,10:50,H0_T,Low,14.5,-15.7,28.8,,test for heath tray experiment
+20180712,20180712,10:50,H0_B,Low,14.5,-15.5,28.79,,test for heath tray experiment
+20180712,20180712,10:50,T1,Control,14.5,-50,28.61,,test for heath tray experiment
+20180712,20180712,10:50,H1_T,Control,14.6,-48.1,28.69,,test for heath tray experiment
+20180712,20180712,10:50,H1_B,Control,14.5,-49.1,28.8,,test for heath tray experiment
+20180712,20180712,10:50,T2,Control,14.5,-50.1,28.87,,test for heath tray experiment
+20180712,20180712,10:50,H2_T,Control,15,50,28.82,,test for heath tray experiment
+20180712,20180712,10:50,H2_B,Control,14.5,-49.9,28.74,,test for heath tray experiment
+20180712,20180712,10:50,T3,Low,14.5,-16.1,28.79,,test for heath tray experiment
+20180712,20180712,10:50,H3_T,Low,14.5,-16.6,28.88,,test for heath tray experiment
+20180712,20180712,10:50,H3_B,Low,14.5,-17.7,28.74,,test for heath tray experiment
+20180712,20180712,10:50,T6,Low,14.7,-51.1,28.89,,"pH low, settled larvae in ambient"
+20180712,20180712,10:50,T7,Control,14.9,-50.7,28.63,,"control, settled larvae in ambient"
+20180712,20180712,10:50,T9,Control,15.5,-48.6,28.31,,"control, settled larvae  in ambient"
+20180712,20180712,10:50,spawn_tank,na,16.8,-24.8,29.04,,flow was not running - likely why pH is low
+20180712,20180712,10:50,raceway,na,20.3,-63,27.75,,
+20180712,20180712,10:50,downweller,na,14.2,-49.7,28.78,,
+20180712,20180712,10:50,inflow_sump,na,14,-50.4,28.82,,
+,,,,,,,,,
