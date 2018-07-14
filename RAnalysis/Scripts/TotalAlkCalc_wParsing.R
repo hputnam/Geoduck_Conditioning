@@ -12,12 +12,14 @@
 #Created by Nyssa Silbiger 03/28/2014
 #modified 20180627 Hollie Putnam
 #new acid bottle 20180712 Emma Strand
+#line 68 changed SampleID to Sample.ID - Sam Gurr 20180713
+#
 #------------------------------------------------------------
 rm(list=ls())
 
 #set working directory---------------------------------------------------------------------------------------------
-#setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis")
-setwd("~/MyProjects/Geoduck_Conditioning/RAnalysis/")
+setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/")
+#setwd("~/MyProjects/Geoduck_Conditioning/RAnalysis/")
 main<-getwd()
 
 #load libraries----------------------------------------------
@@ -25,12 +27,12 @@ library(seacarb) #used to calculate TA
 library(tidyverse)
 
 #CHANGE THESE VALUES EVERY DAY----------------------------------------------
-path<-"Data/20180712" #the location of all your titration files
-massfile<-"20180712mass_CRM.csv" # name of your file with masses
-titrationfile<-'20180712_CRM.csv'# name of the last titration file run
+path<-"Data/20180713" #the location of all your titration files
+massfile<-"20180713mass_Run1.csv" # name of your file with masses
+titrationfile<-'20180713_Run1.csv'# name of the last titration file run
 
 # Date that the data were run
-date<-'20180712'
+date<-'20180713'
 
 
 #DO NOT CHANGE ANYTHING BELOW THIS LINE UNLESS A NEW BOTTLE OF ACID IS USED
@@ -64,7 +66,7 @@ pH3<-mod.pH$coefficients[1]+mod.pH$coefficients[2]*3
 nrows<-nrow(Mass) # number of rows in a mass file
 TA <- data.frame(matrix(nrow = nrows, ncol = 3))
 rownames(TA)<-Mass$Sample.ID1[1:nrows]
-colnames(TA)<-c("SampleID",'TA','Mass')
+colnames(TA)<-c("Sample.ID",'TA','Mass') # changed SampleID to Sample.ID
 
 #run a for loop to bring in the titration files one at a time and calculate TA
 # read in the mega concatenated titration results file
