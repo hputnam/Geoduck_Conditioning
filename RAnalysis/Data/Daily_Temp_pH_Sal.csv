@@ -191,4 +191,16 @@ Date,Calib.Date,Time,Sample.ID,Treatment,Temperature,pH.MV,Salinity,Period1,Note
 20180712,20180712,10:50,raceway,na,20.3,-63,27.75,,
 20180712,20180712,10:50,downweller,na,14.2,-49.7,28.78,,
 20180712,20180712,10:50,inflow_sump,na,14,-50.4,28.82,,
-,,,,,,,,,
+20180713,20180713,9:00,T0,Low,14.5,-15,28.95,pre-experiment,TEMP NOT MEASURED (INSERTED 14.5 FOR ALL) test for heath tray experiment
+20180713,20180713,9:00,H0_T,Low,14.5,-17,28.01,pre-experiment,test for heath tray experiment
+20180713,20180713,9:00,H0_B,Low,14.5,-15,28.93,pre-experiment,test for heath tray experiment
+20180713,20180713,9:00,T1,Control,14.5,-49.4,28.98,pre-experiment,test for heath tray experiment
+20180713,20180713,9:00,H1_T,Control,14.5,-49.3,29.05,pre-experiment,test for heath tray experiment
+20180713,20180713,9:00,H1_B,Control,14.5,-49.4,28.88,pre-experiment,test for heath tray experiment
+20180713,20180713,9:00,T2,Control,14.5,-49.3,28.91,pre-experiment,test for heath tray experiment
+20180713,20180713,9:00,H2_T,Control,14.5,-49.4,28.94,pre-experiment,test for heath tray experiment
+20180713,20180713,9:00,H2_B,Control,14.5,-49.1,28.94,pre-experiment,test for heath tray experiment
+20180713,20180713,9:00,T3,Low,14.5,-15.1,28.86,pre-experiment,test for heath tray experiment
+20180713,20180713,9:00,H3_T,Low,14.5,-15.4,28.91,pre-experiment,test for heath tray experiment
+20180713,20180713,9:00,H3_B,Low,14.5,-16,28.77,pre-experiment,test for heath tray experiment
+20180713,20180713,9:00,heathstack_outdoor,Ambient,14.5,-49.1,28.67,,basal respiration taken today - animals from outdoor heathstack
