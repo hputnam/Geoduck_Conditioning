@@ -17,7 +17,7 @@ rm(list=ls())
 
 #set working directory---------------------------------------------------------------------------------------------
 #setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis")
-setwd("~/MyProjects/Geoduck_Conditioning/RAnalysis/")
+setwd("~/MyProjects/UW_TA_2016/RAnalysis/")
 main<-getwd()
 
 #load libraries----------------------------------------------
@@ -26,8 +26,8 @@ library(tidyverse)
 
 #CHANGE THESE VALUES EVERY DAY----------------------------------------------
 path<-"Data/20180712" #the location of all your titration files
-massfile<-"20180712mass_CRM.csv" # name of your file with masses
-titrationfile<-'20180712_CRM.csv'# name of the last titration file run
+massfile<-"20180712mass_Run3.csv" # name of your file with masses
+titrationfile<-'20180712_Run3.csv'# name of the last titration file run
 
 # Date that the data were run
 date<-'20180712'
