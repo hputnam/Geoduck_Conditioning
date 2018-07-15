@@ -1,12 +1,13 @@
 #http://www.informit.com/articles/article.aspx?p=2215520
 
-# modified as of 20170708 by SJG 
-#  changes in lines 20 - 36 for column name changes for switched conicals
+#modified as of 20180715 SJG
+#added reminders on lines 39 and 43 to prevent overwritting files ->  SJG
+#changes in lines 20 - 36 for column name changes for switched conicals -> 20170708 by SJG 
 
 library("XML")
 library("plyr")
 
-xmlfile <- xmlParse("http://192.168.1.100:80/cgi-bin/datalog.xml?sdate=180702&days=7") #read in the date plus x days of Apex data
+xmlfile <- xmlParse("http://192.168.1.100:80/cgi-bin/datalog.xml?sdate=180708&days=8") #read in the date plus x days of Apex data
 
 Apex.Data <- ldply(xmlToList(xmlfile), data.frame) #convert xml to dataframe
 
@@ -35,11 +36,12 @@ Probe.Data <- Apex.Data2[,c(3,6,9,12,66, 69, 72, 75, 78, 81)] #select columns
 colnames(Probe.Data ) <- c("Date.Time", "TMP_T0", "pH_T0", "Sal", "TMP_T2", "pH_T2","Temp_T3",
                            "pH_T3", "TMP_T1", "pH_T1")  #rename columns
 Probe.Data$Date.Time <- as.POSIXct(Probe.Data$Date.Time, format = "%m/%d/%Y %H:%M:%S", tz="HST") #convert date to HI time
-write.csv(Probe.Data, "C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Data/Apex_data/Output/20180708_Apex_Data_Output.data.csv") #write file to save data
+# CHANGE DATE FOR NEW CSV (risk overwritting previous)
+write.csv(Probe.Data, "C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Data/Apex_data/Output/20180715_Apex_Data_Output.data.csv") #write file to save data
 
 #plot Temp and pH and save to output
-
-pdf("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Data/Apex_data/Output/Graphs/20180708_Apex_Output.data.pdf")
+# CHANGE DATE FOR NEW PDF (risk overwritting previous)
+pdf("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Data/Apex_data/Output/Graphs/20180715_Apex_Output.data.pdf")
 par(mfrow=c(2,1))
 plot(as.numeric(as.character(TMP_T0)) ~ Date.Time, Probe.Data, col = "grey", type="l", ylim=c(12, 20),  xlab="Time", ylab="Temperature °C")
 lines(as.numeric(as.character(TMP_T1)) ~ Date.Time, Probe.Data, col = "red")
