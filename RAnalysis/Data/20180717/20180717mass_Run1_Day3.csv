@@ -1,0 +1,10 @@
+sample,mass,salinity,Sample.ID,Type, Notes
+20180717_H3_B,59.931,28.99,H3_B,heath_tray,
+20180717_H3_T,60.5019,29.2,H3_T,heath_tray,
+20180717_H2_B,60.9138,29.1,H2_B,heath_tray,
+20180717_inflow_sump,59.574,29.11,inflow_sump,sump,
+20180717_H2_T,60.5704,28.95,H2_T,heath_tray,
+20180717_H1_B,60.7607,29.12,H1_B,heath_tray,
+20180717_H1_T,60.0912,29.08,H1_T,heath_tray,
+20180717_H0_T,60.5825,28.77,H0_T,heath_tray,
+20180717_H0_B,60.3305,29,H0_B,heath_tray,
