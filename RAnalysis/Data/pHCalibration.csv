@@ -18,3 +18,5 @@ Date,ZeroPoint,Slope,pH4,pH7,pH10,temp,status,notes,initials
 20180722,6.936,-57.86,169.1,-4.6,-178.8,21.1,pass,2nd zeropt and slope,
 20180723,6.934,-57.91,169.2,-4.7,-180.2,21.2,pass,2nd zeropt and slope,
 20180724,6.922,-57.79,168.2,-5.4,-180.6,21,pass,2nd zeropt and slope,
+20180731,6.919,-57.83,166.9,-5.7,-181.2,20.6,pass,2nd zeropt and slope,
+20180802,6.917,-57.99,167.5,-5.6,-181.3,21.3,pass,2nd zeropt and slope,
