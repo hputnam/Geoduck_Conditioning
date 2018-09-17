@@ -1,3 +1,27 @@
+# Geoduck Conditioning
+# Title: Geoduck_resp_SDR
+# Supported by: FFAR
+# This script was written by Sam J Gurr in Summer 2018
+# Contact: samuel_gurr@uri.edu
+
+# OBJECTIVE: use the LoLinR package for respiration measurements with a Presens SDR SensorDish (24-vial plate)
+# This script was first written for data on juvenile (~5mm shell width) Pacific geoduck (Panopea genorosa)
+
+# WHY LoLinR package?: respiration rate is often misinterpreted due to visual bias or use of entire datasets that
+# include noise due to intrumentation error, poor mixing, physiological thresholds (decelione of resp or oxyconformity), etc.
+# the Lolin package minimizes this error and allows for a relatively non-bias criteria 
+
+# MY CRITERIA: I use the Lolin package at a default of alpha = 0.2 (20% of the data)
+# for the equation Lpc (review publication on LolinR package). However, this script below is catered
+# to visualize the LoLin output to tinker alpha or determine whether Lpc acurately portrays the data. 
+# Due to inconsistancies (e.g. delayed mixing, noise, curves, transitions to slower rates, etc),
+# I strongly believe it is still necessary to determine data at which the default criteria (Lpc, alpha=0.2)
+# may or may not fit each measurement. 
+# CRTIERIA (animal resp) = proximity to peak density curve on "Distrubution of Beta 1" graph
+# CRITERIA (blanks) = alpha=0.2 and Lpc more MOST cases. NOTE: proximity to the poeak density curve is often NOT 
+# accurate for blanks. blanks tend to have a significant inital curve that plateus at ~ (-0.6)-(-1.5) after 15 minutes 
+# in 30 min respiration trials. 
+
 rm(list=ls())
 
 #set working directory---------------------------------------------------------------------------------------------
@@ -7,7 +31,7 @@ main<-getwd()
 
 #CHANGE THESE VALUES EVERY DAY----------------------------------------------------------------------
 path<-"All_data_csv" #the location of all your titration files
-respfile<-"20180811_resp_Day4_RUN2_Oxygen.csv" # name of your file with resp data
+respfile<-"20180724_resp_Day10_RUN1_Oxygen.csv" # name of your file with resp data
 
 #load Data------------------------------------------------------------------------------------------
 resp<-read.csv(file.path(path,respfile), header=T, sep=",", na.string="NA", as.is=T) 
@@ -22,44 +46,44 @@ resp.data <- resp[,c(1:26)] #select columns = 26 total (Date + Time + 24 vials o
 #SDR plate organization - name columns accordingly as TANK_vial (Ex: H1_T_B1 where H1_T = Tank name; B1 = vial position)
 ############################-------------------------------------------------------------------------
 ######   H0 & H1   #########
-#colnames(resp.data) <- c("Date", "minutes",
+colnames(resp.data) <- c("Date", "minutes",
 #Row 1 (A1, B1, C1, D1)
-#                      "H0_T_A1", "H0_B_B1", "H0_T_blank_C1", "H0_B_blank_D1", 
+                      "H0_T_A1", "H0_B_B1", "H0_T_blank_C1", "H0_B_blank_D1", 
 #Row 2 (A2, B2, C2, D2)
-#                   "H0_T_A2","H0_B_B2", "H0_T_blank_C2", "H0_B_blank_D2",
+                   "H0_T_A2","H0_B_B2", "H0_T_blank_C2", "H0_B_blank_D2",
 #Row 3 (A3, B3, C3, D3)
-#                  "H0_T_A3", "H0_B_B3", "H0_T_blank_C3", "H0_B_blank_D3",
+                  "H0_T_A3", "H0_B_B3", "H0_T_blank_C3", "H0_B_blank_D3",
 #Row 4 (A4, B4, C4, D4)
-#                    "H1_T_A4", "H1_B_B4", "H1_T_blank_C4", "H1_B_blank_D4",
+                    "H1_T_A4", "H1_B_B4", "H1_T_blank_C4", "H1_B_blank_D4",
 #Row 5 (A5, B5, C5, D5)
-#                  "H1_T_A5", "H1_B_B5", "H1_T_blank_C5", "H1_B_blank_D5",
+                  "H1_T_A5", "H1_B_B5", "H1_T_blank_C5", "H1_B_blank_D5",
 #Row 6 (A6, B6, C6, D6)
-#                 "H1_T_A6", "H1_B_B6", "H1_T_blank_C6", "H1_B_blank_D6") #rename columns
+                 "H1_T_A6", "H1_B_B6", "H1_T_blank_C6", "H1_B_blank_D6") #rename columns
 
 
 ############################--------------------------------------------------------------------------
 ######   H2 & H3   #########
-colnames(resp.data) <- c("Date", "minutes",
+#colnames(resp.data) <- c("Date", "minutes",
 #Row 1 (A1, B1, C1, D1)
-                   "H2_T_A1", "H2_B_B1", "H2_T_blank_C1", "H2_B_blank_D1", 
+#                   "H2_T_A1", "H2_B_B1", "H2_T_blank_C1", "H2_B_blank_D1", 
 #Row 2 (A2, B2, C2, D2)
-                     "H2_T_A2","H2_B_B2", "H2_T_blank_C2", "H2_B_blank_D2",
+#                     "H2_T_A2","H2_B_B2", "H2_T_blank_C2", "H2_B_blank_D2",
 #Row 3 (A3, B3, C3, D3)
-                    "H2_T_A3", "H2_B_B3", "H2_T_blank_C3", "H2_B_blank_D3",
+#                    "H2_T_A3", "H2_B_B3", "H2_T_blank_C3", "H2_B_blank_D3",
 #Row 4 (A4, B4, C4, D4)
-                     "H3_T_A4", "H3_B_B4", "H3_T_blank_C4", "H3_B_blank_D4",
+#                     "H3_T_A4", "H3_B_B4", "H3_T_blank_C4", "H3_B_blank_D4",
 #Row 5 (A5, B5, C5, D5)
-                    "H3_T_A5", "H3_B_B5", "H3_T_blank_C5", "H3_B_blank_D5",
+#                    "H3_T_A5", "H3_B_B5", "H3_T_blank_C5", "H3_B_blank_D5",
 #Row 6 (A6, B6, C6, D6)
-                  "H3_T_A6", "H3_B_B6", "H3_T_blank_C6", "H3_B_blank_D6") #rename columns
+#                  "H3_T_A6", "H3_B_B6", "H3_T_blank_C6", "H3_B_blank_D6") #rename columns
 
 # fill this in and press Cnrt A + enter for each vial 
-Date <- "20180811"
-tank_name <- "H3_B_blank"
-vial_pos <- "D6"
-ID <- "H3_B_blank_D6"
-tank_vial <- resp.data$H3_B_blank_D6
-alpha <- 0.2
+Date <- "20180724"
+tank_name <- "H0_B"
+vial_pos <- "B1"
+ID <- "H0_B_B1"
+tank_vial <- resp.data$H1_B_B6
+alpha <- 0.5
 
 # here is a test of the commands for LoLinR---------------------------------------
 
