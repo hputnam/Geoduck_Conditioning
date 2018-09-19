@@ -13,9 +13,12 @@
 # to choose the constants that best represent our data - similarity to the "individually" run file
 # in which a visual criteria was completed by hand for proximity to highest regression density from LoLin plots
 
-# NOTE: 
-# units in the called files (column name "bi.Lpc") are assumed to be in units of umol min-1 when uploaded to the script
-# current script is written for 10 files each with 16 run of the SensorDish (SDR) 24-well plate 
+# NOTE & Assumptions:
+# order plays a major role in this script and will need to be adjusted for future measurements
+# the 24-well plate without randomization in each of the "RUNS" - adjustment to blank triplets uses an if statments on row numbers 
+# This works for the experiment in summer 2018, but will need to rewrite to call categorically in next version...
+# units in the called files (column name "bi.Lpc") are assumed to be umol min-1 when uploaded to the script
+# current script is written for 10 files each with 16 runs of the SensorDish (SDR) 24-well plate 
 ###################################################################################################
 rm(list=ls())
 
