@@ -29,13 +29,13 @@ library(LoLinR)
 path<-"All_data_csv" #the location of all your respiration files
 
 # assign your alpha value
-a <- 0.6
+a <- 0.4 #---------------------------------------------------------------------CHANGE THE NAME HERE EVERY TIME ( AND in the model itself!)
 #assign your "Notes" column - refer to the amount of data used 
-n <- "all"
+n <- "min10-25" #---------------------------------------------------------------CHANGE THE NAME HERE EVERY TIME
 # time gap for assigned resp vials
-# write this for minutes 10-25 resp_vials[40:100,]
-# write this for minutes 10-20 resp_vials[40:80,]
-ouputNAME<-"Cumulative_resp_alpha0.6_all.csv"
+# write this for minutes 10-25 resp_vials[40:100,] min10-25_2
+# write this for minutes 10-20 resp_vials[40:80,] min10-20_2
+ouputNAME<-"Cumulative_resp_alpha0.4_min10-25_2.csv" # -------------------------CHANGE THE NAME HERE EVERY TIME
 
 # size data to merge to output
 path2<-"All_data_csv/Cumulative_output"
@@ -98,15 +98,15 @@ for(i in 1:nrow(TABLE_files)){
   RUN <- TABLE_files[i,2]
 
   # your predicted values
-  resp_vials <- resp[, !(colnames(resp) %in% c("Time.Min."))]
+  resp_vials <- resp[40:100, !(colnames(resp) %in% c("Time.Min."))] 
   resp_vials 
 
   # inside for loop calls the 24 columns individually for the LoLin model
   # ouputs the Lpc individually to the created dataframe and rbinds it to df_total 
   for(j in t(1:ncol(resp_vials))){
     model <- rankLocReg(
-  xall=resp$Time.Min., yall=resp_vials[, j],
-  alpha=0.2, method="pc", verbose=TRUE)
+  xall=resp$Time.Min.[40:100], yall=resp_vials[, j],
+  alpha=0.4, method="pc", verbose=TRUE)
 
     sum.table<-summary(model)
 
