@@ -1,0 +1,4 @@
+sample,mass,salinity,Sample.ID,Type, Notes
+20180804_JUNK,60.8847,29,JUNK,JUNK,
+20180804_CRM1,59.1497,33.607,CRM1,CRM,"New Batch and Bottle #137-1095 - TA = 2231.59, sal = 33.607"
+20180804_CRM2,59.1159,33.607,CRM2,CRM,New Batch and Bottle #137-1095

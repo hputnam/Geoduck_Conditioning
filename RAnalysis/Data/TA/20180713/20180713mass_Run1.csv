@@ -1,0 +1,10 @@
+sample,mass,salinity,Sample.ID,Type, Notes
+20180713_Heathstack_outdoor,60.6248,28.67,Heathstack_outdoor,Heath_tray,basal respiration from indiv from this heathstack
+20180713_H2_T,60.9886,28.94,H2_T,Heath_tray,
+20180713_H3_B,60.2307,28.77,H3_B,Heath_tray,
+20180713_H3_T,59.1286,28.91,H3_T,Heath_tray,
+20180713_H1_B,60.1233,28.88,H1_B,Heath_tray,
+20180713_H2_B,60.2168,28.94,H2_B,Heath_tray,
+20180713_H1_T,60.6424,29.05,H1_T,Heath_tray,
+20180713_H0_T,60.6441,28.01,H0_T,Heath_tray,
+20180713_H0_B,60.1952,28.93,H0_B,Heath_tray,
