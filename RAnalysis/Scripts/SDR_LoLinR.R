@@ -1,7 +1,8 @@
-# Geoduck Conditioning
+# Project: Geoduck Conditioning
 # Title: SDR_LoLinR.R
 # Supported by: FFAR
-# This script was written by Sam J Gurr in Fall 2018
+# Author: Sam Gurr
+# Date Updated: 20181002
 # Contact: samuel_gurr@uri.edu
 
 # OBJECTIVE: use the LoLinR package for respiration measurements with a Presens SDR SensorDish (24-vial plate)
@@ -11,7 +12,7 @@
 # include noise due to intrumentation error, poor mixing, physiological thresholds (decelione of resp or oxyconformity), etc.
 # the Lolin package minimizes this error and allows for a relatively non-bias criteria 
 
-# This script allows for  AUTOMATED and REPRODUCIBLE output for the LoLinR package from several output files
+# This script allows for AUTOMATED and REPRODUCIBLE output for the LoLinR package from several output files
 # script targets use of Lpc with the ability to easily change constants for alpha and truncated datasets (time time based on row numbers)
 
 # Assumption: raw SDR ouput files are edited for headers (row1) in vial order A1....D1, A2, ...D2, etc.  
@@ -49,7 +50,7 @@ size$RUN <- NULL
 size$Date<-NULL
 size$SDR_position<- NULL
 
-
+###THIS SHOULD ALL COME FROM YOUR SAMPLE INFO FILE##
 # make a table for to refer in the outer for loop - filenames, run, and date
 TABLE_files <- data.frame(matrix(nrow = 16))
 TABLE_files$run_number <- c(1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2)
@@ -140,6 +141,8 @@ for(i in 1:nrow(TABLE_files)){
 
 #look at your cumulative dataframe
 df_total
+
+#### THIS SHOULD COME FROM YOUR SAMPLE INFO FILE####
 #names from a1 to D6 in order of default in SDR sensor dish - X16 for the 16 files
       names <- c("A1", "B1", "C1", "D1", "A2", "B2", "C2", "D2", 
                  "A3", "B3", "C3", "D3", "A4", "B4" ,"C4", "D4", 

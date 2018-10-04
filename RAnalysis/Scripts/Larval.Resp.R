@@ -1,7 +1,7 @@
 #Title: Respiration Calculations
 #Author: HM Putnam
 #Edited by: HM Putnam
-#Date Last Modified: 20180627
+#Date Last Modified: 20181002
 #See Readme file for details
 
 rm(list=ls()) #clears workspace 
@@ -55,25 +55,20 @@ Sample.Info <- read.csv(file="Data/Larval_Sample_Info.csv", header=T) #read samp
 #includes treatment, tank, chamber volume, animal size/number etc for normalization
 
 for(i in 1:length(file.names)) { # for every file in list start at the first and run this following function
-  Resp.Data1 <-read.table(file.path(path.p,file.names[i]), skip = 56, header=T, sep=",", na.string="NA", fill = TRUE, as.is=TRUE, fileEncoding="latin1") #reads in the data files
-  #Resp.Data1  <- Resp.Data1[,c(2,9,16)] #subset columns of interest
-  Resp.Data1$Time <- as.POSIXct(Resp.Data1$Date.Time,format="%H:%M:%S", tz = "") #convert time from character to time
+  Resp.Data <-read.table(file.path(path.p,file.names[i]), skip = 56, header=T, sep=",", na.string="NA", fill = TRUE, as.is=TRUE, fileEncoding="latin1") #reads in the data files
+  Resp.Data$Time.Min. <- seq.int(0.017, (nrow(Resp.Data))*0.25, by=0.25) #set time in min
+  Resp.Data[ Resp.Data[,] == "No Sensor" ] <- as.numeric(runif(nrow(Resp.Data), min=0, max=100)) #convert any vials with no data
+  Resp.Data <- Resp.Data[,2:26]
   
-  Resp.Data   <-  thinData(Resp.Data , by=20)$newData1 #thin data by every 10 points
-  Resp.Data $sec <- as.numeric(rownames(Resp.Data )) #maintain numeric values for time
-  plot(Value ~ sec, data=Resp.Data , xlab='Time (seconds)', ylab=substitute(' O'[2]~' (µmol/L)'), type='n', axes=FALSE) #plot thinned data
-  usr  <-  par('usr')
-  rect(usr[1], usr[3], usr[2], usr[4], col='grey90', border=NA)
-  whiteGrid()
-  box()
-  points(Resp.Data $Value ~ Resp.Data $sec, pch=16, col=transparentColor('dodgerblue2', 0.6), cex=1.1)
-  axis(1)
-  axis(2, las=1)
-  dev.off()
   
-  Regs  <-  rankLocReg(xall=Resp.Data $sec, yall=Resp.Data $Value, alpha=0.3, 
-                       method="pc", verbose=TRUE) 
-  pdf(paste0("~/Desktop/Data/20170822/T4_output",rename,"_",j,"regression.pdf"))
-  plot(Regs)
+  for(j in 2:(ncol(Resp.Data)-1)){
+    model <- rankLocReg(
+      xall=Resp.Data$Time.Min., yall=as.numeric(Resp.Data[, j]),
+      alpha=0.4, method="pc", verbose=TRUE)
+  
+  pdf(paste0("~/MyProjects/Geoduck_Conditioning/RAnalysis/Data/Respirometry/Larval/Resp_Plots/",i,"_",j,"_regression.pdf"))
+  plot(model)
   dev.off()
 }
+}
+
