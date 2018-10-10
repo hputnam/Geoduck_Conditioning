@@ -5,6 +5,8 @@ library(plyr)
 library(ggplot2)
 library(ggpubr)
 library(Rmisc)
+library(nlme)
+library(lme4)
 #set working directory--------------------------------------------------------------------------------------------------
 setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Data/SDR_data/All_data_csv/Cumulative_output/")
 main<-getwd()
@@ -25,18 +27,16 @@ data <-dat
 data[,17] <- tibble::rownames_to_column(data, "ROWS")
 
 # Trial 1
-TRIAL1 <-dat[1:96,]
+TRIAL1 <-data[1:96,]
 tail(TRIAL1, 34)
 names(TRIAL1)
-# add a column for row names to identify scatterplot rows
-TRIAL1[,17] <- tibble::rownames_to_column(TRIAL1, "ROWS")
+
 
 # Trial 2
-TRIAL2 <-dat[97:192,]
+TRIAL2 <-data[97:192,]
 tail(TRIAL2, 34)
 nrow(TRIAL2)
-# add a column for row names to identify scatterplot rows
-TRIAL2[,17] <- tibble::rownames_to_column(TRIAL2, "ROWS")
+
 
 ########################
 # plotted all automated ouputs ([,2-10]) to the output by hand ([,1])
@@ -143,13 +143,13 @@ hist(TRIAL1[,18]) # positive or right skewed - need to transform the data
 
 # transform via squareroot gets a normal distrubtion via shapro wilk test
 TRIAL1$sqrt_FINALresp <- sqrt(TRIAL1[,18])
-shapiro.test(TRIAL1[,19]) #  normal
-hist(TRIAL1[,19])
+shapiro.test(TRIAL1$sqrt_FINALres) #  not normal
+hist(TRIAL1$sqrt_FINALres)
 
 # regress the new data column FINALresp with the column of resp by hand ("REF") TRIAL1[,1]
 # lets look at a plot of our raw untransformed FINALresp data TABLE1[,18]
-plot(TRIAL1[,1],TRIAL1[,18], main= "Ref vs. FINALresp")
-summary(lm(TRIAL1[,1]~TRIAL1[,18])) # Multiple R-squared:  0.8784,	Adjusted R-squared:  0.8771 
+plot(TRIAL1[,1],TRIAL1$FINALresp, main= "Ref vs. FINALresp")
+summary(lm(TRIAL1[,1]~TRIAL1$FINALresp)) # Multiple R-squared:  0.8784,	Adjusted R-squared:  0.8771 
 
 ggplot(TRIAL1, aes(x = TRIAL1[,1], y = TRIAL1[,18])) +
   geom_point() +
@@ -179,7 +179,7 @@ percentdiff
 
 #lme_resp_trial1 <- lmer(sqrt_FINALresp ~ Treat1_Treat2 + (1|Date/Treat1_Treat2/tank), data = TRIAL1)
 
-lme_resp_trial1 <- lme(sqrt_FINALresp ~ Treat1_Treat2, random=~1|Date/Treat1_Treat2/tank, data = TRIAL1)
+lme_resp_trial1 <- lme(sqrt_FINALresp ~ Treat1_Treat2, random=~1|Date/Treat1_Treat2/tank/, data = TRIAL1)
 
 shapiro.test(residuals(lme_resp_trial1))
 histogram(residuals(lme_resp_trial1))
@@ -404,7 +404,7 @@ TRIAL2_plot <- ggplot(TRIAL2_om, aes(x = factor(TRIAL2_om$Date), y = TRIAL2_om$F
         legend.position = "none")
 print(TRIAL2_plot + labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1", 
                          x = "Date") + 
-        ggtitle("Juvenile geoduck respirometry \nin OA treatments TRIAL2"))
+        ggtitle("Juvenile geoduck respirometry \nin OA treatments EXP2"))
 
 
 
@@ -418,6 +418,6 @@ TRIAL2_plot_2 <- ggplot(TRIAL2_om, aes(x = factor(TRIAL2_om$Treat1_Treat2), y = 
         legend.position = "none")
 print(TRIAL2_plot_2 + labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1", 
                            x = "Date") + 
-        ggtitle("Juvenile geoduck respirometry \nin OA treatments TRIAL2"))
+        ggtitle("Juvenile geoduck respirometry \nin OA treatments EXP2"))
 
 
