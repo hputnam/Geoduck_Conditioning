@@ -1,12 +1,22 @@
 ###################################################################################################
 rm(list=ls())
 library(dplyr)
+library(tidyverse)
 library(plyr)
 library(ggplot2)
 library(ggpubr)
 library(devtools)
 library(easyGgplot2)
 library(reshape2)
+library(lme4)
+library(seacarb) 
+library(reshape) 
+library(plotrix) 
+library(ggplot2) 
+library(plyr)
+library(gridExtra)
+library(multcompView)
+library(lsmeans)
 #set working directory--------------------------------------------------------------------------------------------------
 setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Data/Growth_data/")
 main<-getwd()
@@ -17,12 +27,13 @@ path<-"Juvenile_SDR_resp_trials" #the locationv of all your respiration files
 # make the dataframe
 ########################
 size<-read.csv(file.path(path, ("All_growth_data.csv")), header=T, sep=",", na.string="NA", as.is=T) 
-########################
-# divide size into trials 1 and 2
-#size_EXP1 <- size[1:955,]
-#size_EXP2 <- size[956:1917,]
+
+size <- tibble::rowid_to_column(size, "ID") # add unique rownumber column to ID animals
+
+# DIVIDE THE DATASET BETWEEN EXPERIMENTS 1 AND 2
 size_EXP1 <- size[1:955,]
 size_EXP2 <- size[956:1917,]
+
 # make new columns to view size across tanks and treatment through time
 # by tank as "Date_tank"
 size$Date_tank <- paste(size$Date, size$tank, size$timeline_days, sep="_")
@@ -33,16 +44,102 @@ size_EXP2$Date_tank <- paste(size_EXP2$Date, size_EXP2$tank, size_EXP2$timeline_
 size$Date_treat <- paste(size$Date, size$treatment, sep="_")
 size_EXP1$Date_treat <- paste(size_EXP1$Date, size_EXP1$treatment, size_EXP1$timeline_days, sep="_")
 size_EXP2$Date_treat <- paste(size_EXP2$Date, size_EXP2$treatment, size_EXP2$timeline_days, sep="_")
+##############################
+# PLOT THE RAW DATA
+##############################
+# Exposure 1 Plotting
+Fig.Exp1.size <- ggplot(size_EXP1, aes(x=Day, y=shell_size, group=treatment)) +
+  geom_point(aes(shape=treatment), size = 3, position = position_dodge(width = 0.6))
+
+Fig.Exp1.size
+
+# Exposure 2 Plotting
+Fig.Exp2.size <- ggplot(size_EXP2, aes(x=Day, y=shell_size, group=treatment)) +
+  geom_point(aes(shape=treatment), size = 3, position = position_dodge(width = 0.6))
+
+Fig.Exp2.size
+
+##############################
+# run linear mixed effects model with treatment fixed, date random, and tank random and nested in treatment
+##############################
+#size_EXP1$Day <- as.character(size_EXP1$Day) # Day needs to be non-numerical
+#size_EXP2$Day <- as.character(size_EXP2$Day) # Day needs to be non-numerical
+#size_EXP1$ID <- as.character(size_EXP1$ID)
+
+############################## Exposure 1 model############################## 
+shapiro.test(size_EXP1$shell_size) # check for normality in the raw data
+hist(size_EXP1$shell_size) # negative skew, reflect and square root to normalize
+max(size_EXP1$shell_size) # max value is 6.859, subtract all values by 1+maxshellsize and square root
+size_EXP1$shell_sizeTRANS <- sqrt((1+max(size_EXP1$shell_size)) - size_EXP1$shell_size) # reflect and square root
+shapiro.test(size_EXP1$shell_sizeTRANS) # transformation is normally distributed
+hist(size_EXP1$shell_sizeTRANS) # histogram shows the norm distribution
+
+# run mixed effect model on transformed data; treat = fixed, Tank nested random within treatment and day
+
+#Init.lme <- lmer(shell_sizeTRANS ~ treatment + (1|Day/treatment/tank/tank_ID), data = size_EXP1) # group factor > individual variance (num. observ)
+
+Init.lme <- lme(shell_sizeTRANS ~ treatment, random=~1|Day/treatment/tank, data = size_EXP1) 
+#Init.lme <- lmer(shell_sizeTRANS ~ treatment + (1|Day/treatment/tank), data = size_EXP1) 
+
+hist(residuals(Init.lme)) # histogram
+shapiro.test(residuals(Init.lme)) # normality test
+summary(Init.lme) # summary
+anova(Init.lme) # anova
+
+############################## Exposure 2 model############################## 
+
+Second.lme <- lme(shell_size ~ treatment, random=~1|Day/treatment/tank, data = size_EXP2) 
+
+shapiro.test(residuals(Second.lme)) # check for normality of residuals
+hist(residuals(Second.lme)) # strong negative skew
+
+
+shapiro.test(size_EXP2$shell_size) # check for normality in the raw data
+hist(size_EXP2$shell_size) # negative skew, reflect and square root to normalize
+max(size_EXP2$shell_size) # max value is 6.859, subtract all values by 1+maxshellsize and square root
+size_EXP2$shell_sizeTRANS <- sqrt((1+max(size_EXP2$shell_size)) - size_EXP2$shell_size) # reflect and square root
+shapiro.test(size_EXP2$shell_sizeTRANS) # transformation is normally distributed
+hist(size_EXP2$shell_sizeTRANS) # histogram shows the norm distribution
+
+
+Second.lmeTRANS <- lme(shell_sizeTRANS ~ treatment, random=~1|Day/treatment/tank, data = size_EXP2) # use transformed data in the model
+
+#Second.lmeTRANS <- lmer(shell_sizeTRANS ~ treatment + (1|Day/treatment/tank), data = size_EXP2)
+
+
+shapiro.test(residuals(Second.lmeTRANS)) # check residuals
+hist(residuals(Second.lmeTRANS)) # histogram
+summary(Second.lmeTRANS) # summary
+anova(Second.lmeTRANS) # anova
+
+#EXP2.post.hoc <- aov(shell_sizeTRANS ~ treatment, data = size_EXP2) #post.hoc test treatment
+#anova(EXP2.post.hoc)
+#TukeyHSD(EXP2.post.hoc)
 
 
 
 
-# test for normality
-shapiro.test(size_EXP1$shell_size) # EXP1 
-hist(size_EXP1$shell_size) # EXP1
 
-shapiro.test(size_EXP2$shell_size) # EXP2
-hist(size_EXP2$shell_size) # EXP2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #-------------------------------------------------------- EXPERIMENT 1 normality tests based on treatment 
 #day 2 (first measurements of specific trays for EXP 1 were on day 2 of exposure)
