@@ -17,7 +17,8 @@ library(lsmeans)
 library(gridExtra)
 
 # Set Working Directory:
-setwd("~/MyProjects/Geoduck_Conditioning/RAnalysis/") #set working
+#setwd("~/MyProjects/Geoduck_Conditioning/RAnalysis/") #set working
+setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/") #set working
 
 #Load Size Data
 size<-read.csv("Data/All_growth_data.csv", header=T, sep=",", na.string="NA", as.is=T) 
@@ -30,8 +31,41 @@ size_EXP2 <- subset(size, Exp.Num=="Exp2")
 size_EXP2.0 <- subset(size, Exp.Num=="Exp2")
 size_EXP2.0 <-subset(size_EXP2.0, Day!=0)
 
-# Visualize experiment 1
+# Test for difference in shell size between tanks to decide whether to standardize
+size_EXP1_d2 <-subset(size_EXP1, !Day %in% c(5,8,10)) # only Day 2 exp1
+size_EXP1_d10 <-subset(size_EXP1, !Day %in% c(2,5,8)) # only Day 10 exp1
+size_EXP2_d0 <-subset(size_EXP2, !Day %in% c(2,4,6)) # only Day 0 exp2
 
+# Model and visualize EXP1
+tank.exp1 <- aov(shell_size~tank,data=size_EXP1_d2)
+anova(tank.exp1) # no difference in shell size with tank
+summary(tank.exp1)
+#Post hoc
+#exp2.tank <- lsmeans(tank.exp1, pairwise ~ tank)
+Fig.d2.EXP1.tank <- ggboxplot(size_EXP1_d2, x = "Day", y = "shell_size", color = "tank", ylab= "Shell Size (mm)",
+                              palette = c(), main= "Day 2 Exp 1")
+
+# Model and visualize EXP1
+tank.exp1.d10 <- aov(shell_size~tank,data=size_EXP1_d10)
+anova(tank.exp1.d10) # no difference in shell size with tank
+summary(tank.exp1.d10)
+#Post hoc
+#exp1.tank.d10 <- lsmeans(tank.exp1.d10, pairwise ~ tank)
+Fig.d10.EXP1.tank <- ggboxplot(size_EXP1_d10, x = "Day", y = "shell_size", color = "tank", ylab= "Shell Size (mm)",
+                              palette = c(), main= "Day 10 Exp 1")
+
+# Model and visualize EXP2
+tank.exp2 <- aov(shell_size~tank,data=size_EXP2_d0)
+anova(tank.exp2) # difference in shell size with tank
+summary(tank.exp2)
+#Post hoc
+exp2.tank <- lsmeans(tank.exp2, pairwise ~ tank) # significant difference in starting sizes
+Fig.d0.EXP2.tank <- ggboxplot(size_EXP2_d0, x = "Day", y = "shell_size", color = "tank", ylab= "Shell Size (mm)",
+                              palette = c(), main= "Day 0 Exp 2")
+
+
+
+# Visualize experiment 1
 
 Exp1.Fig <- ggboxplot(size_EXP1, x = "Day", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)",
           palette = c("blue", "red"), main= "Initial Exposure")
@@ -69,8 +103,10 @@ x2.1 <- do.call(data.frame,aggregate(shell_size ~ Init.Trt*Sec.Trt, data = size_
 
 
 m2 <- lme(shell_size~Init.Trt*Sec.Trt,random=~1|Day/Init.Trt/Sec.Trt,data=size_EXP2.0)
+m2 <- lme(shell_size~Init.Trt*Sec.Trt,random=~1|Day/Init.Trt/Sec.Trt,data=size_EXP2.0)
 anova(m2)
 summary(m2)
+
 
 #Post hoc
 exp2.ph <- lsmeans(m2, pairwise ~ Init.Trt*Sec.Trt)
