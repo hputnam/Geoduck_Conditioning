@@ -122,7 +122,7 @@ summary(lm(newdata_resp_EXP1_ALL_1[,11]~newdata_resp_EXP1_ALL_1[,2]))#  0.3334
 #####
 #assgin new  "FINAL" column base as the alpha 0.4 all and inserted points from alpha = 0.6 10-20 min
 resp_EXP1$FINALresp <- resp_EXP1[,5]
-resp_EXP1[c(57,52,3,6,17,2,1,76,50,96,31,5,29,70,72,68,56,94),22] <- resp_EXP1[c(57,52,3,6,17,2,1,76,50,96,31,5,29,70,72,68,56,94), 9]
+resp_EXP1[c(57,52,3,6,17,2,1,76,50,96,31,5,29,70,72,68,56,94),21] <- resp_EXP1[c(57,52,3,6,17,2,1,76,50,96,31,5,29,70,72,68,56,94), 9]
 
 # normality test 
 shapiro.test(resp_EXP1$FINALresp) # not normal
@@ -324,7 +324,7 @@ shapiro.test(resp_EXP2$FINALresp) # not normal - ommit the data from row 186
 hist(resp_EXP2$FINALresp) # positive or right skewed - need to transform the data
 
 OutVals2 = boxplot(resp_EXP2$FINALresp)$out
-which(resp_EXP2$FINALresp %in% OutVals2) #  90 is outliers
+which(resp_EXP2$FINALresp %in% OutVals2) #  83 and 90 is outliers
 
 resp_EXP2_om <- resp_EXP2[-c(83,90),]
 shapiro.test(resp_EXP2_om$FINALresp) # normally distributed
