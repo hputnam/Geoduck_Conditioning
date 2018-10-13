@@ -1,5 +1,6 @@
 ###################################################################################################
 rm(list=ls())
+##Install and load packages
 library(dplyr)
 library(plyr)
 library(ggplot2)
@@ -7,7 +8,6 @@ library(ggpubr)
 library(Rmisc)
 library(nlme)
 library(lme4)
-##Install and load packages
 library(ggplot2) 
 library(lme4)
 library(ggpubr)
@@ -164,8 +164,9 @@ anova(Init.lme.resp)
 summary(Init.lme.resp)
 
 m1.resp <- lme(FINALresp~Init.treat*Day,random=~1|Day,data=resp_EXP1)
-anova(m1.resp)
 
+anova(m1.resp) # anova on lme model
+EXP1.lme.anovatable <- anova(m1.resp) # assign name to output table
 
 par(mfrow=c(1,3)) #set plotting configuration
 par(mar=c(1,1,1,1)) #set margins for plots
@@ -319,19 +320,25 @@ resp_EXP2$FINALresp <- resp_EXP2[,5]
 resp_EXP2[c(18, 57, 59, 60 ,54 ,45 , 9 ,34 ,56,  2, 92),21] <- resp_EXP2[c(18, 57, 59, 60 ,54 ,45 , 9 ,34 ,56,  2, 92), 10]
 
 
-# normality test 
+# normality test
 shapiro.test(resp_EXP2$FINALresp) # not normal - ommit the data from row 186
 hist(resp_EXP2$FINALresp) # positive or right skewed - need to transform the data
 
 OutVals2 = boxplot(resp_EXP2$FINALresp)$out
-which(resp_EXP2$FINALresp %in% OutVals2) #  83 and 90 is outliers
+which(resp_EXP2$FINALresp %in% OutVals2) #  83 and 90 are outliers for new resp file
+
+OutVals2.0 = boxplot(resp_EXP2$Resp_individually_all.csv)$out
+which(resp_EXP2$Resp_individually_all.csv %in% OutVals2.0) # 83 and 90 are outliers in "REF"
+
+OutVals2.1 = boxplot(resp_EXP2$LpcResp_alpha0.4_all.csv)$out
+which(resp_EXP2$LpcResp_alpha0.4_all.csv %in% OutVals2.1) # 90 is an outlier in alpha 0.4 all
 
 resp_EXP2_om <- resp_EXP2[-c(83,90),]
-shapiro.test(resp_EXP2_om$FINALresp) # normally distributed
-hist(resp_EXP2_om$FINALresp)
+shapiro.test(resp_EXP2_om$FINALresp) # normally distributed 
+hist(resp_EXP2_om$FINALresp) # noted that 83 and 90 ommitted gives a norm distribution 
 
 # regress the new data column FINALresp with the column of resp by hand ("REF") resp_EXP1[,1]
-# lets look at a plot of our raw untransformed FINALresp data TABLE1[,18]
+# lets look at a plot of our raw untransformed FINALresp data with outliers ommitted 
 plot(resp_EXP2_om$FINALresp,resp_EXP2_om[,1], main= "Ref vs. FINALresp")
 summary(lm(resp_EXP2_om[,1]~resp_EXP2_om$FINALresp)) # Multiple R-squared:  0.9107,	Adjusted R-squared:  0.9097 
 
@@ -370,6 +377,7 @@ x2.1.resp <- do.call(data.frame,aggregate(FINALresp ~ Init.treat*Sec.treat, data
 m2.resp <- lme(FINALresp~Init.treat*Sec.treat,random=~1|Day/Init.treat/Sec.treat,data=resp_EXP2_om)
 
 anova(m2.resp)
+EXP2.lme.anovatable <- anova(m2.resp)
 summary(m2.resp)
 
 
@@ -534,6 +542,13 @@ ggsave(file="Output/Geoduck_Resp_Exp2.byDay.pdf", Figure1.Exp2.Resp, width = 6.5
 Figure1.Exp2.AllResp <- arrangeGrob(Fig.Exp2.All.resp, ncol=1)
 ggsave(file="Output/Geoduck_Resp_Exp2.All.pdf", Figure1.Exp2.AllResp, width = 6.5, height = 8, units = c("in"))
 
+# Saving anova tables 
+
+Table1.Exp1.Resp <- data.frame(EXP1.lme.anovatable)
+write.csv(file="Output/Geoduck_Resp.table_Exp1.csv", Table1.Exp1.Resp)
+
+Table12.Exp2.Resp <- data.frame(EXP2.lme.anovatable)
+write.csv(file="Output/Geoduck_Resp.table_Exp2.csv", Table12.Exp2.Resp)
 
 
 
