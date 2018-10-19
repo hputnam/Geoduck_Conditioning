@@ -76,12 +76,13 @@ x1 <- do.call(data.frame,aggregate(shell_size ~ Day*treatment, data = size_EXP1,
 
 # Test for size differences in experiment 1
 Init.lme <- lmer(shell_size ~ treatment*Day + (1|Day), data = size_EXP1) 
+
 anova(Init.lme)
 summary(Init.lme)
 
 m1 <- lme(shell_size~treatment*Day,random=~1|Day,data=size_EXP1)
 anova(m1)
-
+EXP1.lme.size.anovatable <- anova(m1)
 
 par(mfrow=c(1,3)) #set plotting configuration
 par(mar=c(1,1,1,1)) #set margins for plots
@@ -104,7 +105,9 @@ x2.1 <- do.call(data.frame,aggregate(shell_size ~ Init.Trt*Sec.Trt, data = size_
 
 m2 <- lme(shell_size~Init.Trt*Sec.Trt,random=~1|Day/Init.Trt/Sec.Trt,data=size_EXP2.0)
 m2 <- lme(shell_size~Init.Trt*Sec.Trt,random=~1|Day/Init.Trt/Sec.Trt,data=size_EXP2.0)
+
 anova(m2)
+EXP2.lme.size.anovatable <- anova(m2)
 summary(m2)
 
 
@@ -266,5 +269,11 @@ ggsave(file="Output/Geoduck_Size_Exp2.byDay.pdf", Figure1.Exp2.Size, width = 6.5
 Figure1.Exp2.AllSize <- arrangeGrob(Fig.Exp2.All.size, ncol=1)
 ggsave(file="Output/Geoduck_Size_Exp2.All.pdf", Figure1.Exp2.AllSize, width = 6.5, height = 8, units = c("in"))
 
+# Saving anova tables 
 
+Table1.Exp1.Size <- data.frame(EXP1.lme.size.anovatable)
+write.csv(file="Output/Geoduck_Size.table_Exp1.csv", Table1.Exp1.Size)
+
+Table12.Exp2.Size <- data.frame(EXP2.lme.size.anovatable)
+write.csv(file="Output/Geoduck_Size.table_Exp2.csv", Table12.Exp2.Size)
 
