@@ -17,8 +17,8 @@ library(lsmeans)
 library(gridExtra)
 
 # Set Working Directory:
-#setwd("~/MyProjects/Geoduck_Conditioning/RAnalysis/") #set working
-setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/") #set working
+setwd("~/MyProjects/Geoduck_Conditioning/RAnalysis/") #set working
+#setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/") #set working
 
 #Load Size Data
 size<-read.csv("Data/All_growth_data.csv", header=T, sep=",", na.string="NA", as.is=T) 
