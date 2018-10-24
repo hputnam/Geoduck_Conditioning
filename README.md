@@ -1,4 +1,4 @@
-#Geoduck (_Panopea generos_) Conditioning to OA
+#Geoduck (_Panopea generosa_) Conditioning to OA
 
 This repository includes data and analysis scripts to accompany: (manuscript title pending)
 
