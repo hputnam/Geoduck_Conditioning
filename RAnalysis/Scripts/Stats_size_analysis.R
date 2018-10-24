@@ -15,10 +15,11 @@ library(nlme)
 library(plotrix)
 library(lsmeans)
 library(gridExtra)
+library(Rmisc)
 
 # Set Working Directory:
 setwd("~/MyProjects/Geoduck_Conditioning/RAnalysis/") #set working
-#setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/") #set working
+setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/") #set working
 
 #Load Size Data
 size<-read.csv("Data/All_growth_data.csv", header=T, sep=",", na.string="NA", as.is=T) 
@@ -30,6 +31,10 @@ size_EXP1 <- subset(size, Exp.Num=="Exp1")
 size_EXP2 <- subset(size, Exp.Num=="Exp2")
 size_EXP2.0 <- subset(size, Exp.Num=="Exp2")
 size_EXP2.0 <-subset(size_EXP2.0, Day!=0)
+
+
+size_day1 <- subset(size_EXP1, Date=="20180716") # subset from EXP1 for just the first day of measurements
+StartSize <- summarySE(size_day1, measurevar="shell_size", groupvars=c("Date")) #summary table for starting shell length = 5.077962 ± 0.6622871 (mean ± SD)
 
 # Test for difference in shell size between tanks to decide whether to standardize
 size_EXP1_d2 <-subset(size_EXP1, !Day %in% c(5,8,10)) # only Day 2 exp1
