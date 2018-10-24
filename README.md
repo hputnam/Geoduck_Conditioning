@@ -2,7 +2,7 @@
 
 This repository includes data and analysis scripts to accompany: (manuscript title pending)
 
-Authors: Gurr, Samujel J., Putnam, Hollie M., Roberts, S., Vadopalas, B.
+Authors: Gurr, Samuel J., Putnam, Hollie M., Roberts, S., Vadopalas, B.
 
 Funding: This work was funded through a grant from the Foundation for Food and Agriculture Research (_Development of environmental conditioning practices to decrease impacts of climate change on shellfish aquaculture_) awarded to Steven Roberts (University of Washington) and Hollie Putnam (University of Rhode Island)
 
