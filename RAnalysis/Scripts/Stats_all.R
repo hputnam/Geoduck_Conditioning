@@ -619,7 +619,65 @@ shapiro.test(residuals(m2.resp)) # residuals are  normal - ommit ouliers at row 
 boxplot(residuals(m2.resp)) #plot boxplot of residuals
 plot( fitted(m2.resp),residuals(m2.resp)) #display residuals versus fitter, normal QQ plot, leverage plot
 
+
 #Exposure2 Plotting
+#barplots for mean SD exp1 - exp2
+exp1_resp_summary.T # exp 1 table grouped by intit*sec treatments
+exp1_resp_summary.T$trial <- "initial" # add column for trial to merge
+colnames(exp1_resp_summary.T)[1] <- "Treat1_Treat2" # to match and merge with eXP2
+exp2_resp_summary_all # exp 2 table grouped by initiat*sec treatments
+exp2_resp_summary_all$trial <- "secondary" # add column for trial to merge
+Table_EXP_1_2 <- rbind(exp1_resp_summary.T, exp2_resp_summary_all) # bind rows by treatment column
+Table_EXP_1_2 # view table
+
+# barplot resp rate exp1 and exp 2
+barplot_resp <- ggplot(Table_EXP_1_2, aes(x=as.factor(Treat1_Treat2), y=FINALresp.mean , fill=trial)) +
+  geom_bar(position=position_dodge(), stat="identity", colour='black') +
+  geom_errorbar(aes(ymin=FINALresp.mean-se, ymax=FINALresp.mean+se), width=.2,position=position_dodge(.9)) +
+  xlab("treatment initial*secondary") +
+  ylab("Respiration rate") +
+  ylim(0,0.4) +
+  theme_bw() + #Set the background color
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), #Set the text angle
+        axis.line = element_line(color = 'black'), #Set the axes color
+        panel.border = element_blank(), #Set the border
+        panel.grid.major = element_blank(), #Set the major gridlines
+        panel.grid.minor = element_blank(), #Set the minor gridlines
+        plot.background=element_blank(), #Set the plot background
+        legend.position='none') + #remove legend background
+  ggtitle("SMR exp1 and exp 2 mean SE") +
+  theme(plot.title = element_text(face = 'bold', 
+                                  size = 12, 
+                                  hjust = 0))
+barplot_resp
+
+# barplot percent difference
+percent_av_resp <- Table_EXP_1_2%>%
+  group_by(Treat1_Treat2) %>%
+  arrange(trial) %>%
+  mutate(pct.chg = 100*(FINALresp.mean - lag(FINALresp.mean))/(FINALresp.mean)) # calculate the percent change from (secondary - initial / secondary) *100
+percent_av_resp <- percent_av_resp[5:8,] # only rows with data
+percent_av_resp # view the table
+# plot
+barplot_resp_percent <- ggplot(percent_av_resp, aes(x=as.factor(Treat1_Treat2), y=pct.chg)) +
+  geom_bar(position=position_dodge(), stat="identity", colour='black') +
+  xlab("treatment initial*secondary") +
+  ylab("Respiration rate") +
+  ylim(0,40) +
+  theme_bw() + #Set the background color
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), #Set the text angle
+        axis.line = element_line(color = 'black'), #Set the axes color
+        panel.border = element_blank(), #Set the border
+        panel.grid.major = element_blank(), #Set the major gridlines
+        panel.grid.minor = element_blank(), #Set the minor gridlines
+        plot.background=element_blank(), #Set the plot background
+        legend.position='none') + #remove legend background
+  ggtitle("Percent diff in average resp rate exp1 - exp2") +
+  theme(plot.title = element_text(face = 'bold', 
+                                  size = 12, 
+                                  hjust = 0))
+barplot_resp_percent # view the plot
+
 #Day 0
 Day0 <- subset(x2.resp, Day==0)
 
@@ -949,6 +1007,69 @@ plot( fitted(m2.trans),residuals(m2.trans)) #display residuals versus fitter, no
 shapiro.test(residuals(m2.trans)) # 
 
 #Exposure2 Plotting
+
+#barplots for mean SD exp1 - exp2
+exp1_size_summary_4.treatments # exp 1 - 4 treatments
+exp2_size_summary_all# exp 2 - 4 treatments
+exp1_size_summary_4.treatments$trial <- "initial" # add column for trial to merge
+colnames(exp1_size_summary_4.treatments)[1] <- "treatment" # to match and merge with eXP2
+colnames(exp1_size_summary_4.treatments)[3] <- "shell_size.mean"
+exp2_size_summary_all$trial <- "secondary" # add column for trial to merge
+SIZETable_EXP_1_2 <- rbind(exp1_size_summary_4.treatments, exp2_size_summary_all) # bind rows by treatment column
+SIZETable_EXP_1_2 # view table
+
+# barplot size rate exp1 and exp 2
+barplot_size <- ggplot(SIZETable_EXP_1_2, aes(x=as.factor(treatment), y=shell_size.mean , fill=trial)) +
+  geom_bar(position=position_dodge(), stat="identity", colour='black') +
+  geom_errorbar(aes(ymin=shell_size.mean-se, ymax=shell_size.mean+se), width=.2,position=position_dodge(.9)) +
+  xlab("treatment initial*secondary") +
+  ylab("Shell length") +
+  ylim(0,8) +
+  theme_bw() + #Set the background color
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), #Set the text angle
+        axis.line = element_line(color = 'black'), #Set the axes color
+        panel.border = element_blank(), #Set the border
+        panel.grid.major = element_blank(), #Set the major gridlines
+        panel.grid.minor = element_blank(), #Set the minor gridlines
+        plot.background=element_blank(), #Set the plot background
+        legend.position='none') + #remove legend background
+  ggtitle("Shell length exp1 and exp 2 mean SE") +
+  theme(plot.title = element_text(face = 'bold', 
+                                  size = 12, 
+                                  hjust = 0))
+barplot_size
+
+# barplot percent difference
+percent_av_size <- SIZETable_EXP_1_2%>%
+  group_by(treatment) %>%
+  arrange(trial) %>%
+  mutate(pct.chg = 100*(shell_size.mean - lag(shell_size.mean))/(shell_size.mean)) # calculate the percent change from (secondary - initial / secondary) *100
+percent_av_size <- percent_av_size[5:8,] # only rows with data
+percent_av_size # view the table
+# plot
+barplot_size_percent <- ggplot(percent_av_size, aes(x=as.factor(treatment), y=pct.chg)) +
+  geom_bar(position=position_dodge(), stat="identity", colour='black') +
+  xlab("treatment initial*secondary") +
+  ylab("Shell length") +
+  ylim(0,15) +
+  theme_bw() + #Set the background color
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), #Set the text angle
+        axis.line = element_line(color = 'black'), #Set the axes color
+        panel.border = element_blank(), #Set the border
+        panel.grid.major = element_blank(), #Set the major gridlines
+        panel.grid.minor = element_blank(), #Set the minor gridlines
+        plot.background=element_blank(), #Set the plot background
+        legend.position='none') + #remove legend background
+  ggtitle("Percent diff in average shell length exp1 - exp2") +
+  theme(plot.title = element_text(face = 'bold', 
+                                  size = 12, 
+                                  hjust = 0))
+barplot_size_percent # view the plot
+
+
+
+
+
 #Day 0
 Day0 <- subset(x2, Day==0)
 
