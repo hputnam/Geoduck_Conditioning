@@ -208,7 +208,7 @@ EXP1_FinalTable$Days <- signif(salinity.summary.1$N, digits = 2) # column for nu
 
 Temperature.1 <- signif(Temperature.summary.1$Temperature.mean, digits = 4) #significant figs for the mean of each value
 Temp.sd.1 <- signif(Temperature.summary.1$sd, digits = 2)#significant figs for the standard dev of each value
-EXP1_FinalTable$Salinity <-paste(Temperature.1, Temp.sd.1, sep="±") # combine mean ± st error as column in final table
+EXP1_FinalTable$Temperature <-paste(Temperature.1, Temp.sd.1, sep="±") # combine mean ± st error as column in final table
 
 Salinity.1 <- signif(salinity.summary.1$Salinity.mean, digits = 4)
 Sal.sd.1 <- signif(salinity.summary.1$sd, digits = 2)
@@ -293,7 +293,7 @@ EXP2_FinalTable$Days <- signif(salinity.summary.2$N, digits = 2)
 
 Temperature.2 <- signif(Temperature.summary.2$Temperature.mean, digits = 4)
 Temp.sd.2 <- signif(Temperature.summary.2$sd, digits = 2)
-EXP2_FinalTable$Salinity <-paste(Temperature.2, Temp.sd.2, sep="±")
+EXP2_FinalTable$Temperature <-paste(Temperature.2, Temp.sd.2, sep="±")
 
 Salinity.2 <- signif(salinity.summary.2$Salinity.mean, digits = 4)
 Sal.sd.2 <- signif(salinity.summary.2$sd, digits = 2)
@@ -378,7 +378,7 @@ EXP_1_2_FinalTable$Days <- signif(salinity.summary.all$N, digits = 2)
 
 Temperature.all <- signif(Temperature.summary.all$Temperature.mean, digits = 4)
 Temp.sd.all <- signif(Temperature.summary.all$sd, digits = 2)
-EXP_1_2_FinalTable$Salinity <-paste(Temperature.all, Temp.sd.all, sep="±")
+EXP_1_2_FinalTable$Temperature <-paste(Temperature.all, Temp.sd.all, sep="±")
 
 Salinity.all <- signif(salinity.summary.all$Salinity.mean, digits = 4)
 Sal.sd.all <- signif(salinity.summary.all$sd, digits = 2)
@@ -436,6 +436,7 @@ resp_EXP2 <- subset(resp, EXP.numb=="EXP2") #second 6-day trial, subset entire d
 resp_EXP2.0 <- subset(resp, EXP.numb=="EXP2") # same under a diff name (read why on next comment)
 resp_EXP2.0 <-subset(resp_EXP2.0, Day!=0) #eliminate Day0 of the second exposure for graph on cumulative exposure to OA 
 
+
 #### EXP1 ####
 
 # Test automated LoLin Script and the Reference data
@@ -466,6 +467,15 @@ ggplot(resp_EXP1, aes(x = resp_EXP1[,1], y = resp_EXP1$FINALresp)) +
   geom_point() +
   geom_smooth(method = 'loess') +
   geom_text(aes(label = resp_EXP1$ID), position = position_nudge(y = -0.01)) # ggplot with loess CI
+
+# Now that we have Finalresp, overall mean SD SMR in EXP1
+exp1_resp_all <- do.call(data.frame,aggregate(FINALresp ~ Treat1_Treat2*Date, data = resp_EXP1, function(x) c(mean = mean(x), sd = sd(x)))) # mean SD table by date EXP1
+exp1_resp_summary_all <- summarySE(exp1_resp_all, measurevar="FINALresp.mean", groupvars=c("Treat1_Treat2")) # SMR by treatment EXP1
+exp1_resp_overall <- summarySE(exp1_resp_all, measurevar="FINALresp.mean") # overall SMR EXP1
+
+resp_EXP2.0.T<- merge(resp_EXP1, resp_EXP2, by=c("tank"))  #merge to obtained combined treatments from EXP2
+exp1_resp_4.T <- do.call(data.frame,aggregate(FINALresp ~ Treat1_Treat2.y*Date.x, data = resp_EXP2.0.T, function(x) c(mean = mean(x), sd = sd(x)))) # mean SD table by date EXP1 and 4 treatments in EXP2
+exp1_resp_summary.T <- summarySE(exp1_resp_4.T, measurevar="FINALresp.mean", groupvars=c(" Treat1_Treat2.y")) # SMR by four treatments EXP1xEXP2
 
 # first visualize the data
 #plot
@@ -553,6 +563,14 @@ ggplot(resp_EXP2, aes(x = resp_EXP2$Resp_individually_all.csv, y = resp_EXP2$FIN
   geom_point() +
   geom_smooth(method = 'loess') +
   geom_text(aes(label = resp_EXP2$ID), position = position_nudge(y = -0.01)) # ggplot with loess CI
+
+# overall SMR in EXP2
+exp2_resp_all <- do.call(data.frame,aggregate(FINALresp ~ Treat1_Treat2*Date, data = resp_EXP2, function(x) c(mean = mean(x), sd = sd(x)))) # mean SD table by init*sec treatments date EXP2
+exp2_resp_summary_all <- summarySE(exp2_resp_all, measurevar="FINALresp.mean", groupvars=c("Treat1_Treat2")) # SMR by init*sec  treatments EXP2
+exp2_resp_all.2 <- do.call(data.frame,aggregate(FINALresp ~ Sec.treat*Date, data = resp_EXP2, function(x) c(mean = mean(x), sd = sd(x)))) # mean SD table by sec treatments date EXP2
+exp2_resp_summary_all.2 <- summarySE(exp2_resp_all.2, measurevar="FINALresp.mean", groupvars=c("Sec.treat")) # SMR by sec  treatments EXP2
+exp2_resp_overall <- summarySE(exp2_resp_all, measurevar="FINALresp.mean") # overall SMR EXP2
+
 
 # first visualize the data
 #plot
@@ -798,16 +816,34 @@ size_EXP1 <- subset(size, Exp.Num=="Exp1") # exposure 1
 size_EXP2 <- subset(size, Exp.Num=="Exp2") # exposure 2
 size_EXP2.0 <- subset(size, Exp.Num=="Exp2") 
 size_EXP2.0 <-subset(size_EXP2.0, Day!=0) # exposure 2 without day 0 
+size_Exp1.T<- merge(size_EXP1, size_EXP2, by=c("tank"))  #merge to obtained combined treatments from EXP2
+
 
 inital_size <- subset(size_EXP1, Date=="20180716") # get starting size of indiivduals from first measurements
 StartSize <- summarySE(inital_size, measurevar="shell_size", groupvars=c("Date")) #summary table for starting shell length = 5.077962 ± 0.6622871 (mean ± SD)
+
+# overall shell size in EXP1 and EXP2
+exp1_size_all <- do.call(data.frame,aggregate(shell_size ~ treatment*Date, data = size_EXP1, function(x) c(mean = mean(x), sd = sd(x)))) # mean SD table by  treatments date EXP1
+exp1_size_summary_all <- summarySE(exp1_size_all, measurevar="shell_size.mean", groupvars=c("treatment")) # shell length by  treatments EXP1
+exp1_size_overall <- summarySE(exp1_size_all, measurevar="shell_size.mean") # overall SMR EXP2
+
+exp1_size_4.treatments <- do.call(data.frame,aggregate(shell_size.x ~ treatment.y*Date.x, data = size_Exp1.T, function(x) c(mean = mean(x), sd = sd(x)))) # mean SD table by  treatments date EXP1
+exp1_size_summary_4.treatments <- summarySE(exp1_size_4.treatments, measurevar="shell_size.x.mean", groupvars=c("treatment.y")) # shell length by  treatments EXP1
+
+exp2_size_all <- do.call(data.frame,aggregate(shell_size ~ treatment*Date, data = size_EXP2, function(x) c(mean = mean(x), sd = sd(x)))) # mean SD table by init*sec treatments date EXP2
+exp2_size_summary_all <- summarySE(exp2_size_all, measurevar="shell_size.mean", groupvars=c("treatment")) # shell length by init*sec  treatments EXP2
+
+exp2_size_all.2 <- do.call(data.frame,aggregate(shell_size ~ Sec.Trt*Date, data = size_EXP2, function(x) c(mean = mean(x), sd = sd(x)))) # mean SD table by sec treatments date EXP2
+exp2_size_summary_all.2 <- summarySE(exp2_size_all.2, measurevar="shell_size.mean", groupvars=c("Sec.Trt")) # shell length by sec  treatments EXP2
+exp2_size_overall <- summarySE(exp2_size_all, measurevar="shell_size.mean") # overall SMR EXP2
+
 
 # Model and visualize EXP1 intiial size by treatment
 # by treatment
 treat.exp1 <- aov(shell_size~treatment,data=inital_size)
 anova(treat.exp1) # no difference in shell size with treatment
 summary(treat.exp1)
-Fig.d2.EXP1.treatment <- ggboxplot(size_EXP1_d2, x = "treatment", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)",
+Fig.d2.EXP1.treatment <- ggboxplot(inital_size, x = "treatment", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)",
                               palette = c(), main= "Day 2 Exp 1") 
 # Model and visualize EXP2 intiial size by treatment
 exp2_inital_size <- subset(size_EXP2, Date=="20180807") # get starting size of indiivduals from first measurements on Day 0 in Exp 2
@@ -877,9 +913,8 @@ m2 <- lme(shell_size~Init.Trt*Sec.Trt,random=~1|Day/Init.Trt/Sec.Trt,data=size_E
 anova(m2) # view anova table
 summary(m2) # view summary of anova table
 EXP2.lme.size.anovatable <- anova(m2) # name anova table to save output later
-exp2.ph <- lsmeans(m2, pairwise ~ Init.Trt*Sec.Trt)# pariwise Post-hoc test between repeated treatments
+exp2.ph <- lsmeans(m2, pairwise ~ Init.Trt*Sec.Trt)# pariwise Tukey Post-hoc test between repeated treatments
 exp2.ph # view post hoc summary
-
 par(mfrow=c(1,3)) #set plotting configuration
 par(mar=c(1,1,1,1)) #set margins for plots
 hist(residuals(m2)) #plot histogram of residuals
