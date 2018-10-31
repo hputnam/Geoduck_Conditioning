@@ -22,7 +22,6 @@ library(nlme)
 library(plotrix)
 library(lsmeans)
 library(gridExtra)
-library(seacarb) 
 library(reshape) 
 library(plotrix) 
 library(ggplot2) 
@@ -35,7 +34,7 @@ library(lsmeans)
 setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/") #set working
 
 #---------------------------------------------------------------------------------------------------
-# Seawater chemistry Data - Analysis, Graphs, Tables (APEX DATA)
+# CONICAL Seawater chemistry Data - Analysis, Graphs, Tables (APEX DATA)
 ###################################################################################################
 
 ##### CONTINUOUS EXPERIMENTAL APEX DATA #####
@@ -152,56 +151,120 @@ All.temp <- ggplot(daily.temp, aes(x=Date, y=mean, group=Treatment)) + #set up p
                                   hjust = 0)) #set title attributes
 All.temp #view plot
 
+#---------------------------------------------------------------------------------------------------
+# HEATH TRAY Flow rate data 
+########################################################################################################################
+# NOTE: heath tray pairs were gravity-fed SW from conical overflow (1 conical to every heath tray pair)
+# conicals were set to 1 LPM and teed with PVC to target 500 LPM in each heath tray
+
+flow<-read.csv("Data/Flow_rates.csv", header=T, sep=",", na.string="NA", as.is=T) #upload file
+flow # view the data
+
+EXP1 <- subset(flow, Exp.num=="EXP1") #initial 10-day trial, subset entire dataset resp by column nsame "Exp.num" == Exp1
+flow_EXP1 <- subset(EXP1, Day!=0) # ommit day 0
+EXP2 <- subset(flow, Exp.num=="EXP2") #second 6-day trial, subset entire dataset resp by column nsame "Exp.num" == Exp2
+flow_EXP2 <- subset(EXP2, Day!=0) # ommit day 0
+flow_EXP1_2 <- rbind(flow_EXP1, flow_EXP2) # bind exp1 and 2, day 0 already ommited
+
+# EXP1 summary -----------------------
+flow_EXP1.TRMT<- do.call(data.frame,aggregate(LPM ~ Treatment*Day, 
+                                              data = flow_EXP1, 
+                                              function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by treatment and Day (4 tanks ber treatment)
+flow_EXP1.TRMT.summary <- summarySE(flow_EXP1.TRMT, measurevar="LPM.mean", groupvars=c("Treatment")) # summary by treatment
+flow_EXP1.TRMT.summary # view table
+
+# EXP2 summary -----------------------
+# grouped as 2 treatments (just Sec.treat) during reciprocal exposure
+# NOTE: this shows flow difference influenced by conical overflow to heath tray pairs
+flow_EXP2.TRMT.2<- do.call(data.frame,aggregate(LPM ~ Sec.treat *Day, 
+                                                data = flow_EXP2, 
+                                                function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by treatment and Day (4 tanks ber treatment)
+flow_EXP2.TRMT.2.summary <- summarySE(flow_EXP2.TRMT.2, measurevar="LPM.mean", groupvars=c("Sec.treat")) # summary by treatment
+flow_EXP2.TRMT.2.summary # view table
+# grouped as 4 treatments during reciprocal exposure
+# NOTE: this shows flow difference between treaments, but not influenced by the same conical overflow
+flow_EXP2.TRMT.4<- do.call(data.frame,aggregate(LPM ~ Treatment_1_2*Day, 
+                                                data = flow_EXP2, 
+                                                function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by treatment and Day (4 tanks ber treatment)
+flow_EXP2.TRMT.4.summary <- summarySE(flow_EXP2.TRMT.4, measurevar="LPM.mean", groupvars=c("Treatment_1_2")) # summary by treatment
+flow_EXP2.TRMT.4.summary # view table
+
+# EXP1 AND EXP2 summary -----------------------
+# group by just day for daily flow rates
+flow_ALL.Date<- do.call(data.frame,aggregate(LPM ~ Date, 
+                                             data = flow_EXP1_2, 
+                                             function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by Date
+flow_ALL.Date.summary <- summarySE(flow_ALL.Date, measurevar="LPM.mean") # summary by treatment
+flow_ALL.Date.summary # view table
+# na omited when notes read "adjusted"
+flow_EXP1_2.OMIT <- subset(flow_EXP1_2, Notes!="adjusted") # ommit rows when flow rate was adjusted
+flow_ALL.Date.OMIT<- do.call(data.frame,aggregate(LPM ~ Date, 
+                                                  data = flow_EXP1_2.OMIT, 
+                                                  function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by Date, adjusted ommited
+flow_ALL.Date.summary.OMIT <- summarySE(flow_ALL.Date.OMIT, measurevar="LPM.mean") # summary by treatment
+flow_ALL.Date.summary.OMIT # view table
+
+# group by treatment and day day for daily flow rates
+flow_ALL.TRMT<- do.call(data.frame,aggregate(LPM ~ Date*Treatment, 
+                                             data = flow_EXP1_2, 
+                                             function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by Date
+flow_ALL.TRMT.summary <- summarySE(flow_ALL.TRMT, measurevar="LPM.mean", groupvars=c("Treatment")) # summary by treatment
+flow_ALL.TRMT.summary # view table
+# na omited when notes read "adjusted"
+flow_ALL.TRMT.OMIT<- do.call(data.frame,aggregate(LPM ~ Date*Treatment, 
+                                                  data = flow_EXP1_2.OMIT, 
+                                                  function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by Date, adjusted ommited
+flow_ALL.TRMT.summary.OMIT <- summarySE(flow_ALL.TRMT.OMIT, measurevar="LPM.mean", groupvars=c("Treatment")) # summary by treatment
+flow_ALL.TRMT.summary.OMIT # view table
 
 #---------------------------------------------------------------------------------------------------
-# Discrete Seawater Chemistry Tables 
+# HEATH TRAY Discrete Seawater Chemistry Tables 
 ########################################################################################################################
-
 
 chem<-read.csv("Output/Seawater_chemistry_table_Output_All.csv", header=T, sep=",", na.string="NA", as.is=T) 
 
 chem.exp <-subset(chem, Treatment!="na") #remove na - na often set as the treatment for samples of the sump
-chem.exp1 <-chem.exp[44:131,] # exposure 1
-chem.exp2 <- chem.exp[157:204,] # exposure 2
+chem.exp1 <-chem.exp[52:131,] # exposure 1 without Day 0 (20180715 - 20180724)
+chem.exp2 <- chem.exp[157:204,] # exposure 2 without Day 0 (20180808 - 20180813)
 chem.exp_1_2 <- rbind(chem.exp1,chem.exp2) # exposure 1 and 2
 
 ### Overall temperature and salinity ###
-salinity.overall<- do.call(data.frame,aggregate(Salinity ~ Date, data = chem.exp_1_2, function(x) c(mean = mean(x), se = std.error(x)))) # table of means __ per day by treatment (4 tanks per treatment)
+salinity.overall<- do.call(data.frame,aggregate(Salinity ~ Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x)))) # table of means __ per day by treatment (4 tanks per treatment)
 salinity.summary.overall <- summarySE(salinity.overall, measurevar="Salinity.mean")  # overall mean 
 
-Temperature.overall<- do.call(data.frame,aggregate(Temperature ~ Date, data = chem.exp_1_2, function(x) c(mean = mean(x), se = std.error(x)))) 
+Temperature.overall<- do.call(data.frame,aggregate(Temperature ~ Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x)))) 
 Temperature.summary.overall <- summarySE(Temperature.overall, measurevar="Temperature.mean") # overall mean 
 
 ### EXP1 ### 10-day OA exposure
 
-salinity.1<- do.call(data.frame,aggregate(Salinity ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), se = std.error(x)))) # table of means __ per day by treatment (4 tanks per treatment)
+salinity.1<- do.call(data.frame,aggregate(Salinity ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x)))) # table of means __ per day by treatment (4 tanks per treatment)
 salinity.summary.1 <- summarySE(salinity.1, measurevar="Salinity.mean", groupvars=c("Treatment"))  # overall mean for each treatment 
 
-Temperature.1<- do.call(data.frame,aggregate(Temperature ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), se = std.error(x)))) 
+Temperature.1<- do.call(data.frame,aggregate(Temperature ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x)))) 
 Temperature.summary.1 <- summarySE(Temperature.1, measurevar="Temperature.mean", groupvars=c("Treatment"))
 
-pH.1<- do.call(data.frame,aggregate(pH ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), se = std.error(x))))
+pH.1<- do.call(data.frame,aggregate(pH ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x))))
 pH.summary.1 <- summarySE(pH.1, measurevar="pH.mean", groupvars=c("Treatment"))
 
-CO2.1<- do.call(data.frame,aggregate(CO2 ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), se = std.error(x))))
+CO2.1<- do.call(data.frame,aggregate(CO2 ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x))))
 CO2.summary.1 <- summarySE(CO2.1, measurevar="CO2.mean", groupvars=c("Treatment"))
 
-pCO2.1<- do.call(data.frame,aggregate(pCO2 ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), se = std.error(x))))
+pCO2.1<- do.call(data.frame,aggregate(pCO2 ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x))))
 pCO2.summary.1 <- summarySE(pCO2.1, measurevar="pCO2.mean", groupvars=c("Treatment"))
 
-HCO3.1<- do.call(data.frame,aggregate(HCO3 ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), se = std.error(x))))
+HCO3.1<- do.call(data.frame,aggregate(HCO3 ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x))))
 HCO3.summary.1 <- summarySE(HCO3.1, measurevar="HCO3.mean", groupvars=c("Treatment"))
 
-CO3.1<- do.call(data.frame,aggregate(CO3 ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), se = std.error(x))))
+CO3.1<- do.call(data.frame,aggregate(CO3 ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x))))
 CO3.summary.1 <- summarySE(CO3.1, measurevar="CO3.mean", groupvars=c("Treatment"))
 
-DIC.1<- do.call(data.frame,aggregate(DIC ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), se = std.error(x))))
+DIC.1<- do.call(data.frame,aggregate(DIC ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x))))
 DIC.summary.1 <- summarySE(DIC.1, measurevar="DIC.mean", groupvars=c("Treatment"))
 
-TA.1<- do.call(data.frame,aggregate(TA ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), se = std.error(x))))
+TA.1<- do.call(data.frame,aggregate(TA ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x))))
 TA.summary.1 <- summarySE(TA.1, measurevar="TA.mean", groupvars=c("Treatment"))
 
-Aragonite.Sat.1<- do.call(data.frame,aggregate(Aragonite.Sat ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), se = std.error(x))))
+Aragonite.Sat.1<- do.call(data.frame,aggregate(Aragonite.Sat ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x))))
 Aragonite.Sat.summary.1 <- summarySE(Aragonite.Sat.1, measurevar="Aragonite.Sat.mean", groupvars=c("Treatment"))
 
 #Final table EXPOSURE 1 - 10-day
@@ -212,6 +275,10 @@ EXP1_FinalTable <- as.data.frame(matrix(nrow = 2))  # make a data frame with 2 r
 EXP1_FinalTable$Treatment <- salinity.summary.1$Treatment # column for treatments
 
 EXP1_FinalTable$Days <- signif(salinity.summary.1$N, digits = 2) # column for number of dayaa as N
+
+Flow.1 <- signif(flow_EXP1.TRMT.summary$LPM.mean, digits = 3) #significant figs for the mean of each value
+Flow.sd.1 <- signif(flow_EXP1.TRMT.summary$sd, digits = 2)#significant figs for the standard dev of each value
+EXP1_FinalTable$Flow <- paste(Flow.1, Flow.sd.1, sep="±") # combine mean ± st error as column in final table
 
 Temperature.1 <- signif(Temperature.summary.1$Temperature.mean, digits = 4) #significant figs for the mean of each value
 Temp.sd.1 <- signif(Temperature.summary.1$sd, digits = 2)#significant figs for the standard dev of each value
@@ -259,34 +326,34 @@ head(EXP1_FinalTable) # view final table
 ### EXP2 ### 6-day OA exposure
 ########################################################################################################################
 
-salinity.2<- do.call(data.frame,aggregate(Salinity ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), se = std.error(x))))
+salinity.2<- do.call(data.frame,aggregate(Salinity ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
 salinity.summary.2 <- summarySE(salinity.2, measurevar="Salinity.mean", groupvars=c("Treatment"))
 
-Temperature.2<- do.call(data.frame,aggregate(Temperature ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), se = std.error(x))))
+Temperature.2<- do.call(data.frame,aggregate(Temperature ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
 Temperature.summary.2 <- summarySE(Temperature.2, measurevar="Temperature.mean", groupvars=c("Treatment"))
 
-pH.2<- do.call(data.frame,aggregate(pH ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), se = std.error(x))))
+pH.2<- do.call(data.frame,aggregate(pH ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
 pH.summary.2 <- summarySE(pH.2, measurevar="pH.mean", groupvars=c("Treatment"))
 
-CO2.2<- do.call(data.frame,aggregate(CO2 ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), se = std.error(x))))
+CO2.2<- do.call(data.frame,aggregate(CO2 ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
 CO2.summary.2 <- summarySE(CO2.2, measurevar="CO2.mean", groupvars=c("Treatment"))
 
-pCO2.2<- do.call(data.frame,aggregate(pCO2 ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), se = std.error(x))))
+pCO2.2<- do.call(data.frame,aggregate(pCO2 ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
 pCO2.summary.2 <- summarySE(pCO2.2, measurevar="pCO2.mean", groupvars=c("Treatment"))
 
-HCO3.2<- do.call(data.frame,aggregate(HCO3 ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), se = std.error(x))))
+HCO3.2<- do.call(data.frame,aggregate(HCO3 ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
 HCO3.summary.2 <- summarySE(HCO3.2, measurevar="HCO3.mean", groupvars=c("Treatment"))
 
-CO3.2<- do.call(data.frame,aggregate(CO3 ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), se = std.error(x))))
+CO3.2<- do.call(data.frame,aggregate(CO3 ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
 CO3.summary.2 <- summarySE(CO3.2, measurevar="CO3.mean", groupvars=c("Treatment"))
 
-DIC.2<- do.call(data.frame,aggregate(DIC ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), se = std.error(x))))
+DIC.2<- do.call(data.frame,aggregate(DIC ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
 DIC.summary.2 <- summarySE(DIC.2, measurevar="DIC.mean", groupvars=c("Treatment"))
 
-TA.2<- do.call(data.frame,aggregate(TA ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), se = std.error(x))))
+TA.2<- do.call(data.frame,aggregate(TA ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
 TA.summary.2 <- summarySE(TA.2, measurevar="TA.mean", groupvars=c("Treatment"))
 
-Aragonite.Sat.2<- do.call(data.frame,aggregate(Aragonite.Sat ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), se = std.error(x))))
+Aragonite.Sat.2<- do.call(data.frame,aggregate(Aragonite.Sat ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
 Aragonite.Sat.summary.2 <- summarySE(Aragonite.Sat.2, measurevar="Aragonite.Sat.mean", groupvars=c("Treatment"))
 
 #Final table EXPOSURE 2 - 6-day
@@ -297,6 +364,10 @@ EXP2_FinalTable <- as.data.frame(matrix(nrow = 2))
 EXP2_FinalTable$Treatment <- salinity.summary.2$Treatment
 
 EXP2_FinalTable$Days <- signif(salinity.summary.2$N, digits = 2)
+
+Flow.2 <- signif(flow_EXP2.TRMT.2.summary$LPM.mean, digits = 3) #significant figs for the mean of each value
+Flow.sd.2 <- signif(flow_EXP2.TRMT.2.summary$sd, digits = 2)#significant figs for the standard dev of each value
+EXP2_FinalTable$Flow <- paste(Flow.2, Flow.sd.2, sep="±") # combine mean ± st error as column in final table
 
 Temperature.2 <- signif(Temperature.summary.2$Temperature.mean, digits = 4)
 Temp.sd.2 <- signif(Temperature.summary.2$sd, digits = 2)
@@ -344,34 +415,34 @@ head(EXP2_FinalTable) # view final table
 ### EXP_1_2 ### ALL OA exposure
 ########################################################################################################################
 
-salinity.all<- do.call(data.frame,aggregate(Salinity ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), se = std.error(x))))
+salinity.all<- do.call(data.frame,aggregate(Salinity ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
 salinity.summary.all <- summarySE(salinity.all, measurevar="Salinity.mean", groupvars=c("Treatment"))
 
-Temperature.all<- do.call(data.frame,aggregate(Temperature ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), se = std.error(x))))
+Temperature.all<- do.call(data.frame,aggregate(Temperature ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
 Temperature.summary.all <- summarySE(Temperature.all, measurevar="Temperature.mean", groupvars=c("Treatment"))
 
-pH.all<- do.call(data.frame,aggregate(pH ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), se = std.error(x))))
+pH.all<- do.call(data.frame,aggregate(pH ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
 pH.summary.all <- summarySE(pH.all, measurevar="pH.mean", groupvars=c("Treatment"))
 
-CO2.all<- do.call(data.frame,aggregate(CO2 ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), se = std.error(x))))
+CO2.all<- do.call(data.frame,aggregate(CO2 ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
 CO2.summary.all <- summarySE(CO2.all, measurevar="CO2.mean", groupvars=c("Treatment"))
 
-pCO2.all<- do.call(data.frame,aggregate(pCO2 ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), se = std.error(x))))
+pCO2.all<- do.call(data.frame,aggregate(pCO2 ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
 pCO2.summary.all <- summarySE(pCO2.all, measurevar="pCO2.mean", groupvars=c("Treatment"))
 
-HCO3.all<- do.call(data.frame,aggregate(HCO3 ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), se = std.error(x))))
+HCO3.all<- do.call(data.frame,aggregate(HCO3 ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
 HCO3.summary.all <- summarySE(HCO3.all, measurevar="HCO3.mean", groupvars=c("Treatment"))
 
-CO3.all<- do.call(data.frame,aggregate(CO3 ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), se = std.error(x))))
+CO3.all<- do.call(data.frame,aggregate(CO3 ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
 CO3.summary.all <- summarySE(CO3.all, measurevar="CO3.mean", groupvars=c("Treatment"))
 
-DIC.all<- do.call(data.frame,aggregate(DIC ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), se = std.error(x))))
+DIC.all<- do.call(data.frame,aggregate(DIC ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
 DIC.summary.all <- summarySE(DIC.all, measurevar="DIC.mean", groupvars=c("Treatment"))
 
-TA.all<- do.call(data.frame,aggregate(TA ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), se = std.error(x))))
+TA.all<- do.call(data.frame,aggregate(TA ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
 TA.summary.all <- summarySE(TA.all, measurevar="TA.mean", groupvars=c("Treatment"))
 
-Aragonite.Sat.all<- do.call(data.frame,aggregate(Aragonite.Sat ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), se = std.error(x))))
+Aragonite.Sat.all<- do.call(data.frame,aggregate(Aragonite.Sat ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
 Aragonite.Sat.summary.all <- summarySE(Aragonite.Sat.all, measurevar="Aragonite.Sat.mean", groupvars=c("Treatment"))
 
 #Final table EXPOSURE ALL OA Exposure
@@ -382,6 +453,10 @@ EXP_1_2_FinalTable <- as.data.frame(matrix(nrow = 2))
 EXP_1_2_FinalTable$Treatment <- salinity.summary.all$Treatment
 
 EXP_1_2_FinalTable$Days <- signif(salinity.summary.all$N, digits = 2)
+
+Flow._1_2 <- signif(flow_ALL.TRMT.summary$LPM.mean, digits = 3) #significant figs for the mean of each value
+Flow.sd._1_2 <- signif(flow_ALL.TRMT.summary$sd, digits = 2)#significant figs for the standard dev of each value
+EXP_1_2_FinalTable$Flow <- paste(Flow._1_2, Flow.sd._1_2, sep="±") # combine mean ± st error as column in final table
 
 Temperature.all <- signif(Temperature.summary.all$Temperature.mean, digits = 4)
 Temp.sd.all <- signif(Temperature.summary.all$sd, digits = 2)
@@ -426,12 +501,26 @@ EXP_1_2_FinalTable$Aragonite.Saturation <-paste(Aragonite.Sat.all, Arag.sd.all, 
 EXP_1_2_FinalTable <- subset(EXP_1_2_FinalTable, select = -c(V1)) # ommit the first column
 head(EXP_1_2_FinalTable) # view final table
 
+# export all tables
+png("Output/ALL_chem_table.png", height = 30*nrow(EXP_1_2_FinalTable), width = 120*ncol(EXP_1_2_FinalTable))
+all_chem<-tableGrob(EXP_1_2_FinalTable)
+grid.arrange(all_chem)
+dev.off()
+
+png("Output/EXP1_chem_table.png", height = 30*nrow(EXP1_FinalTable), width = 120*ncol(EXP1_FinalTable))
+EXP1_chem<-tableGrob(EXP1_FinalTable)
+grid.arrange(EXP1_chem)
+dev.off()
+
+png("Output/EXP2_chem_table.png", height = 30*nrow(EXP2_FinalTable), width = 120*ncol(EXP2_FinalTable))
+EXP2_chem<-tableGrob(EXP2_FinalTable)
+grid.arrange(EXP2_chem)
+dev.off()
 
 
 #---------------------------------------------------------------------------------------------------
 # Respiration Data - Analysis, Graphs, Models  (summarized analysis from Stats_resp_analysis.R)
 ###################################################################################################
-
 
 
 #Load Respiraiton Data
