@@ -165,6 +165,13 @@ chem.exp1 <-chem.exp[44:131,] # exposure 1
 chem.exp2 <- chem.exp[157:204,] # exposure 2
 chem.exp_1_2 <- rbind(chem.exp1,chem.exp2) # exposure 1 and 2
 
+### Overall temperature and salinity ###
+salinity.overall<- do.call(data.frame,aggregate(Salinity ~ Date, data = chem.exp_1_2, function(x) c(mean = mean(x), se = std.error(x)))) # table of means __ per day by treatment (4 tanks per treatment)
+salinity.summary.overall <- summarySE(salinity.overall, measurevar="Salinity.mean")  # overall mean 
+
+Temperature.overall<- do.call(data.frame,aggregate(Temperature ~ Date, data = chem.exp_1_2, function(x) c(mean = mean(x), se = std.error(x)))) 
+Temperature.summary.overall <- summarySE(Temperature.overall, measurevar="Temperature.mean") # overall mean 
+
 ### EXP1 ### 10-day OA exposure
 
 salinity.1<- do.call(data.frame,aggregate(Salinity ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), se = std.error(x)))) # table of means __ per day by treatment (4 tanks per treatment)
