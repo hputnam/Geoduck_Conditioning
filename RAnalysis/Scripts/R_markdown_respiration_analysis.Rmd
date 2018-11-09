@@ -1,0 +1,148 @@
+---
+title: "Respirometry - assemble final values from LoLin outputs"
+author: "Samuel Gurr"
+date: "October 29, 2018"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+##Install and load packages
+library(dplyr)
+library(plyr)
+library(ggplot2)
+library(ggpubr)
+library(Rmisc)
+library(nlme)
+library(lme4)
+library(ggplot2) 
+library(lme4)
+library(ggpubr)
+library(nlme)
+library(plotrix)
+library(lsmeans)
+library(gridExtra)
+library(seacarb) 
+library(reshape) 
+library(plotrix) 
+library(ggplot2) 
+library(plyr)
+library(gridExtra)
+library(multcompView)
+library(lsmeans)
+library(knitr)
+library(kableExtra)
+#set working directory--------------------------------------------------------------------------------------------------
+setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/") #set working
+
+#Load Respiraiton Data
+resp<-read.csv("Data/All_resp_calc_and_standardized.csv", header=T, sep=",", na.string="NA", as.is=T) 
+names(resp) # view the names of the data
+# seperate into experiment 1 and 2 for the 10-day and 6-day OA exposure
+resp_EXP1 <- subset(resp, EXP.numb=="EXP1") #initial 10-day trial, subset entire dataset resp by column nsame "Exp.num" == Exp1
+resp_EXP2 <- subset(resp, EXP.numb=="EXP2") #second 6-day trial, subset entire dataset resp by column nsame "Exp.num" == Exp2
+resp_EXP2.0 <- subset(resp, EXP.numb=="EXP2") # same under a diff name (read why on next comment)
+resp_EXP2.0 <-subset(resp_EXP2.0, Day!=0) #eliminate Day0 of the second exposure for graph on cumulative exposure to OA 
+
+newdata_resp_EXP1_ALL <- data.frame(resp_EXP1$Date, resp_EXP1[,c(1:10)])
+newdata_resp_EXP1_ALL_1 <-newdata_resp_EXP1_ALL[c(57,52,3,6,17,2,1,76,50,96,31,5,29,70,72,68,56,94), ]
+
+```
+
+## Exposure 1 (10-day OA): SMR and respirometry
+
+plot all automated outputs to the "reference"
+
+Reference = each value saved individually based on visual criteria of LoLin plots defatult at alpha 0.2, no truncation, and Lpc
+
+Automated ouputs = looped the LoLin function for nine pairs of constants at alpha = 0.2, 0.4 and 0.6 for three levels of truncation of 30 minute trials (no truncation, 10-20mins, 10-25 mins) - aways target Lpc. 
+
+Below you can see that alpha 0.2 and alpha 0.4 with no truncation are strongly correlated to the reference 
+
+```{r , echo=FALSE}
+par(mfrow=c(2,2))
+plot(resp_EXP1[,1],resp_EXP1[,2], main= "Ref vs. alpha0.2_all")#Adjusted R-squared:  0.4987 
+
+plot(resp_EXP1[,1],resp_EXP1[,3], main= "Ref vs. alpha0.2_min10.20")#Adjusted R-squared:  0.2892
+
+plot(resp_EXP1[,1],resp_EXP1[,4], main= "Ref vs. alpha0.2_min10.25")#Adjusted R-squared:  0.1674
+
+plot(resp_EXP1[,1],resp_EXP1[,5], main= "Ref vs. alpha0.4_all")#Adjusted R-squared:  0.3905
+
+plot(resp_EXP1[,1],resp_EXP1[,6], main= "Ref vs. alpha0.4_min10.20")#Adjusted R-squared:  0.2589 
+
+plot(resp_EXP1[,1],resp_EXP1[,7], main= "Ref vs. alpha0.4_min10.25")#Adjusted R-squared:  0.315 
+
+plot(resp_EXP1[,1],resp_EXP1[,8], main= "Ref vs. alpha0.6_all")#Adjusted R-squared:  0.4947 
+
+plot(resp_EXP1[,1],resp_EXP1[,9], main= "Ref vs. alpha0.6_min10.20")#Adjusted R-squared:  0.4037 
+
+plot(resp_EXP1[,1],resp_EXP1[,10], main= "Ref vs. alpha0.6_min10.25")#Adjusted R-squared:  0.4409 
+
+
+```
+
+## Create an final dataset (LOESS curve, linear regression, merge data)
+1) Determine that alpha = 0.4 no truncation has LEAST number of points outside of the LOESS curve to the reference 
+
+-  ID points outside of the LOESS CI interval
+
+RESULT: 18 points outside of loess 
+
+```{r , echo=FALSE}
+# Below used alpha = 0.4, no truncation for automated ouput because of the Least number of respiration values outside of Loess CI with Reference
+ggplot(resp_EXP1, aes(x = resp_EXP1[,1], y = resp_EXP1[,5])) +
+  geom_point() +
+  geom_smooth(method = 'loess') +
+  geom_text(aes(label = resp_EXP1$ID), position = position_nudge(y = -0.01))
+
+```
+
+2) call these 18 values for each column (automated LoLin ouput) into a new dataframe
+
+Run linear regressions to the reference 
+
+RESULT: Alpha = 0.6 10-25 minute (truncation) or 'respEX1_..[,10]' has strongest correlation to reference (r = 0.7235) 
+
+```{r , echo=FALSE}
+par(mfrow=c(2,2))
+plot(newdata_resp_EXP1_ALL_1[,2],newdata_resp_EXP1_ALL_1[,3])#Adjusted R-squared: 0.5145 
+
+plot(newdata_resp_EXP1_ALL_1[,2],newdata_resp_EXP1_ALL_1[,4])#Adjusted R-squared:  0.6196 
+
+plot(newdata_resp_EXP1_ALL_1[,2],newdata_resp_EXP1_ALL_1[,5])#  0.07991
+
+plot(newdata_resp_EXP1_ALL_1[,2],newdata_resp_EXP1_ALL_1[,6])# 0.0618 
+
+plot(newdata_resp_EXP1_ALL_1[,2],newdata_resp_EXP1_ALL_1[,7])#0.3223 
+
+plot(newdata_resp_EXP1_ALL_1[,2],newdata_resp_EXP1_ALL_1[,8])#0.205 
+
+plot(newdata_resp_EXP1_ALL_1[,2],newdata_resp_EXP1_ALL_1[,9])#0.2356 
+
+plot(newdata_resp_EXP1_ALL_1[,2],newdata_resp_EXP1_ALL_1[,10]) # alpha = 0.6 10-20 min# 0.7235 
+
+plot(newdata_resp_EXP1_ALL_1[,2],newdata_resp_EXP1_ALL_1[,11])#  0.3334 
+
+```
+
+3) Merge with alpha 0.4 no truncation to create final column. Plot with reference.
+
+
+```{r , echo=FALSE}
+#create a new column 
+resp_EXP1$FINALresp <- resp_EXP1$LpcResp_alpha0.4_all.csv # base alpha 0.4, no truncation
+resp_EXP1$FINALresp[c(57,52,3,6,17,2,1,76,50,96,31,5,29,70,72,68,56,94)] <- resp_EXP1$LpcResp_alpha0.6_min10.20.csv[c(57,52,3,6,17,2,1,76,50,96,31,5,29,70,72,68,56,94)] #inserted new rows from alpha = 0.6 10-20 min for points outside loess curve
+# test correlation of this new column with the Ref
+plot(resp_EXP1$Resp_individually_all.csv,resp_EXP1$FINALresp, main= "Ref vs. FINALresp") # plot the relationship
+summary(lm(resp_EXP1[,1]~resp_EXP1$FINALresp)) # summarize linear model - Multiple R-squared:  0.8784,	Adjusted R-squared:  0.8771 
+ggplot(resp_EXP1, aes(x = resp_EXP1[,1], y = resp_EXP1$FINALresp)) +
+  geom_point() +
+  geom_smooth(method = 'loess') +
+  geom_text(aes(label = resp_EXP1$ID), position = position_nudge(y = -0.01)) # ggplot with loess CI
+  
+```
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
