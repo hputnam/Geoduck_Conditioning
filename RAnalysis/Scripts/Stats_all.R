@@ -5,7 +5,6 @@
 #Date Last Modified: 20181026
 #See Readme file for details
 
-
 rm(list=ls())
 ##Install and load packages
 library(dplyr)
@@ -29,6 +28,7 @@ library(plyr)
 library(gridExtra)
 library(multcompView)
 library(lsmeans)
+library(tidyr)
 
 #set working directory--------------------------------------------------------------------------------------------------
 setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/") #set working
@@ -166,56 +166,66 @@ EXP2 <- subset(flow, Exp.num=="EXP2") #second 6-day trial, subset entire dataset
 flow_EXP2 <- subset(EXP2, Day!=0) # ommit day 0
 flow_EXP1_2 <- rbind(flow_EXP1, flow_EXP2) # bind exp1 and 2, day 0 already ommited
 
-# EXP1 summary -----------------------
-flow_EXP1.TRMT<- do.call(data.frame,aggregate(LPM ~ Treatment*Day, 
-                                              data = flow_EXP1, 
-                                              function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by treatment and Day (4 tanks ber treatment)
-flow_EXP1.TRMT.summary <- summarySE(flow_EXP1.TRMT, measurevar="LPM.mean", groupvars=c("Treatment")) # summary by treatment
-flow_EXP1.TRMT.summary # view table
+# EXP1 summary treat by day-----------------------
+#flow_EXP1.TRMT<- do.call(data.frame,aggregate(LPM ~ Treatment*Day, 
+                                              #data = flow_EXP1, 
+                                              #function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by treatment and Day (4 tanks ber treatment)
+#flow_EXP1.TRMT.summary <- summarySE(flow_EXP1.TRMT, measurevar="LPM.mean", groupvars=c("Treatment")) # summary by treatment
+#flow_EXP1.TRMT.summary # view table
+
+# flow exp by treatment
+flow_EXP1.treat <- summarySE(flow_EXP1, measurevar="LPM", groupvars=c("Treatment")) # summary by treatment
+flow_EXP1.treat # view table
 
 # EXP2 summary -----------------------
 # grouped as 2 treatments (just Sec.treat) during reciprocal exposure
 # NOTE: this shows flow difference influenced by conical overflow to heath tray pairs
-flow_EXP2.TRMT.2<- do.call(data.frame,aggregate(LPM ~ Sec.treat *Day, 
-                                                data = flow_EXP2, 
-                                                function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by treatment and Day (4 tanks ber treatment)
-flow_EXP2.TRMT.2.summary <- summarySE(flow_EXP2.TRMT.2, measurevar="LPM.mean", groupvars=c("Sec.treat")) # summary by treatment
-flow_EXP2.TRMT.2.summary # view table
+#flow_EXP2.TRMT.2<- do.call(data.frame,aggregate(LPM ~ Sec.treat *Day, 
+                                                #data = flow_EXP2, 
+                                                #function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by treatment and Day (4 tanks ber treatment)
+#flow_EXP2.TRMT.2.summary <- summarySE(flow_EXP2.TRMT.2, measurevar="LPM.mean", groupvars=c("Sec.treat")) # summary by treatment
+#flow_EXP2.TRMT.2.summary # view table
 # grouped as 4 treatments during reciprocal exposure
 # NOTE: this shows flow difference between treaments, but not influenced by the same conical overflow
-flow_EXP2.TRMT.4<- do.call(data.frame,aggregate(LPM ~ Treatment_1_2*Day, 
-                                                data = flow_EXP2, 
-                                                function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by treatment and Day (4 tanks ber treatment)
-flow_EXP2.TRMT.4.summary <- summarySE(flow_EXP2.TRMT.4, measurevar="LPM.mean", groupvars=c("Treatment_1_2")) # summary by treatment
-flow_EXP2.TRMT.4.summary # view table
+#flow_EXP2.TRMT.4<- do.call(data.frame,aggregate(LPM ~ Treatment_1_2*Day, 
+                                                #data = flow_EXP2, 
+                                                #function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by treatment and Day (4 tanks ber treatment)
+#flow_EXP2.TRMT.4.summary <- summarySE(flow_EXP2.TRMT.4, measurevar="LPM.mean", groupvars=c("Treatment_1_2")) # summary by treatment
+#flow_EXP2.TRMT.4.summary # view table
+
+# flow by treatment
+flow_EXP2.treat <- summarySE(flow_EXP2, measurevar="LPM", groupvars=c("Sec.treat")) # summary by treatment
+flow_EXP2.treat # view summary table
 
 # EXP1 AND EXP2 summary -----------------------
+flow_EXP_1_2.treat <- summarySE(flow_EXP1_2, measurevar="LPM", groupvars=c("Treatment")) # summary by treatment
+flow_EXP_1_2.treat # view summary table
 # group by just day for daily flow rates
-flow_ALL.Date<- do.call(data.frame,aggregate(LPM ~ Date, 
-                                             data = flow_EXP1_2, 
-                                             function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by Date
-flow_ALL.Date.summary <- summarySE(flow_ALL.Date, measurevar="LPM.mean") # summary by treatment
-flow_ALL.Date.summary # view table
+#flow_ALL.Date<- do.call(data.frame,aggregate(LPM ~ Date, 
+#                                             data = flow_EXP1_2, 
+#                                             function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by Date
+#flow_ALL.Date.summary <- summarySE(flow_ALL.Date, measurevar="LPM.mean") # summary by treatment
+#flow_ALL.Date.summary # view table
 # na omited when notes read "adjusted"
-flow_EXP1_2.OMIT <- subset(flow_EXP1_2, Notes!="adjusted") # ommit rows when flow rate was adjusted
-flow_ALL.Date.OMIT<- do.call(data.frame,aggregate(LPM ~ Date, 
-                                                  data = flow_EXP1_2.OMIT, 
-                                                  function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by Date, adjusted ommited
-flow_ALL.Date.summary.OMIT <- summarySE(flow_ALL.Date.OMIT, measurevar="LPM.mean") # summary by treatment
-flow_ALL.Date.summary.OMIT # view table
+#flow_EXP1_2.OMIT <- subset(flow_EXP1_2, Notes!="adjusted") # ommit rows when flow rate was adjusted
+#flow_ALL.Date.OMIT<- do.call(data.frame,aggregate(LPM ~ Date, 
+#                                                  data = flow_EXP1_2.OMIT, 
+#                                                  function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by Date, adjusted ommited
+#flow_ALL.Date.summary.OMIT <- summarySE(flow_ALL.Date.OMIT, measurevar="LPM.mean") # summary by treatment
+#flow_ALL.Date.summary.OMIT # view table
 
 # group by treatment and day day for daily flow rates
-flow_ALL.TRMT<- do.call(data.frame,aggregate(LPM ~ Date*Treatment, 
-                                             data = flow_EXP1_2, 
-                                             function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by Date
-flow_ALL.TRMT.summary <- summarySE(flow_ALL.TRMT, measurevar="LPM.mean", groupvars=c("Treatment")) # summary by treatment
-flow_ALL.TRMT.summary # view table
+#flow_ALL.TRMT<- do.call(data.frame,aggregate(LPM ~ Date*Treatment, 
+#                                             data = flow_EXP1_2, 
+#                                             function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by Date
+#flow_ALL.TRMT.summary <- summarySE(flow_ALL.TRMT, measurevar="LPM.mean", groupvars=c("Treatment")) # summary by treatment
+#flow_ALL.TRMT.summary # view table
 # na omited when notes read "adjusted"
-flow_ALL.TRMT.OMIT<- do.call(data.frame,aggregate(LPM ~ Date*Treatment, 
-                                                  data = flow_EXP1_2.OMIT, 
-                                                  function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by Date, adjusted ommited
-flow_ALL.TRMT.summary.OMIT <- summarySE(flow_ALL.TRMT.OMIT, measurevar="LPM.mean", groupvars=c("Treatment")) # summary by treatment
-flow_ALL.TRMT.summary.OMIT # view table
+#flow_ALL.TRMT.OMIT<- do.call(data.frame,aggregate(LPM ~ Date*Treatment, 
+#                                                  data = flow_EXP1_2.OMIT, 
+#                                                  function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by Date, adjusted ommited
+#flow_ALL.TRMT.summary.OMIT <- summarySE(flow_ALL.TRMT.OMIT, measurevar="LPM.mean", groupvars=c("Treatment")) # summary by treatment
+#flow_ALL.TRMT.summary.OMIT # view table
 
 #---------------------------------------------------------------------------------------------------
 # HEATH TRAY Discrete Seawater Chemistry Tables 
@@ -352,296 +362,6 @@ Exposure2.long <- reshape(Exposure2.chem, idvar="Treatment", direction="wide", t
 write.table (Exposure1.long, file="C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Output/Seawater_chemistry_table_Output_exposure1.csv", sep=",", row.names = FALSE) #save data to output file
 write.table (Exposure2.long, file="C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Output/Seawater_chemistry_table_Output_exposure2.csv", sep=",", row.names = FALSE) #save data to output file
 
-### Overall temperature and salinity ###
-salinity.overall<- do.call(data.frame,aggregate(Salinity ~ Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x)))) # table of means __ per day by treatment (4 tanks per treatment)
-salinity.summary.overall <- summarySE(salinity.overall, measurevar="Salinity.mean")  # overall mean 
-
-Temperature.overall<- do.call(data.frame,aggregate(Temperature ~ Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x)))) 
-Temperature.summary.overall <- summarySE(Temperature.overall, measurevar="Temperature.mean") # overall mean 
-
-### EXP1 ### 10-day OA exposure
-
-salinity.1<- do.call(data.frame,aggregate(Salinity ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x)))) # table of means __ per day by treatment (4 tanks per treatment)
-salinity.summary.1 <- summarySE(salinity.1, measurevar="Salinity.mean", groupvars=c("Treatment"))  # overall mean for each treatment 
-
-Temperature.1<- do.call(data.frame,aggregate(Temperature ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x)))) 
-Temperature.summary.1 <- summarySE(Temperature.1, measurevar="Temperature.mean", groupvars=c("Treatment"))
-
-pH.1<- do.call(data.frame,aggregate(pH ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x))))
-pH.summary.1 <- summarySE(pH.1, measurevar="pH.mean", groupvars=c("Treatment"))
-
-CO2.1<- do.call(data.frame,aggregate(CO2 ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x))))
-CO2.summary.1 <- summarySE(CO2.1, measurevar="CO2.mean", groupvars=c("Treatment"))
-
-pCO2.1<- do.call(data.frame,aggregate(pCO2 ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x))))
-pCO2.summary.1 <- summarySE(pCO2.1, measurevar="pCO2.mean", groupvars=c("Treatment"))
-
-HCO3.1<- do.call(data.frame,aggregate(HCO3 ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x))))
-HCO3.summary.1 <- summarySE(HCO3.1, measurevar="HCO3.mean", groupvars=c("Treatment"))
-
-CO3.1<- do.call(data.frame,aggregate(CO3 ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x))))
-CO3.summary.1 <- summarySE(CO3.1, measurevar="CO3.mean", groupvars=c("Treatment"))
-
-DIC.1<- do.call(data.frame,aggregate(DIC ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x))))
-DIC.summary.1 <- summarySE(DIC.1, measurevar="DIC.mean", groupvars=c("Treatment"))
-
-TA.1<- do.call(data.frame,aggregate(TA ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x))))
-TA.summary.1 <- summarySE(TA.1, measurevar="TA.mean", groupvars=c("Treatment"))
-
-Aragonite.Sat.1<- do.call(data.frame,aggregate(Aragonite.Sat ~ Treatment*Date, data = chem.exp1, function(x) c(mean = mean(x), sd = sd(x))))
-Aragonite.Sat.summary.1 <- summarySE(Aragonite.Sat.1, measurevar="Aragonite.Sat.mean", groupvars=c("Treatment"))
-
-#Final table EXPOSURE 1 - 10-day
-########################################################################################################################
-
-EXP1_FinalTable <- as.data.frame(matrix(nrow = 2))  # make a data frame with 2 rows   
-
-EXP1_FinalTable$Treatment <- salinity.summary.1$Treatment # column for treatments
-
-EXP1_FinalTable$Days <- signif(salinity.summary.1$N, digits = 2) # column for number of dayaa as N
-
-Flow.1 <- signif(flow_EXP1.TRMT.summary$LPM.mean, digits = 3) #significant figs for the mean of each value
-Flow.sd.1 <- signif(flow_EXP1.TRMT.summary$sd, digits = 2)#significant figs for the standard dev of each value
-EXP1_FinalTable$Flow <- paste(Flow.1, Flow.sd.1, sep="±") # combine mean ± st error as column in final table
-
-Temperature.1 <- signif(Temperature.summary.1$Temperature.mean, digits = 4) #significant figs for the mean of each value
-Temp.sd.1 <- signif(Temperature.summary.1$sd, digits = 2)#significant figs for the standard dev of each value
-EXP1_FinalTable$Temperature <-paste(Temperature.1, Temp.sd.1, sep="±") # combine mean ± st error as column in final table
-
-Salinity.1 <- signif(salinity.summary.1$Salinity.mean, digits = 4)
-Sal.sd.1 <- signif(salinity.summary.1$sd, digits = 2)
-EXP1_FinalTable$Salinity <-paste(Salinity.1, Sal.sd.1, sep="±")
-
-pH.1 <- signif(pH.summary.1$pH.mean, digits = 3)
-pH.sd.1 <- signif(pH.summary.1$sd, digits = 1)
-EXP1_FinalTable$pH <-paste(pH.1, pH.sd.1, sep="±")
-
-CO2.1 <- signif(CO2.summary.1$CO2.mean, digits = 4)
-CO2.sd.1 <- signif(CO2.summary.1$sd, digits = 3)
-EXP1_FinalTable$CO2 <-paste(CO2.1, CO2.sd.1, sep="±")
-
-pCO2.1 <- signif(pCO2.summary.1$pCO2.mean, digits = 5)
-pCO2.sd.1 <- signif(pCO2.summary.1$sd, digits = 4)
-EXP1_FinalTable$pCO2 <-paste(pCO2.1, pCO2.sd.1, sep="±")
-
-HCO3.1 <- signif(HCO3.summary.1$HCO3.mean, digits = 6)
-HCO3.sd.1 <- signif(HCO3.summary.1$sd, digits = 3)
-EXP1_FinalTable$HCO3 <-paste(HCO3.1, HCO3.sd.1, sep="±")
-
-CO3.1 <- signif(CO3.summary.1$CO3.mean, digits = 4)
-CO3.sd.1 <- signif(CO3.summary.1$sd, digits = 3)
-EXP1_FinalTable$CO3 <-paste(CO3.1, CO3.sd.1, sep="±")
-
-DIC.1 <- signif(DIC.summary.1$DIC.mean, digits = 4)
-DIC.sd.1 <- signif(DIC.summary.1$sd, digits = 3)
-EXP1_FinalTable$DIC <-paste(DIC.1, DIC.sd.1, sep="±")
-
-TA.1 <- signif(TA.summary.1$TA.mean, digits = 4)
-TA.sd.1 <- signif(TA.summary.1$sd, digits = 3)
-EXP1_FinalTable$Total.Alkalinity <-paste(TA.1, TA.sd.1 , sep="±")
-
-Aragonite.Sat.1 <- signif(Aragonite.Sat.summary.1$Aragonite.Sat.mean, digits = 2)
-Arag.sd.1 <- signif(Aragonite.Sat.summary.1$sd, digits = 2)
-EXP1_FinalTable$Aragonite.Saturation <-paste(Aragonite.Sat.1, Arag.sd.1, sep="±")
-
-EXP1_FinalTable <- subset(EXP1_FinalTable, select = -c(V1)) # ommit the first column
-head(EXP1_FinalTable) # view final table
-
-### EXP2 ### 6-day OA exposure
-########################################################################################################################
-
-salinity.2<- do.call(data.frame,aggregate(Salinity ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
-salinity.summary.2 <- summarySE(salinity.2, measurevar="Salinity.mean", groupvars=c("Treatment"))
-
-Temperature.2<- do.call(data.frame,aggregate(Temperature ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
-Temperature.summary.2 <- summarySE(Temperature.2, measurevar="Temperature.mean", groupvars=c("Treatment"))
-
-pH.2<- do.call(data.frame,aggregate(pH ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
-pH.summary.2 <- summarySE(pH.2, measurevar="pH.mean", groupvars=c("Treatment"))
-
-CO2.2<- do.call(data.frame,aggregate(CO2 ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
-CO2.summary.2 <- summarySE(CO2.2, measurevar="CO2.mean", groupvars=c("Treatment"))
-
-pCO2.2<- do.call(data.frame,aggregate(pCO2 ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
-pCO2.summary.2 <- summarySE(pCO2.2, measurevar="pCO2.mean", groupvars=c("Treatment"))
-
-HCO3.2<- do.call(data.frame,aggregate(HCO3 ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
-HCO3.summary.2 <- summarySE(HCO3.2, measurevar="HCO3.mean", groupvars=c("Treatment"))
-
-CO3.2<- do.call(data.frame,aggregate(CO3 ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
-CO3.summary.2 <- summarySE(CO3.2, measurevar="CO3.mean", groupvars=c("Treatment"))
-
-DIC.2<- do.call(data.frame,aggregate(DIC ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
-DIC.summary.2 <- summarySE(DIC.2, measurevar="DIC.mean", groupvars=c("Treatment"))
-
-TA.2<- do.call(data.frame,aggregate(TA ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
-TA.summary.2 <- summarySE(TA.2, measurevar="TA.mean", groupvars=c("Treatment"))
-
-Aragonite.Sat.2<- do.call(data.frame,aggregate(Aragonite.Sat ~ Treatment*Date, data = chem.exp2, function(x) c(mean = mean(x), sd = sd(x))))
-Aragonite.Sat.summary.2 <- summarySE(Aragonite.Sat.2, measurevar="Aragonite.Sat.mean", groupvars=c("Treatment"))
-
-#Final table EXPOSURE 2 - 6-day
-########################################################################################################################
-
-EXP2_FinalTable <- as.data.frame(matrix(nrow = 2)) 
-
-EXP2_FinalTable$Treatment <- salinity.summary.2$Treatment
-
-EXP2_FinalTable$Days <- signif(salinity.summary.2$N, digits = 2)
-
-Flow.2 <- signif(flow_EXP2.TRMT.2.summary$LPM.mean, digits = 3) #significant figs for the mean of each value
-Flow.sd.2 <- signif(flow_EXP2.TRMT.2.summary$sd, digits = 2)#significant figs for the standard dev of each value
-EXP2_FinalTable$Flow <- paste(Flow.2, Flow.sd.2, sep="±") # combine mean ± st error as column in final table
-
-Temperature.2 <- signif(Temperature.summary.2$Temperature.mean, digits = 4)
-Temp.sd.2 <- signif(Temperature.summary.2$sd, digits = 2)
-EXP2_FinalTable$Temperature <-paste(Temperature.2, Temp.sd.2, sep="±")
-
-Salinity.2 <- signif(salinity.summary.2$Salinity.mean, digits = 4)
-Sal.sd.2 <- signif(salinity.summary.2$sd, digits = 2)
-EXP2_FinalTable$Salinity <-paste(Salinity.2, Sal.sd.2, sep="±")
-
-pH.2 <- signif(pH.summary.2$pH.mean, digits = 3)
-pH.sd.2 <- signif(pH.summary.2$sd, digits = 1)
-EXP2_FinalTable$pH <-paste(pH.2, pH.sd.2, sep="±")
-
-CO2.2 <- signif(CO2.summary.2$CO2.mean, digits = 4)
-CO2.sd.2 <- signif(CO2.summary.2$sd, digits = 3)
-EXP2_FinalTable$CO2 <-paste(CO2.2, CO2.sd.2, sep="±")
-
-pCO2.2 <- signif(pCO2.summary.2$pCO2.mean, digits = 5)
-pCO2.sd.2 <- signif(pCO2.summary.2$sd, digits = 4)
-EXP2_FinalTable$pCO2 <-paste(pCO2.2, pCO2.sd.2, sep="±")
-
-HCO3.2 <- signif(HCO3.summary.2$HCO3.mean, digits = 6)
-HCO3.sd.2 <- signif(HCO3.summary.2$sd, digits = 3)
-EXP2_FinalTable$HCO3 <-paste(HCO3.2, HCO3.sd.2, sep="±")
-
-CO3.2 <- signif(CO3.summary.2$CO3.mean, digits = 4)
-CO3.sd.2 <- signif(CO3.summary.2$sd, digits = 3)
-EXP2_FinalTable$CO3 <-paste(CO3.2, CO3.sd.2, sep="±")
-
-DIC.2 <- signif(DIC.summary.2$DIC.mean, digits = 4)
-DIC.sd.2 <- signif(DIC.summary.2$sd, digits = 3)
-EXP2_FinalTable$DIC <-paste(DIC.2, DIC.sd.2, sep="±")
-
-TA.2 <- signif(TA.summary.2$TA.mean, digits = 4)
-TA.sd.2 <- signif(TA.summary.2$sd, digits = 3)
-EXP2_FinalTable$Total.Alkalinity <-paste(TA.2, TA.sd.2 , sep="±")
-
-Aragonite.Sat.2 <- signif(Aragonite.Sat.summary.2$Aragonite.Sat.mean, digits = 2)
-Arag.sd.2 <- signif(Aragonite.Sat.summary.2$sd, digits = 2)
-EXP2_FinalTable$Aragonite.Saturation <-paste(Aragonite.Sat.2, Arag.sd.2, sep="±")
-
-EXP2_FinalTable <- subset(EXP2_FinalTable, select = -c(V1)) # ommit the first column
-head(EXP2_FinalTable) # view final table
-
-### EXP_1_2 ### ALL OA exposure
-########################################################################################################################
-
-salinity.all<- do.call(data.frame,aggregate(Salinity ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
-salinity.summary.all <- summarySE(salinity.all, measurevar="Salinity.mean", groupvars=c("Treatment"))
-
-Temperature.all<- do.call(data.frame,aggregate(Temperature ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
-Temperature.summary.all <- summarySE(Temperature.all, measurevar="Temperature.mean", groupvars=c("Treatment"))
-
-pH.all<- do.call(data.frame,aggregate(pH ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
-pH.summary.all <- summarySE(pH.all, measurevar="pH.mean", groupvars=c("Treatment"))
-
-CO2.all<- do.call(data.frame,aggregate(CO2 ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
-CO2.summary.all <- summarySE(CO2.all, measurevar="CO2.mean", groupvars=c("Treatment"))
-
-pCO2.all<- do.call(data.frame,aggregate(pCO2 ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
-pCO2.summary.all <- summarySE(pCO2.all, measurevar="pCO2.mean", groupvars=c("Treatment"))
-
-HCO3.all<- do.call(data.frame,aggregate(HCO3 ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
-HCO3.summary.all <- summarySE(HCO3.all, measurevar="HCO3.mean", groupvars=c("Treatment"))
-
-CO3.all<- do.call(data.frame,aggregate(CO3 ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
-CO3.summary.all <- summarySE(CO3.all, measurevar="CO3.mean", groupvars=c("Treatment"))
-
-DIC.all<- do.call(data.frame,aggregate(DIC ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
-DIC.summary.all <- summarySE(DIC.all, measurevar="DIC.mean", groupvars=c("Treatment"))
-
-TA.all<- do.call(data.frame,aggregate(TA ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
-TA.summary.all <- summarySE(TA.all, measurevar="TA.mean", groupvars=c("Treatment"))
-
-Aragonite.Sat.all<- do.call(data.frame,aggregate(Aragonite.Sat ~ Treatment*Date, data = chem.exp_1_2, function(x) c(mean = mean(x), sd = sd(x))))
-Aragonite.Sat.summary.all <- summarySE(Aragonite.Sat.all, measurevar="Aragonite.Sat.mean", groupvars=c("Treatment"))
-
-#Final table EXPOSURE ALL OA Exposure
-########################################################################################################################
-
-EXP_1_2_FinalTable <- as.data.frame(matrix(nrow = 2)) 
-
-EXP_1_2_FinalTable$Treatment <- salinity.summary.all$Treatment
-
-EXP_1_2_FinalTable$Days <- signif(salinity.summary.all$N, digits = 2)
-
-Flow._1_2 <- signif(flow_ALL.TRMT.summary$LPM.mean, digits = 3) #significant figs for the mean of each value
-Flow.sd._1_2 <- signif(flow_ALL.TRMT.summary$sd, digits = 2)#significant figs for the standard dev of each value
-EXP_1_2_FinalTable$Flow <- paste(Flow._1_2, Flow.sd._1_2, sep="±") # combine mean ± st error as column in final table
-
-Temperature.all <- signif(Temperature.summary.all$Temperature.mean, digits = 4)
-Temp.sd.all <- signif(Temperature.summary.all$sd, digits = 2)
-EXP_1_2_FinalTable$Temperature <-paste(Temperature.all, Temp.sd.all, sep="±")
-
-Salinity.all <- signif(salinity.summary.all$Salinity.mean, digits = 4)
-Sal.sd.all <- signif(salinity.summary.all$sd, digits = 2)
-EXP_1_2_FinalTable$Salinity <-paste(Salinity.all, Sal.sd.all, sep="±")
-
-pH.all <- signif(pH.summary.all$pH.mean, digits = 3)
-pH.sd.all <- signif(pH.summary.all$sd, digits = 1)
-EXP_1_2_FinalTable$pH <-paste(pH.all, pH.sd.all, sep="±")
-
-CO2.all <- signif(CO2.summary.all$CO2.mean, digits = 4)
-CO2.sd.all <- signif(CO2.summary.all$sd, digits = 3)
-EXP_1_2_FinalTable$CO2 <-paste(CO2.all, CO2.sd.all, sep="±")
-
-pCO2.all <- signif(pCO2.summary.all$pCO2.mean, digits = 5)
-pCO2.sd.all <- signif(pCO2.summary.all$sd, digits = 4)
-EXP_1_2_FinalTable$pCO2 <-paste(pCO2.all, pCO2.sd.all, sep="±")
-
-HCO3.all <- signif(HCO3.summary.all$HCO3.mean, digits = 6)
-HCO3.sd.all <- signif(HCO3.summary.all$sd, digits = 3)
-EXP_1_2_FinalTable$HCO3 <-paste(HCO3.all, HCO3.sd.all, sep="±")
-
-CO3.all <- signif(CO3.summary.all$CO3.mean, digits = 4)
-CO3.sd.all <- signif(CO3.summary.all$sd, digits = 3)
-EXP_1_2_FinalTable$CO3 <-paste(CO3.all, CO3.sd.all, sep="±")
-
-DIC.all <- signif(DIC.summary.all$DIC.mean, digits = 4)
-DIC.sd.all <- signif(DIC.summary.all$sd, digits = 3)
-EXP_1_2_FinalTable$DIC <-paste(DIC.all, DIC.sd.all, sep="±")
-
-TA.all <- signif(TA.summary.all$TA.mean, digits = 4)
-TA.sd.all <- signif(TA.summary.all$sd, digits = 3)
-EXP_1_2_FinalTable$Total.Alkalinity <-paste(TA.all, TA.sd.all , sep="±")
-
-Aragonite.Sat.all <- signif(Aragonite.Sat.summary.all$Aragonite.Sat.mean, digits = 2)
-Arag.sd.all <- signif(Aragonite.Sat.summary.all$sd, digits = 2)
-EXP_1_2_FinalTable$Aragonite.Saturation <-paste(Aragonite.Sat.all, Arag.sd.all, sep="±")
-
-EXP_1_2_FinalTable <- subset(EXP_1_2_FinalTable, select = -c(V1)) # ommit the first column
-head(EXP_1_2_FinalTable) # view final table
-
-# export all tables
-cro(EXP_1_2_FinalTable)
-png("Output/ALL_chem_table.png", height = 30*nrow(EXP_1_2_FinalTable), width = 120*ncol(EXP_1_2_FinalTable))
-all_chem<-tableGrob(EXP_1_2_FinalTable)
-grid.arrange(all_chem)
-dev.off()
-
-png("Output/EXP1_chem_table.png", height = 30*nrow(EXP1_FinalTable), width = 120*ncol(EXP1_FinalTable))
-EXP1_chem<-tableGrob(EXP1_FinalTable)
-grid.arrange(EXP1_chem)
-dev.off()
-
-png("Output/EXP2_chem_table.png", height = 30*nrow(EXP2_FinalTable), width = 120*ncol(EXP2_FinalTable))
-EXP2_chem<-tableGrob(EXP2_FinalTable)
-grid.arrange(EXP2_chem)
-dev.off()
-
 
 #---------------------------------------------------------------------------------------------------
 # Respiration Data - Analysis, Graphs, Models  (summarized analysis from Stats_resp_analysis.R)
@@ -753,26 +473,25 @@ respBASAL$Day <- 0
 resp_EXP1_condensed <- resp_EXP1[,c(11,12,13,14,15,16,21)] # call the columns in respBasal to rbind
 resp_EXP1_ALL <- rbind(resp_EXP1_condensed, respBASAL) # merge the two tables for the graph
 
+# plot below
 resp_EXP1_plot <- ggplot(resp_EXP1_ALL, aes(x = factor(resp_EXP1_ALL$Day), y = resp_EXP1_ALL$FINALresp, fill = resp_EXP1_ALL$Treat1_Treat2)) +
   geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
   ylim(0, 0.6) +
-  geom_point(aes(fill = resp_EXP1_ALL$Treat1_Treat2), size = 1.5, shape = 21, position = position_jitterdodge(0.15)) +
-  stat_summary(fun.y=mean, geom="point", shape=5, size=2, position = position_jitterdodge(0.125)) +
-theme(legend.position = c(.9, .9), legend.text=element_text(size=8)) +
+  #geom_point(aes(fill = resp_EXP1_ALL$Treat1_Treat2), size = 1.5, shape = 21, position = position_jitterdodge(0.15)) +
+  stat_summary(fun.y=mean, geom="point", shape=4, size=2, position = position_jitterdodge(0.01)) +
+  theme(legend.position = c(.9, .9), legend.text=element_text(size=8)) +
   geom_vline(xintercept=c(1.5), linetype="dotted", size=1) +
-  labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1", 
-                            x = "Date", fill="") + 
-        ggtitle("Juvenile geoduck respirometry \nin OA treatments resp_EXP1")
+  scale_x_discrete(labels = c("prebasal",2,5,8,10))    +
+  labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1", x = "Date", fill="") 
+resp_EXP1_plot # view the plot
 
 # plot just treatment 
 resp_EXP1_plot_2 <- ggplot(resp_EXP1, aes(x = factor(resp_EXP1$Treat1_Treat2), y = resp_EXP1$FINALresp, fill = resp_EXP1$Treat1_Treat2)) +
   geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
-  geom_point(aes(fill = resp_EXP1$Treat1_Treat2), size = 2, shape = 21, position = position_jitterdodge(0.15)) +
+  #geom_point(aes(fill = resp_EXP1$Treat1_Treat2), size = 2, shape = 21, position = position_jitterdodge(0.15)) +
   theme(legend.position = c(.9, .9), legend.text=element_text(size=8)) +
-  stat_summary(fun.y=mean, geom="point", shape=5, size=4, position = position_jitterdodge(0.125)) +
-  labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1", 
-                              x = "Treatment", fill= "") + 
-        ggtitle("Juvenile geoduck respirometry \nin OA treatments resp_EXP1")
+  stat_summary(fun.y=mean, geom="point", shape=4, size=2, position = position_jitterdodge(0.01)) +
+  labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1",  x = "Treatment", fill= "") 
 resp_EXP1_plot_2
 
 #### EXP2 ####
@@ -825,13 +544,12 @@ Exp2.Fig.resp # view the figure
 resp_EXP2_plot <- ggplot(resp_EXP2, aes(x = factor(resp_EXP2$Day), y = resp_EXP2$FINALresp, fill = resp_EXP2$Treat1_Treat2)) +
   geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
   ylim(0, 0.6) +
-  geom_point(aes(fill = resp_EXP2$Treat1_Treat2), size = 1.5, shape = 21, position = position_jitterdodge(0.05)) +
-  stat_summary(fun.y=mean, geom="point", shape=5, size=2, position = position_jitterdodge(0.05)) +
+  #geom_point(aes(fill = resp_EXP2$Treat1_Treat2), size = 1.5, shape = 21, position = position_jitterdodge(0.05)) +
+  stat_summary(fun.y=mean, geom="point", shape=4, size=2, position = position_jitterdodge(0.01)) +
   theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
-  geom_vline(xintercept=c(1.5), linetype="dotted", size=1) + labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1", 
-                              x = "Date", fill="") + 
-          ggtitle("Juvenile geoduck respirometry \nin OA treatments resp_EXP1")
-
+  scale_x_discrete(labels = c("prebasal",2,4,6)) +
+  geom_vline(xintercept=c(1.5), linetype="dotted", size=1) + labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1", x = "Day", fill="")
+resp_EXP2_plot # view the plot
   
 #table
 x2.resp <- do.call(data.frame,aggregate(FINALresp ~ Day*Init.treat*Sec.treat, data = resp_EXP2_om, function(x) c(mean = mean(x), se = std.error(x))))
@@ -1054,6 +772,7 @@ Fig.Exp2.All.resp <- ggplot(x2.1.resp, aes(x=Sec.treat, y=FINALresp.mean , group
   xlab("Secondary Treatment") +
   ylab("Respiration rate") +
   ylim(0,0.5) +
+  labs(fill="") +
   theme_bw() + #Set the background color
   theme(axis.text.x = element_text(vjust = 0.5, hjust=1), #Set the text angle
         axis.line = element_line(color = 'black'), #Set the axes color
@@ -1061,8 +780,8 @@ Fig.Exp2.All.resp <- ggplot(x2.1.resp, aes(x=Sec.treat, y=FINALresp.mean , group
         panel.grid.major = element_blank(), #Set the major gridlines
         panel.grid.minor = element_blank(), #Set the minor gridlines
         plot.background=element_blank(), #Set the plot background
-        legend.position='none') + #remove legend background
-  ggtitle(" Secondary Exposure All Days") +
+        legend.position = c(.92, .9), legend.text=element_text(size=8)) + #remove legend background
+  #ggtitle(" Secondary Exposure All Days") +
   theme(plot.title = element_text(face = 'bold', 
                                   size = 12, 
                                   hjust = 0))
@@ -1172,11 +891,10 @@ Fig.d10.EXP1.treatment <- ggboxplot(end_size, x = "treatment", y = "shell_size",
 length_EXP1_Day10 <- ggplot(end_size, aes(x = treatment, y = shell_size, fill = treatment)) +
   geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
   ylim(2,8.2) +
-  geom_point(aes(fill = treatment), size = 0.5, shape = 21, position = position_jitterdodge(0.05)) +
-  stat_summary(fun.y=mean, geom="point", shape=5, size=2, position = position_jitterdodge(0.3)) +
+  #geom_point(aes(fill = treatment), size = 0.5, shape = 21, position = position_jitterdodge(0.05)) +
+  stat_summary(fun.y=mean, geom="point", shape=4, size=2, position = position_jitterdodge(0.01)) +
   theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
-  labs(y="shell length", x = "Treatment", fill="") + 
-  ggtitle("Juvenile geoduck shell length \nin OA treatments length_EXP1")
+  labs(y="shell length", x = "Treatment", fill="") 
 length_EXP1_Day10
 
 
@@ -1199,12 +917,10 @@ Exp1.Fig # view the plot
 length_EXP1_plot <- ggplot(size_EXP1_with_basal, aes(x = factor(Day), y = shell_size, fill = treatment)) +
   geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
   ylim(2,8.2) + scale_x_discrete(limits=c("prebasal",2,5,8,10)) +
-  geom_point(aes(fill = treatment), size = 0.5, shape = 21, position = position_jitterdodge(0.05)) +
-  stat_summary(fun.y=mean, geom="point", shape=5, size=2, position = position_jitterdodge(0.3)) +
+  #geom_point(aes(fill = treatment), size = 0.5, shape = 21, position = position_jitterdodge(0.05)) +
+  stat_summary(fun.y=mean, geom="point", shape=4, size=2, position = position_jitterdodge(0.01)) +
   theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
-  geom_vline(xintercept=c(1.5), linetype="dotted", size=1) + labs(y="shell length", 
-                                                                  x = "Date", fill="") + 
-  ggtitle("Juvenile geoduck shell length \nin OA treatments resp_EXP1")
+  geom_vline(xintercept=c(1.5), linetype="dotted", size=1) + labs(y="shell length", x = "Day", fill="")
 length_EXP1_plot
 
 
@@ -1258,14 +974,13 @@ Exp2.Fig # view the plot
 
 #plot treatments and time
 length_EXP2_plot <- ggplot(size_EXP2, aes(x = factor(Day), y = shell_size, fill = treatment)) +
-  geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
+  geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey(start = 0, end = 0.9) + theme_classic() +
   ylim(2, 8.2) +
-  geom_point(aes(fill = treatment), size = 0.5, shape = 21, position = position_jitterdodge(0.05)) +
-  stat_summary(fun.y=mean, geom="point", shape=5, size=2, position = position_jitterdodge(0.3)) +
+  stat_summary(fun.y=mean, geom="point", shape=4, size=2, position = position_jitterdodge(0.01)) +
+  #geom_point(aes(fill = treatment), size = 0.5, shape = 21, position = position_jitterdodge(0.05)) +
   theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
-  geom_vline(xintercept=c(1.5), linetype="dotted", size=1) + labs(y="shell length", 
-                                                                  x = "Date", fill="") + 
-  ggtitle("Juvenile geoduck shell length \nin OA treatments length_EXP2")
+  scale_x_discrete(labels = c("prebasal",2,4,6)) +
+  geom_vline(xintercept=c(1.5), linetype="dotted", size=1) + labs(y="shell length", x = "Day", fill="")
 length_EXP2_plot
 
 
@@ -1494,15 +1209,16 @@ Fig.Exp2.All.size <- ggplot(x2.1, aes(x=Sec.Trt, y=shell_size.mean, group=Init.T
   xlab("Secondary Treatment") +
   ylab("Shell size (mm)") +
   ylim(5,7) +
+  labs(fill="") +
   theme_bw() + #Set the background color
   theme(axis.text.x = element_text(vjust = 0.5, hjust=1), #Set the text angle
         axis.line = element_line(color = 'black'), #Set the axes color
         panel.border = element_blank(), #Set the border
         panel.grid.major = element_blank(), #Set the major gridlines
         panel.grid.minor = element_blank(), #Set the minor gridlines
-        plot.background=element_blank(), #Set the plot background
-        legend.position='none') + #remove legend background
-  ggtitle(" Secondary Exposure All Days") +
+        plot.background=element_blank(),
+        legend.position = c(.92, .9), legend.text=element_text(size=8)) + #remove legend background
+  #ggtitle(" Secondary Exposure All Days") +
   theme(plot.title = element_text(face = 'bold', 
                                   size = 12, 
                                   hjust = 0))
@@ -1536,17 +1252,7 @@ LINEFig.Exp2.All.size <- ggplot(x2, aes(x=Day, y=shell_size.mean , group=treatme
 LINEFig.Exp2.All.size
 
 
-# Saving output plots
 
-#Figure1.Exp1.Size <- arrangeGrob(Exp1.Fig, ncol=1)
-#ggsave(file="Output/Geoduck_Size_Exp1.pdf", Figure1.Exp1.Size, width = 6.5, height = 8, units = c("in"))
-
-
-#Figure1.Exp2.Size <- arrangeGrob(Exp2.Fig,Fig.Exp2.D0.size, Fig.Exp2.D2.size,Fig.Exp2.D4.size,Fig.Exp2.D6.size, ncol=1)
-#ggsave(file="Output/Geoduck_Size_Exp2.byDay.pdf", Figure1.Exp2.Size, width = 6.5, height = 15, units = c("in"))
-
-#Figure1.Exp2.AllSize <- arrangeGrob(Fig.Exp2.All.size, ncol=1)
-#ggsave(file="Output/Geoduck_Size_Exp2.All.pdf", Figure1.Exp2.AllSize, width = 6.5, height = 8, units = c("in"))
 
 # Saving anova tables 
 
@@ -1556,13 +1262,15 @@ LINEFig.Exp2.All.size
 #Table12.Exp2.Size <- data.frame(EXP2.lme.size.anovatable)
 #write.csv(file="Output/Geoduck_Size.table_Exp2.csv", Table12.Exp2.Size)
 
+# Assemble output plots
 figure_1 <- ggarrange(resp_EXP1_plot, resp_EXP2_plot, length_EXP1_plot, length_EXP2_plot,
-                    labels = c("A", "B", "C", "D"),
+                    labels = c("A) SMR Exposure 1", "B) SMR Exposure 2", "C) Shell length Exposure 1", "D) Shell length Exposure 2"),
                     ncol = 2, nrow = 2)
-figure_1
-
 figure_2 <- ggarrange(resp_EXP1_plot_2, Fig.Exp2.All.resp, length_EXP1_Day10, Fig.Exp2.All.size,
-                      labels = c("A", "B", "C", "D"),
+                      labels = c("A) SMR Exposure 1", "B) SMR Interaction Plot", "C) Shell length Exposure 1 (Day 10)", "D) Shell length Interaction Plot"),
                       ncol = 2, nrow = 2)
-figure_2
+
+# Saving output plots
+ggsave(file="Output/Output_Figure_1.pdf", figure_1, width = 12, height = 8, units = c("in"))
+ggsave(file="Output/Output_Figure_2.pdf", figure_2, width = 12, height = 8, units = c("in"))
 
