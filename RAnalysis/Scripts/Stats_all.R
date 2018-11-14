@@ -522,6 +522,22 @@ dev.off()
 # Respiration Data - Analysis, Graphs, Models  (summarized analysis from Stats_resp_analysis.R)
 ###################################################################################################
 
+#Load BASAL Respiraiton Data before the exposures
+respBASAL<-read.csv("Data/Basal_resp_calc_and_standardized.csv", header=T, sep=",", na.string="NA", as.is=T) 
+names(respBASAL) # view the names of the data
+
+# plot the basal respiration rate 
+resp_BASAL_plot <- ggplot(respBASAL, aes(x = factor(respBASAL$Date), y = respBASAL$LpcResp_alpha0.4_all)) +
+  geom_boxplot(alpha = 0.1) +
+  geom_point(size = 2, shape = 21) +
+  theme(text = element_text(size = 18),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_blank(),
+        legend.position = "none")
+print(resp_BASAL_plot + labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1", 
+                            x = "Date") + 
+        ggtitle("Juvenile geoduck respirometry \ Basal"))
+
 
 #Load Respiraiton Data
 resp<-read.csv("Data/All_resp_calc_and_standardized.csv", header=T, sep=",", na.string="NA", as.is=T) 
@@ -578,6 +594,7 @@ exp1_resp_summary.T <- summarySE(exp1_resp_4.T, measurevar="FINALresp.mean", gro
 Exp1.Fig.resp <- ggboxplot(resp_EXP1, x = "Day", y = "FINALresp", color = "Init.treat", ylab= "respiration",
                            palette = c("blue", "red"), main= "Initial Exposure")
 Exp1.Fig.resp # view boxplot of all data
+
 #table
 x1 <- do.call(data.frame,aggregate(FINALresp ~ Day*Init.treat, data = resp_EXP1, function(x) c(mean = mean(x), se = std.error(x)))) #mean and st. error table
 # mixed effect model
@@ -603,29 +620,35 @@ sumresp_EXP1_means <- summarySE(sumresp_EXP1,
 percentdiff <- ((sumresp_EXP1_means[1,3] - sumresp_EXP1_means[2,3])/sumresp_EXP1_means[1,3])*100 # calculate percent difference
 percentdiff # 25% lower respiration rates in low pH
 
-#plot treatments and time
-resp_EXP1_plot <- ggplot(resp_EXP1, aes(x = factor(resp_EXP1$Date), y = resp_EXP1$FINALresp, fill = resp_EXP1$Treat1_Treat2)) +
-  geom_boxplot(alpha = 0.1) +
-  geom_point(aes(fill = resp_EXP1$Treat1_Treat2), size = 2, shape = 21, position = position_jitterdodge(0.15)) +
-  theme(text = element_text(size = 18),
-        panel.grid.minor.x = element_blank(),
-        panel.grid.major.x = element_blank(),
-        legend.position = "none")
-print(resp_EXP1_plot + labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1", 
-                            x = "Date") + 
-        ggtitle("Juvenile geoduck respirometry \nin OA treatments resp_EXP1"))
+
+#plot treatments and time WITH THE BASAL ADDED
+colnames(respBASAL)[1] <- "FINALresp" # rename the calc resp values in Basal table to match the resp_EXP1
+respBASAL$Treat1_Treat2 <- c("Ambient") # name the treatement 
+respBASAL$Day <- 0
+resp_EXP1_condensed <- resp_EXP1[,c(11,12,13,14,15,16,21)] # call the columns in respBasal to rbind
+resp_EXP1_ALL <- rbind(resp_EXP1_condensed, respBASAL) # merge the two tables for the graph
+
+resp_EXP1_plot <- ggplot(resp_EXP1_ALL, aes(x = factor(resp_EXP1_ALL$Day), y = resp_EXP1_ALL$FINALresp, fill = resp_EXP1_ALL$Treat1_Treat2)) +
+  geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
+  ylim(0, 0.6) +
+  geom_point(aes(fill = resp_EXP1_ALL$Treat1_Treat2), size = 1.5, shape = 21, position = position_jitterdodge(0.15)) +
+  stat_summary(fun.y=mean, geom="point", shape=5, size=2, position = position_jitterdodge(0.125)) +
+theme(legend.position = c(.9, .9), legend.text=element_text(size=8)) +
+  geom_vline(xintercept=c(1.5), linetype="dotted", size=1) +
+  labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1", 
+                            x = "Date", fill="") + 
+        ggtitle("Juvenile geoduck respirometry \nin OA treatments resp_EXP1")
 
 # plot just treatment 
 resp_EXP1_plot_2 <- ggplot(resp_EXP1, aes(x = factor(resp_EXP1$Treat1_Treat2), y = resp_EXP1$FINALresp, fill = resp_EXP1$Treat1_Treat2)) +
-  geom_boxplot(alpha = 0.1) +
+  geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
   geom_point(aes(fill = resp_EXP1$Treat1_Treat2), size = 2, shape = 21, position = position_jitterdodge(0.15)) +
-  theme(text = element_text(size = 18),
-        panel.grid.minor.x = element_blank(),
-        panel.grid.major.x = element_blank(),
-        legend.position = "none")
-print(resp_EXP1_plot_2 + labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1", 
-                              x = "Date") + 
-        ggtitle("Juvenile geoduck respirometry \nin OA treatments resp_EXP1"))
+  theme(legend.position = c(.9, .9), legend.text=element_text(size=8)) +
+  stat_summary(fun.y=mean, geom="point", shape=5, size=4, position = position_jitterdodge(0.125)) +
+  labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1", 
+                              x = "Treatment", fill= "") + 
+        ggtitle("Juvenile geoduck respirometry \nin OA treatments resp_EXP1")
+resp_EXP1_plot_2
 
 #### EXP2 ####
 
@@ -667,11 +690,24 @@ exp2_resp_all.2 <- do.call(data.frame,aggregate(FINALresp ~ Sec.treat*Date, data
 exp2_resp_summary_all.2 <- summarySE(exp2_resp_all.2, measurevar="FINALresp.mean", groupvars=c("Sec.treat")) # SMR by sec  treatments EXP2
 exp2_resp_overall <- summarySE(exp2_resp_all, measurevar="FINALresp.mean") # overall SMR EXP2
 
-
+library(wesanderson)
 # first visualize the data
 #plot
 Exp2.Fig.resp <- ggboxplot(resp_EXP2, x = "Day", y = "FINALresp", color = "Sec.treat", ylab= "respiration",palette = c())
 Exp2.Fig.resp # view the figure
+
+#plot treatments and time
+resp_EXP2_plot <- ggplot(resp_EXP2, aes(x = factor(resp_EXP2$Day), y = resp_EXP2$FINALresp, fill = resp_EXP2$Treat1_Treat2)) +
+  geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
+  ylim(0, 0.6) +
+  geom_point(aes(fill = resp_EXP2$Treat1_Treat2), size = 1.5, shape = 21, position = position_jitterdodge(0.05)) +
+  stat_summary(fun.y=mean, geom="point", shape=5, size=2, position = position_jitterdodge(0.05)) +
+  theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
+  geom_vline(xintercept=c(1.5), linetype="dotted", size=1) + labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1", 
+                              x = "Date", fill="") + 
+          ggtitle("Juvenile geoduck respirometry \nin OA treatments resp_EXP1")
+
+  
 #table
 x2.resp <- do.call(data.frame,aggregate(FINALresp ~ Day*Init.treat*Sec.treat, data = resp_EXP2_om, function(x) c(mean = mean(x), se = std.error(x))))
 x2.1.resp <- do.call(data.frame,aggregate(FINALresp ~ Init.treat*Sec.treat, data = resp_EXP2_om, function(x) c(mean = mean(x), se = std.error(x))))
@@ -894,7 +930,7 @@ Fig.Exp2.All.resp <- ggplot(x2.1.resp, aes(x=Sec.treat, y=FINALresp.mean , group
   ylab("Respiration rate") +
   ylim(0,0.5) +
   theme_bw() + #Set the background color
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), #Set the text angle
+  theme(axis.text.x = element_text(vjust = 0.5, hjust=1), #Set the text angle
         axis.line = element_line(color = 'black'), #Set the axes color
         panel.border = element_blank(), #Set the border
         panel.grid.major = element_blank(), #Set the major gridlines
@@ -966,7 +1002,8 @@ size<-read.csv("Data/All_growth_data.csv", header=T, sep=",", na.string="NA", as
 
 size <- tibble::rowid_to_column(size, "ID") # add unique rownumber column to ID animals
 # DIVIDE THE DATASET BETWEEN EXPERIMENTS 1 AND 2
-size_EXP1 <- subset(size, Exp.Num=="Exp1") # exposure 1
+size_EXP1_with_basal <- subset(size, Exp.Num=="Exp1") # exposure 1
+size_EXP1 <- subset(size_EXP1_with_basal, Date!="20180713")
 size_EXP2 <- subset(size, Exp.Num=="Exp2") # exposure 2
 size_EXP2.0 <- subset(size, Exp.Num=="Exp2") 
 size_EXP2.0 <-subset(size_EXP2.0, Day!=0) # exposure 2 without day 0 
@@ -975,7 +1012,7 @@ size_Exp1.T<- merge(size_EXP1, size_EXP2, by=c("tank"))  #merge to obtained comb
 
 inital_size <- subset(size_EXP1, Date=="20180716") # get starting size of indiivduals from first measurements
 StartSize <- summarySE(inital_size, measurevar="shell_size", groupvars=c("Date")) #summary table for starting shell length = 5.077962 ± 0.6622871 (mean ± SD)
-
+end_size <- subset(size_EXP1, Date=="20180724") # get the ned size on Day 10 of exposure 1
 # overall shell size in EXP1 and EXP2
 exp1_size_all <- do.call(data.frame,aggregate(shell_size ~ treatment*Date, data = size_EXP1, function(x) c(mean = mean(x), sd = sd(x)))) # mean SD table by  treatments date EXP1
 exp1_size_summary_all <- summarySE(exp1_size_all, measurevar="shell_size.mean", groupvars=c("treatment")) # shell length by  treatments EXP1
@@ -999,6 +1036,25 @@ anova(treat.exp1) # no difference in shell size with treatment
 summary(treat.exp1)
 Fig.d2.EXP1.treatment <- ggboxplot(inital_size, x = "treatment", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)",
                               palette = c(), main= "Day 2 Exp 1") 
+# Model and visualize EXP1 end size by treatment
+# by treatment
+treat.exp1.Day10 <- aov(shell_size~treatment,data=end_size)
+anova(treat.exp1.Day10) # no difference in shell size with treatment
+Fig.d10.EXP1.treatment <- ggboxplot(end_size, x = "treatment", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)",
+                                   palette = c(), main= "Day 10 Exp 1") 
+
+#plot end of exp 1 Day 10 with treatments 
+length_EXP1_Day10 <- ggplot(end_size, aes(x = treatment, y = shell_size, fill = treatment)) +
+  geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
+  ylim(2,8.2) +
+  geom_point(aes(fill = treatment), size = 0.5, shape = 21, position = position_jitterdodge(0.05)) +
+  stat_summary(fun.y=mean, geom="point", shape=5, size=2, position = position_jitterdodge(0.3)) +
+  theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
+  labs(y="shell length", x = "Treatment", fill="") + 
+  ggtitle("Juvenile geoduck shell length \nin OA treatments length_EXP1")
+length_EXP1_Day10
+
+
 # Model and visualize EXP2 intiial size by treatment
 exp2_inital_size <- subset(size_EXP2, Date=="20180807") # get starting size of indiivduals from first measurements on Day 0 in Exp 2
 # by treatment
@@ -1009,10 +1065,24 @@ Fig.d2.EXP2.treatment <- ggboxplot(exp2_inital_size, x = "treatment", y = "shell
                                    palette = c(), main= "Day 2 Exp 1") 
 #######################
 # OA Exposure 1
-# Visualize OA exposure 1
-Exp1.Fig <- ggboxplot(size_EXP1, x = "Day", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)",
+# Visualize OA exposure 1 (with basal shell length from initial SMR readings)
+Exp1.Fig <- ggboxplot(size_EXP1_with_basal, x = "Day", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)",
                       palette = c("blue", "red"), main= "Initial Exposure")
 Exp1.Fig # view the plot
+
+#plot treatments and time
+length_EXP1_plot <- ggplot(size_EXP1_with_basal, aes(x = factor(Day), y = shell_size, fill = treatment)) +
+  geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
+  ylim(2,8.2) + scale_x_discrete(limits=c("prebasal",2,5,8,10)) +
+  geom_point(aes(fill = treatment), size = 0.5, shape = 21, position = position_jitterdodge(0.05)) +
+  stat_summary(fun.y=mean, geom="point", shape=5, size=2, position = position_jitterdodge(0.3)) +
+  theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
+  geom_vline(xintercept=c(1.5), linetype="dotted", size=1) + labs(y="shell length", 
+                                                                  x = "Date", fill="") + 
+  ggtitle("Juvenile geoduck shell length \nin OA treatments resp_EXP1")
+length_EXP1_plot
+
+
 x1 <- do.call(data.frame,aggregate(shell_size ~ Day*treatment, data = size_EXP1, function(x) c(mean = mean(x), se = std.error(x)))) #mean and st. error table
 # Linear mixe effects model - Test for size differences in experiment 1
 Init.lme <- lmer(shell_size ~ treatment*Day + (1|Day), data = size_EXP1) # test for treatment fixed and day as a random factor
@@ -1060,6 +1130,20 @@ shapiro.test(residuals(m1.trans)) # residuals normally distributed
 Exp2.Fig <- ggboxplot(size_EXP2, x = "Day", y = "shell_size", color = "treatment", ylab= "Size (mm)",
                       palette = c("light blue", "darkblue", "pink", "red"))
 Exp2.Fig # view the plot
+
+#plot treatments and time
+length_EXP2_plot <- ggplot(size_EXP2, aes(x = factor(Day), y = shell_size, fill = treatment)) +
+  geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
+  ylim(2, 8.2) +
+  geom_point(aes(fill = treatment), size = 0.5, shape = 21, position = position_jitterdodge(0.05)) +
+  stat_summary(fun.y=mean, geom="point", shape=5, size=2, position = position_jitterdodge(0.3)) +
+  theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
+  geom_vline(xintercept=c(1.5), linetype="dotted", size=1) + labs(y="shell length", 
+                                                                  x = "Date", fill="") + 
+  ggtitle("Juvenile geoduck shell length \nin OA treatments length_EXP2")
+length_EXP2_plot
+
+
 x2 <- do.call(data.frame,aggregate(shell_size ~ Day*Init.Trt*Sec.Trt, data = size_EXP2, function(x) c(mean = mean(x), se = std.error(x))))#mean and st. error table (used from plotting later)
 x2.1 <- do.call(data.frame,aggregate(shell_size ~ Init.Trt*Sec.Trt, data = size_EXP2.0, function(x) c(mean = mean(x), se = std.error(x))))#mean and st. error table(used from plotting later)
 x2$treatments <- paste(x2$Init.Trt, x2$Sec.Trt, sep="_") # combine treatments in a column
@@ -1286,7 +1370,7 @@ Fig.Exp2.All.size <- ggplot(x2.1, aes(x=Sec.Trt, y=shell_size.mean, group=Init.T
   ylab("Shell size (mm)") +
   ylim(5,7) +
   theme_bw() + #Set the background color
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), #Set the text angle
+  theme(axis.text.x = element_text(vjust = 0.5, hjust=1), #Set the text angle
         axis.line = element_line(color = 'black'), #Set the axes color
         panel.border = element_blank(), #Set the border
         panel.grid.major = element_blank(), #Set the major gridlines
@@ -1347,4 +1431,13 @@ LINEFig.Exp2.All.size
 #Table12.Exp2.Size <- data.frame(EXP2.lme.size.anovatable)
 #write.csv(file="Output/Geoduck_Size.table_Exp2.csv", Table12.Exp2.Size)
 
+figure_1 <- ggarrange(resp_EXP1_plot, resp_EXP2_plot, length_EXP1_plot, length_EXP2_plot,
+                    labels = c("A", "B", "C", "D"),
+                    ncol = 2, nrow = 2)
+figure_1
+
+figure_2 <- ggarrange(resp_EXP1_plot_2, Fig.Exp2.All.resp, length_EXP1_Day10, Fig.Exp2.All.size,
+                      labels = c("A", "B", "C", "D"),
+                      ncol = 2, nrow = 2)
+figure_2
 
