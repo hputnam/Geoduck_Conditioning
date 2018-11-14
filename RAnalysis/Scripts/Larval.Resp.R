@@ -35,10 +35,12 @@ library('dplyr')
 #Required Data files
 
 # Set Working Directory:
-setwd("~/MyProjects/Geoduck_Conditioning/RAnalysis/") #set working
+# setwd("~/MyProjects/Geoduck_Conditioning/RAnalysis/") #set working
+setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/")
 
 ##### Respiration #####
-path.p<-"Data/Respirometry/Larval" #the location of all your respirometry files 
+# path.p<-"Data/Respirometry/Larval" #the location of all your respirometry files 
+path.p<-"Data/SDR_data/All_data_csv " #the location of all your respirometry files 
 
 # bring in the respiration file names
 file.names<-basename(list.files(path = path.p, pattern = "csv$", recursive = TRUE)) #list all csv file names in the folder and subfolders
@@ -51,7 +53,9 @@ Resp.R <- data.frame(matrix(NA, nrow=length(file.names)*2, ncol=3))
 colnames(Resp.R) <- c("Sample.ID","Intercept", "umol.L.sec")
 
 #Load Sample Info
-Sample.Info <- read.csv(file="Data/Larval_Sample_Info.csv", header=T) #read sample.info data
+# Sample.Info <- read.csv(file="Data/Larval_Sample_Info.csv", header=T) #read sample.info data
+Sample.Info <- read.csv(file="Data/All_growth_data.csv", header=T) #read sample.info data
+
 #includes treatment, tank, chamber volume, animal size/number etc for normalization
 
 for(i in 1:length(file.names)) { # for every file in list start at the first and run this following function
