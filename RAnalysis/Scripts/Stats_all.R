@@ -534,7 +534,6 @@ exp2_resp_all.2 <- do.call(data.frame,aggregate(FINALresp ~ Sec.treat*Date, data
 exp2_resp_summary_all.2 <- summarySE(exp2_resp_all.2, measurevar="FINALresp.mean", groupvars=c("Sec.treat")) # SMR by sec  treatments EXP2
 exp2_resp_overall <- summarySE(exp2_resp_all, measurevar="FINALresp.mean") # overall SMR EXP2
 
-library(wesanderson)
 # first visualize the data
 #plot
 Exp2.Fig.resp <- ggboxplot(resp_EXP2, x = "Day", y = "FINALresp", color = "Sec.treat", ylab= "respiration",palette = c())
@@ -987,6 +986,8 @@ length_EXP2_plot
 x2 <- do.call(data.frame,aggregate(shell_size ~ Day*Init.Trt*Sec.Trt, data = size_EXP2, function(x) c(mean = mean(x), se = std.error(x))))#mean and st. error table (used from plotting later)
 x2.1 <- do.call(data.frame,aggregate(shell_size ~ Init.Trt*Sec.Trt, data = size_EXP2.0, function(x) c(mean = mean(x), se = std.error(x))))#mean and st. error table(used from plotting later)
 x2$treatments <- paste(x2$Init.Trt, x2$Sec.Trt, sep="_") # combine treatments in a column
+Sec.lme.trans <- lmer(shell_size ~ Init.Trt*Sec.Trt + (1|Day/Init.Trt/Sec.Trt), data = size_EXP2.0) # test for treatment fixed and day as a random factor
+anova(Sec.lme.trans)
 m2 <- lme(shell_size~Init.Trt*Sec.Trt,random=~1|Day/Init.Trt/Sec.Trt,data=size_EXP2.0) # lme model with initial and secondary treatment effects fixed and time random
 anova(m2) # view anova table
 summary(m2) # view summary of anova table
