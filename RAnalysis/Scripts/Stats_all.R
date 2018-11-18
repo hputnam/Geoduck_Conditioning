@@ -396,13 +396,14 @@ resp_EXP2.0 <-subset(resp_EXP2.0, Day!=0) #eliminate Day0 of the second exposure
 
 #### EXP1 ####
 
+# The following are condenced steps to determine a reproducible and strong dataset from LoLin R ouputs.
 # Test automated LoLin Script and the Reference data
-# Reference = each output observed at default critieria (alpha = 0.2, untruncated) and adjusted for acheive peak density of regressions
-# Automated ouputs = at nine total settings of alpha= 0.2,0.4and0.6 at three different truncations
-# Below used alpha = 0.4, no truncation for automated ouput because of the Least number of respiration values outside of Loess CI with Reference
-plot(resp_EXP1[,1],resp_EXP1[,5], main= "Ref vs. alpha0.4_all") 
+# Reference = each resp value with a visial criteria and default constants  (alpha = 0.2, untruncated); adjusted to acheive peak density of regressions
+# Automated ouputs = at nine total settings of alpha= 0.2,0.4 and0.6 at three different truncations (all, 10-20 minutes, 10-25 minutes)
+# Below used alpha = 0.4, no truncation for automated ouput - yielded the least respiration values outside of Loess CI with Reference
+plot(resp_EXP1[,1],resp_EXP1[,5], main= "Ref vs. alpha0.4_all") # plot this relationship witht the reference 
 summary(lm(resp_EXP1[,1]~resp_EXP1[,5])) #Adjusted R-squared:  0.3905
-# ggplot labeled with row numbers for individual respiration points - can can values outside of CI interval in loess curve
+# plot and label with row numbers for individual respiration points - shows values outside of CI interval in loess curve
 ggplot(resp_EXP1, aes(x = resp_EXP1[,1], y = resp_EXP1[,5])) +
   geom_point() +
   geom_smooth(method = 'loess') +
@@ -411,7 +412,7 @@ ggplot(resp_EXP1, aes(x = resp_EXP1[,1], y = resp_EXP1[,5])) +
 # regress points outside loess against reference with all automated resp outputs 
 newdata_resp_EXP1_ALL <- data.frame(resp_EXP1$Date, resp_EXP1[,c(1:10)]) # new dataframe with first 11 columns, Date + nine automated outputs
 newdata_resp_EXP1_ALL_1 <-newdata_resp_EXP1_ALL[c(57,52,3,6,17,2,1,76,50,96,31,5,29,70,72,68,56,94), ] # only call points (rows) outside loess in first regression
-plot(newdata_resp_EXP1_ALL_1[,2],newdata_resp_EXP1_ALL_1[,10]) # alpha = 0.6 truncation at 10-20 minutes (each resp trial was 30 mins)
+plot(newdata_resp_EXP1_ALL_1[,2],newdata_resp_EXP1_ALL_1[,10]) # strongest correlation was with alpha = 0.6 truncation at 10-20 minutes 
 summary(lm(newdata_resp_EXP1_ALL_1[,10]~newdata_resp_EXP1_ALL_1[,2]))# strongest relationship with Reference - adj R-squared=0.7235 
 
 #create a new column 
@@ -435,19 +436,19 @@ exp1_resp_4.T <- do.call(data.frame,aggregate(FINALresp ~ Treat1_Treat2.y*Date.x
 exp1_resp_summary.T <- summarySE(exp1_resp_4.T, measurevar="FINALresp.mean", groupvars=c(" Treat1_Treat2.y")) # SMR by four treatments EXP1xEXP2
 
 # first visualize the data
-#plot
+#plot by ecp 1 treatments
 Exp1.Fig.resp <- ggboxplot(resp_EXP1, x = "Day", y = "FINALresp", color = "Init.treat", ylab= "respiration",
                            palette = c("blue", "red"), main= "Initial Exposure")
 Exp1.Fig.resp # view boxplot of all data
 
-#table
+#table mean and st derror resp by treatment for exp 1
 x1 <- do.call(data.frame,aggregate(FINALresp ~ Day*Init.treat, data = resp_EXP1, function(x) c(mean = mean(x), se = std.error(x)))) #mean and st. error table
 # mixed effect model
 Init.lme.resp <- lmer(FINALresp ~ Init.treat*Day + (1|Day), data = resp_EXP1) #reteatment and day with day as a random factor
 anova(Init.lme.resp) # anova of lmer
 summary(Init.lme.resp) # summary of lmer
 m1.resp <- lme(FINALresp~Init.treat*Day,random=~1|Day,data=resp_EXP1) # equivent function in lme
-anova(m1.resp) # anova on lme model --------an effect of treatment on inital exposure to OA
+anova(m1.resp) # anova on lme model = an effect of treatment on metabolic rate
 EXP1.lme.anovatable <- anova(m1.resp) # assign name to output table late in code
 par(mfrow=c(1,3)) #set plotting configuration
 par(mar=c(1,1,1,1)) #set margins for plots
@@ -456,6 +457,7 @@ shapiro.test(residuals(m1.resp)) # residuals are normal
 boxplot(residuals(m1.resp)) #plot boxplot of residuals
 plot( fitted(m1.resp),residuals(m1.resp)) #display residuals versus fitter, normal QQ plot, leverage plot
 
+#summary tables to receive the percent difference between resp in treatments
 sumresp_EXP1 <- summarySE(resp_EXP1, 
                           measurevar="FINALresp", 
                           groupvars=c("Date","Treat1_Treat2")) # summary table of resp with Date and treatment
@@ -465,41 +467,39 @@ sumresp_EXP1_means <- summarySE(sumresp_EXP1,
 percentdiff <- ((sumresp_EXP1_means[1,3] - sumresp_EXP1_means[2,3])/sumresp_EXP1_means[1,3])*100 # calculate percent difference
 percentdiff # 25% lower respiration rates in low pH
 
-
-#plot treatments and time WITH THE BASAL ADDED
+#plot the data
+#treatments and time (with basal added)
 colnames(respBASAL)[1] <- "FINALresp" # rename the calc resp values in Basal table to match the resp_EXP1
 respBASAL$Treat1_Treat2 <- c("Ambient") # name the treatement 
-respBASAL$Day <- 0
-resp_EXP1_condensed <- resp_EXP1[,c(11,12,13,14,15,16,21)] # call the columns in respBasal to rbind
+respBASAL$Day <- 0 # zero dafults correctly plotted position - renamed in ggplot script at "prebasal"
+resp_EXP1_condensed <- resp_EXP1[,c(11,12,13,14,15,16,21)] # call the columns in respBasal to rbind (must be the same)
 resp_EXP1_ALL <- rbind(resp_EXP1_condensed, respBASAL) # merge the two tables for the graph
-
 # plot below
 resp_EXP1_plot <- ggplot(resp_EXP1_ALL, aes(x = factor(resp_EXP1_ALL$Day), y = resp_EXP1_ALL$FINALresp, fill = resp_EXP1_ALL$Treat1_Treat2)) +
-  geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
-  ylim(0, 0.6) +
-  #geom_point(aes(fill = resp_EXP1_ALL$Treat1_Treat2), size = 1.5, shape = 21, position = position_jitterdodge(0.15)) +
-  stat_summary(fun.y=mean, geom="point", shape=4, size=2, position = position_jitterdodge(0.01)) +
-  theme(legend.position = c(.9, .9), legend.text=element_text(size=8)) +
-  geom_vline(xintercept=c(1.5), linetype="dotted", size=1) +
-  scale_x_discrete(labels = c("prebasal",2,5,8,10))    +
-  labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1", x = "Date", fill="") 
+    geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
+    ylim(0, 0.6) +
+    #geom_point(aes(fill = resp_EXP1_ALL$Treat1_Treat2), size = 1.5, shape = 21, position = position_jitterdodge(0.15)) +
+    stat_summary(fun.y=mean, geom="point", shape=4, size=2, position = position_jitterdodge(0.01)) +
+    theme(legend.position = c(.9, .9), legend.text=element_text(size=8)) +
+    geom_vline(xintercept=c(1.5), linetype="dotted", size=1) +
+    scale_x_discrete(labels = c("prebasal",2,5,8,10))    +
+    labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1", x = "Date", fill="") 
 resp_EXP1_plot # view the plot
 
-# plot just treatment 
+# plot just treatment (without prebasal)
 resp_EXP1_plot_2 <- ggplot(resp_EXP1, aes(x = factor(resp_EXP1$Treat1_Treat2), y = resp_EXP1$FINALresp, fill = resp_EXP1$Treat1_Treat2)) +
-  geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
-  #geom_point(aes(fill = resp_EXP1$Treat1_Treat2), size = 2, shape = 21, position = position_jitterdodge(0.15)) +
-  theme(legend.position = c(.9, .9), legend.text=element_text(size=8)) +
-  stat_summary(fun.y=mean, geom="point", shape=4, size=2, position = position_jitterdodge(0.01)) +
-  labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1",  x = "Treatment", fill= "") 
+    geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
+    #geom_point(aes(fill = resp_EXP1$Treat1_Treat2), size = 2, shape = 21, position = position_jitterdodge(0.15)) +
+    theme(legend.position = c(.9, .9), legend.text=element_text(size=8)) +
+    stat_summary(fun.y=mean, geom="point", shape=4, size=2, position = position_jitterdodge(0.01)) +
+    labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1",  x = "Treatment", fill= "") 
 resp_EXP1_plot_2
 
 #### EXP2 ####
 
-# Test automated LoLin Script and the Reference data
-# Reference = each output observed at default critieria (alpha = 0.2, untruncated) and adjusted for acheive peak density of regressions
-# Automated ouputs = at nine total settings of alpha= 0.2,0.4and0.6 at three different truncations
-# Below used alpha = 0.4, no truncation for automated ouput because of the Least number of respiration values outside of Loess CI with Reference
+# The following are condenced steps to determine a reproducible and strong dataset from LoLin R ouputs.
+# Test automated LoLin Script and the Reference data (same criteria describes above for Exp 1)
+par(mfrow=c(1,1)) #set plotting configuration
 plot(resp_EXP2[,1],resp_EXP2[,5], main= "Ref vs. alpha0.4_all")
 summary(lm(resp_EXP2[,1]~resp_EXP2[,5])) #Adjusted R-squared:  0.8002 
 # ggplot labeled with row numbers for individual respiration points - can can values outside of CI interval in loess curve
@@ -528,9 +528,10 @@ ggplot(resp_EXP2, aes(x = resp_EXP2$Resp_individually_all.csv, y = resp_EXP2$FIN
   geom_text(aes(label = resp_EXP2$ID), position = position_nudge(y = -0.01)) # ggplot with loess CI
 
 # overall SMR in EXP2
-exp2_resp_all <- do.call(data.frame,aggregate(FINALresp ~ Treat1_Treat2*Date, data = resp_EXP2, function(x) c(mean = mean(x), sd = sd(x)))) # mean SD table by init*sec treatments date EXP2
+resp_EXP2_2.4.6. <- subset(resp_EXP2, Day!=0) # subset out pre-exposure measurements on day 0 (day 24 od experiment)
+exp2_resp_all <- do.call(data.frame,aggregate(FINALresp ~ Treat1_Treat2*Date, data = resp_EXP2_2.4.6., function(x) c(mean = mean(x), sd = sd(x)))) # mean SD table by init*sec treatments date EXP2
 exp2_resp_summary_all <- summarySE(exp2_resp_all, measurevar="FINALresp.mean", groupvars=c("Treat1_Treat2")) # SMR by init*sec  treatments EXP2
-exp2_resp_all.2 <- do.call(data.frame,aggregate(FINALresp ~ Sec.treat*Date, data = resp_EXP2, function(x) c(mean = mean(x), sd = sd(x)))) # mean SD table by sec treatments date EXP2
+exp2_resp_all.2 <- do.call(data.frame,aggregate(FINALresp ~ Sec.treat*Date, data = resp_EXP2_2.4.6., function(x) c(mean = mean(x), sd = sd(x)))) # mean SD table by sec treatments date EXP2
 exp2_resp_summary_all.2 <- summarySE(exp2_resp_all.2, measurevar="FINALresp.mean", groupvars=c("Sec.treat")) # SMR by sec  treatments EXP2
 exp2_resp_overall <- summarySE(exp2_resp_all, measurevar="FINALresp.mean") # overall SMR EXP2
 
@@ -539,7 +540,7 @@ exp2_resp_overall <- summarySE(exp2_resp_all, measurevar="FINALresp.mean") # ove
 Exp2.Fig.resp <- ggboxplot(resp_EXP2, x = "Day", y = "FINALresp", color = "Sec.treat", ylab= "respiration",palette = c())
 Exp2.Fig.resp # view the figure
 
-#plot treatments and time
+#plot treatments and time (prebasal added as day 0 data)
 resp_EXP2_plot <- ggplot(resp_EXP2, aes(x = factor(resp_EXP2$Day), y = resp_EXP2$FINALresp, fill = resp_EXP2$Treat1_Treat2)) +
   geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
   ylim(0, 0.6) +
@@ -551,12 +552,15 @@ resp_EXP2_plot <- ggplot(resp_EXP2, aes(x = factor(resp_EXP2$Day), y = resp_EXP2
 resp_EXP2_plot # view the plot
   
 #table
-x2.resp <- do.call(data.frame,aggregate(FINALresp ~ Day*Init.treat*Sec.treat, data = resp_EXP2_om, function(x) c(mean = mean(x), se = std.error(x))))
-x2.1.resp <- do.call(data.frame,aggregate(FINALresp ~ Init.treat*Sec.treat, data = resp_EXP2_om, function(x) c(mean = mean(x), se = std.error(x))))
+x2.resp_d0 <-do.call(data.frame,aggregate(FINALresp ~ Day*Init.treat*Sec.treat, data = resp_EXP2, function(x) c(mean = mean(x), se = std.error(x))))
+x2.resp_d0 <- subset(x2.resp_d0, Day==0)
+x2.resp <- do.call(data.frame,aggregate(FINALresp ~ Day*Init.treat*Sec.treat, data = resp_EXP2, function(x) c(mean = mean(x), se = std.error(x))))
+x2.resp <- subset(x2.resp, Day=c(2,4,6))
+x2.1.resp <- do.call(data.frame,aggregate(FINALresp ~ Init.treat*Sec.treat, data = resp_EXP2_2.4.6., function(x) c(mean = mean(x), se = std.error(x))))
 x2.resp$treatments <- paste(x2.resp$Init.treat, x2.resp$Sec.treat, sep="_") # combine treatments in a column
 
 # linear mixed effect model
-m2.resp <- lme(FINALresp~Init.treat*Sec.treat,random=~1|Day/Init.treat/Sec.treat,data=resp_EXP2) #reteatment and day with day as a random factor
+m2.resp <- lme(FINALresp~Init.treat*Sec.treat,random=~1|Day/Init.treat/Sec.treat,data=resp_EXP2_2.4.6.) #reteatment and day with day as a random factor
 anova(m2.resp) # anova of lmer
 summary(m2.resp) # summary of lmer
 EXP2.lme.anovatable <- anova(m2.resp) # assign name to output table late in code
@@ -565,19 +569,19 @@ par(mar=c(1,1,1,1)) #set margins for plots
 hist(residuals(m2.resp)) #plot histogram of residuals
 shapiro.test(residuals(m2.resp)) # residuals are NOT normal
 boxplot(residuals(m2.resp)) #plot boxplot of residuals
-plot( fitted(m1.resp),residuals(m2.resp)) #display residuals versus fitter, normal QQ plot, leverage plot
+plot(fitted(m2.resp),residuals(m2.resp)) #display residuals versus fitter, normal QQ plot, leverage plot
 
 #residuals are not normal - need to transform the data
-shapiro.test(resp_EXP2$FINALresp) # Fianl_resp not normal - ommit the data from row 186
-hist(resp_EXP2$FINALresp) # positive or right skewed 
-OutVals2 = boxplot(resp_EXP2$FINALresp)$out # test for ouliers of respFinal
-which(resp_EXP2$FINALresp %in% OutVals2) #  83 and 90 are outliers for new resp file
-OutVals2.0 = boxplot(resp_EXP2$Resp_individually_all.csv) # test for outliers of the Reference
-which(resp_EXP2$Resp_individually_all.csv %in% OutVals2.0) # 83 and 90 are outliers in "REF"
-OutVals2.1 = boxplot(resp_EXP2$LpcResp_alpha0.4_all.csv)$out # test for outliers of the alpha 0.4 no truncation
-which(resp_EXP2$LpcResp_alpha0.4_all.csv %in% OutVals2.1) # 90 is an outlier 
+shapiro.test(resp_EXP2_2.4.6.$FINALresp) # Fianl_resp not normal - ommit the data from row 186
+hist(resp_EXP2_2.4.6.$FINALresp) # positive or right skewed 
+OutVals2 = boxplot(resp_EXP2_2.4.6.$FINALresp)$out # test for ouliers of respFinal
+which(resp_EXP2_2.4.6.$FINALresp %in% OutVals2) #  83 and 90 are outliers for new resp file
+OutVals2.0 = boxplot(resp_EXP2_2.4.6.$Resp_individually_all.csv) # test for outliers of the Reference
+which(resp_EXP2_2.4.6.$Resp_individually_all.csv %in% OutVals2.0) # outliers in "REF"
+OutVals2.1 = boxplot(resp_EXP2_2.4.6.$LpcResp_alpha0.4_all.csv)$out # test for outliers of the alpha 0.4 no truncation
+which(resp_EXP2_2.4.6.$LpcResp_alpha0.4_all.csv %in% OutVals2.1) # outliers 
 
-resp_EXP2_om <- resp_EXP2[-c(83,90),] # new dataset called resp_om
+resp_EXP2_om <- resp_EXP2_2.4.6.[-c(59,66),] # new dataset called resp_om
 shapiro.test(resp_EXP2_om$FINALresp) # normally distributed 
 hist(resp_EXP2_om$FINALresp) # noted that 83 and 90 ommitted gives a norm distribution, now test with mixed effect model and test residuals
 
@@ -591,7 +595,7 @@ par(mar=c(1,1,1,1)) #set margins for plots
 hist(residuals(m2.resp)) #plot histogram of residuals
 shapiro.test(residuals(m2.resp)) # residuals are  normal - ommit ouliers at row 83 and 90 allowed normal residuals
 boxplot(residuals(m2.resp)) #plot boxplot of residuals
-plot( fitted(m2.resp),residuals(m2.resp)) #display residuals versus fitter, normal QQ plot, leverage plot
+plot(fitted(m2.resp),residuals(m2.resp)) #display residuals versus fitter, normal QQ plot, leverage plot
 
 
 #Exposure2 Plotting
@@ -653,7 +657,7 @@ barplot_resp_percent <- ggplot(percent_av_resp, aes(x=as.factor(Treat1_Treat2), 
 barplot_resp_percent # view the plot
 
 #Day 0
-Day0 <- subset(x2.resp, Day==0)
+Day0 <- x2.resp_d0
 
 Fig.Exp2.D0.resp <- ggplot(Day0, aes(x=Sec.treat, y=FINALresp.mean , group=Init.treat)) + 
   geom_errorbar(aes(ymin=Day0$FINALresp.mean -Day0$FINALresp.se, ymax=Day0$FINALresp.mean +Day0$FINALresp.se), colour="black", width=.1, position = position_dodge(width = 0.05)) +
@@ -664,6 +668,7 @@ Fig.Exp2.D0.resp <- ggplot(Day0, aes(x=Sec.treat, y=FINALresp.mean , group=Init.
   xlab("Secondary Treatment") +
   ylab("Respiration rate") +
   ylim(0,0.5) +
+  labs(fill="") +
   theme_bw() + #Set the background color
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), #Set the text angle
         axis.line = element_line(color = 'black'), #Set the axes color
@@ -671,7 +676,7 @@ Fig.Exp2.D0.resp <- ggplot(Day0, aes(x=Sec.treat, y=FINALresp.mean , group=Init.
         panel.grid.major = element_blank(), #Set the major gridlines
         panel.grid.minor = element_blank(), #Set the minor gridlines
         plot.background=element_blank(), #Set the plot background
-        legend.position='none') + #remove legend background
+        legend.position = c(.92, .9), legend.text=element_text(size=8)) + #remove legend background
   ggtitle(" Secondary Exposure Day 0") +
   theme(plot.title = element_text(face = 'bold', 
                                   size = 12, 
@@ -691,6 +696,7 @@ Fig.Exp2.D2.resp <- ggplot(Day2, aes(x=Sec.treat, y=FINALresp.mean , group=Init.
   xlab("Secondary Treatment") +
   ylab("Respiration rate") +
   ylim(0,0.5) +
+  labs(fill="") +
   theme_bw() + #Set the background color
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), #Set the text angle
         axis.line = element_line(color = 'black'), #Set the axes color
@@ -698,7 +704,7 @@ Fig.Exp2.D2.resp <- ggplot(Day2, aes(x=Sec.treat, y=FINALresp.mean , group=Init.
         panel.grid.major = element_blank(), #Set the major gridlines
         panel.grid.minor = element_blank(), #Set the minor gridlines
         plot.background=element_blank(), #Set the plot background
-        legend.position='none') + #remove legend background
+        legend.position = c(.92, .9), legend.text=element_text(size=8)) + #remove legend background
   ggtitle(" Secondary Exposure Day 2") +
   theme(plot.title = element_text(face = 'bold', 
                                   size = 12, 
@@ -718,6 +724,7 @@ Fig.Exp2.D4.resp <- ggplot(Day4, aes(x=Sec.treat, y=FINALresp.mean , group=Init.
   xlab("Secondary Treatment") +
   ylab("Respiration rate") +
   ylim(0,0.5) +
+  labs(fill="") +
   theme_bw() + #Set the background color
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), #Set the text angle
         axis.line = element_line(color = 'black'), #Set the axes color
@@ -725,7 +732,7 @@ Fig.Exp2.D4.resp <- ggplot(Day4, aes(x=Sec.treat, y=FINALresp.mean , group=Init.
         panel.grid.major = element_blank(), #Set the major gridlines
         panel.grid.minor = element_blank(), #Set the minor gridlines
         plot.background=element_blank(), #Set the plot background
-        legend.position='none') + #remove legend background
+        legend.position = c(.92, .9), legend.text=element_text(size=8)) + #remove legend background
   ggtitle(" Secondary Exposure Day 4") +
   theme(plot.title = element_text(face = 'bold', 
                                   size = 12, 
@@ -745,6 +752,7 @@ Fig.Exp2.D6.resp <- ggplot(Day6, aes(x=Sec.treat, y=FINALresp.mean , group=Init.
   xlab("Secondary Treatment") +
   ylab("Respiration rate") +
   ylim(0,0.5) +
+  labs(fill="") +
   theme_bw() + #Set the background color
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), #Set the text angle
         axis.line = element_line(color = 'black'), #Set the axes color
@@ -752,7 +760,7 @@ Fig.Exp2.D6.resp <- ggplot(Day6, aes(x=Sec.treat, y=FINALresp.mean , group=Init.
         panel.grid.major = element_blank(), #Set the major gridlines
         panel.grid.minor = element_blank(), #Set the minor gridlines
         plot.background=element_blank(), #Set the plot background
-        legend.position='none') + #remove legend background
+        legend.position = c(.92, .9), legend.text=element_text(size=8)) + #remove legend background
   ggtitle(" Secondary Exposure Day 6") +
   theme(plot.title = element_text(face = 'bold', 
                                   size = 12, 
@@ -760,7 +768,7 @@ Fig.Exp2.D6.resp <- ggplot(Day6, aes(x=Sec.treat, y=FINALresp.mean , group=Init.
 
 Fig.Exp2.D6.resp
 
-#Averaged across Days
+#Averaged across Days (without day 0 before treatments began)
 
 Fig.Exp2.All.resp <- ggplot(x2.1.resp, aes(x=Sec.treat, y=FINALresp.mean , group=Init.treat)) + 
   geom_errorbar(aes(ymin=x2.1.resp$FINALresp.mean -x2.1.resp$FINALresp.se, ymax=x2.1.resp$FINALresp.mean +x2.1.resp$FINALresp.se), colour="black", width=.1, position = position_dodge(width = 0.05)) +
@@ -798,6 +806,7 @@ LINEFig.Exp2.All.resp <- ggplot(x2.resp, aes(x=Day, y=FINALresp.mean , group=tre
   xlab("Secondary Treatment") +
   ylab("Respiration rate") +
   ylim(0,0.5) +
+  labs(fill="") +
   theme_bw() + #Set the background color
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), #Set the text angle
         axis.line = element_line(color = 'black'), #Set the axes color
@@ -805,7 +814,7 @@ LINEFig.Exp2.All.resp <- ggplot(x2.resp, aes(x=Day, y=FINALresp.mean , group=tre
         panel.grid.major = element_blank(), #Set the major gridlines
         panel.grid.minor = element_blank(), #Set the minor gridlines
         plot.background=element_blank(), #Set the plot background
-        legend.position='none') + #remove legend background
+        legend.position = c(.92, .9), legend.text=element_text(size=8)) + #remove legend background
   ggtitle(" Secondary Exposure All Days") +
   theme(plot.title = element_text(face = 'bold', 
                                   size = 12, 
@@ -846,7 +855,7 @@ size<-read.csv("Data/All_growth_data.csv", header=T, sep=",", na.string="NA", as
 size <- tibble::rowid_to_column(size, "ID") # add unique rownumber column to ID animals
 # DIVIDE THE DATASET BETWEEN EXPERIMENTS 1 AND 2
 size_EXP1_with_basal <- subset(size, Exp.Num=="Exp1") # exposure 1
-size_EXP1 <- subset(size_EXP1_with_basal, Date!="20180713")
+size_EXP1 <- subset(size_EXP1_with_basal, Day!="prebasal")
 size_EXP2 <- subset(size, Exp.Num=="Exp2") # exposure 2
 size_EXP2.0 <- subset(size, Exp.Num=="Exp2") 
 size_EXP2.0 <-subset(size_EXP2.0, Day!=0) # exposure 2 without day 0 
@@ -911,8 +920,7 @@ Fig.d2.EXP2.treatment <- ggboxplot(exp2_inital_size, x = "treatment", y = "shell
 Exp1.Fig <- ggboxplot(size_EXP1_with_basal, x = "Day", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)",
                       palette = c("blue", "red"), main= "Initial Exposure")
 Exp1.Fig # view the plot
-
-#plot treatments and time
+#plot treatments and time (with prebasal)
 length_EXP1_plot <- ggplot(size_EXP1_with_basal, aes(x = factor(Day), y = shell_size, fill = treatment)) +
   geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
   ylim(2,8.2) + scale_x_discrete(limits=c("prebasal",2,5,8,10)) +
@@ -922,13 +930,14 @@ length_EXP1_plot <- ggplot(size_EXP1_with_basal, aes(x = factor(Day), y = shell_
   geom_vline(xintercept=c(1.5), linetype="dotted", size=1) + labs(y="shell length", x = "Day", fill="")
 length_EXP1_plot
 
-
+# table to use for figures
 x1 <- do.call(data.frame,aggregate(shell_size ~ Day*treatment, data = size_EXP1, function(x) c(mean = mean(x), se = std.error(x)))) #mean and st. error table
+
 # Linear mixe effects model - Test for size differences in experiment 1
-Init.lme <- lmer(shell_size ~ treatment*Day + (1|Day), data = size_EXP1) # test for treatment fixed and day as a random factor
+Init.lme <- lmer(shell_size ~ Init.Trt*Day + (1|Day), data = size_EXP1) # test for treatment fixed and day as a random factor
 anova(Init.lme) # anova on the model
 summary(Init.lme) # view summary
-m1 <- lme(shell_size~treatment*Day,random=~1|Day,data=size_EXP1) # run same model as lme for stats in anova table
+m1 <- lme(shell_size~Init.Trt*Day,random=~1|Day,data=size_EXP1) # run same model as lme 
 anova(m1) # view anova table of lme and compare to anova table from lmer
 EXP1.lme.size.anovatable <- anova(m1) # assign a name to anova table to save table output later
 # view plots and check for assumptions of normality in residuals
@@ -986,6 +995,8 @@ length_EXP2_plot
 x2 <- do.call(data.frame,aggregate(shell_size ~ Day*Init.Trt*Sec.Trt, data = size_EXP2, function(x) c(mean = mean(x), se = std.error(x))))#mean and st. error table (used from plotting later)
 x2.1 <- do.call(data.frame,aggregate(shell_size ~ Init.Trt*Sec.Trt, data = size_EXP2.0, function(x) c(mean = mean(x), se = std.error(x))))#mean and st. error table(used from plotting later)
 x2$treatments <- paste(x2$Init.Trt, x2$Sec.Trt, sep="_") # combine treatments in a column
+
+# linea mixed effects models
 Sec.lme.trans <- lmer(shell_size ~ Init.Trt*Sec.Trt + (1|Day/Init.Trt/Sec.Trt), data = size_EXP2.0) # test for treatment fixed and day as a random factor
 anova(Sec.lme.trans)
 m2 <- lme(shell_size~Init.Trt*Sec.Trt,random=~1|Day/Init.Trt/Sec.Trt,data=size_EXP2.0) # lme model with initial and secondary treatment effects fixed and time random
@@ -1001,31 +1012,6 @@ boxplot(residuals(m2)) #plot boxplot of residuals
 plot( fitted(m2),residuals(m2)) #display residuals versus fitter, normal QQ plot, leverage plot
 shapiro.test(residuals(m2)) # residuals NOT normally distributed
 
-# RUN test again with tranformed data
-
-# Test for size differences in experiment 2 (TRANSFORMED)
-#reflect data tp transform positive skew
-max(size_EXP2$shell_size) # get the max value of exp1 shell size to reflect transform
-size_EXP2$size_reflect <- ((max(size_EXP2$shell_size)+1) - size_EXP2$shell_size) # transform via sqrt(1+max - x)
-shapiro.test(size_EXP2$size_reflect) # homogeneity of variance test - normally distributed
-histogram(size_EXP2$size_reflect) # histogram shows normal didstribution
-
-m2.trans <- lme(shell_size~Init.Trt*Sec.Trt,random=~1|Day/Init.Trt/Sec.Trt,data=size_EXP2.0)
-
-anova(m2.trans)
-EXP2.lme.size.anovatable.transformed <- anova(m2.trans)
-summary(m2.trans)
-
-#Post hoc
-exp2.ph.trans <- lsmeans(m2.trans, pairwise ~ Init.Trt*Sec.Trt)
-exp2.ph.trans # view post hoc summary
-
-par(mfrow=c(1,3)) #set plotting configuration
-par(mar=c(1,1,1,1)) #set margins for plots
-hist(residuals(m2.trans)) #plot histogram of residuals
-boxplot(residuals(m2.trans)) #plot boxplot of residuals
-plot( fitted(m2.trans),residuals(m2.trans)) #display residuals versus fitter, normal QQ plot, leverage plot
-shapiro.test(residuals(m2.trans)) # 
 
 #Exposure2 Plotting
 
