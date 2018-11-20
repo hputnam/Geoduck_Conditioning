@@ -33,11 +33,11 @@ library(tidyr)
 #set working directory--------------------------------------------------------------------------------------------------
 setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/") #set working
 
-#---------------------------------------------------------------------------------------------------
-# CONICAL Seawater chemistry Data - Analysis, Graphs, Tables (APEX DATA)
-###################################################################################################
 
-##### CONTINUOUS EXPERIMENTAL APEX DATA #####
+
+### CONICAL Seawater chemistry Data - Analysis, Graphs, Tables (APEX DATA) ####
+
+#CONTINUOUS EXPERIMENTAL APEX DATA 
 #Load Apex Data 
 APEX_1<-read.csv("Data/Apex_data/20180724_Apex_Data_Output.csv", header=T, sep=",", na.string="NA", as.is=T) 
 APEX_2<-read.csv("Data/Apex_data/20180801_Apex_Data_Output.csv", header=T, sep=",", na.string="NA", as.is=T) 
@@ -98,7 +98,7 @@ All.pH <- ggplot(daily.pH, aes(x=Date, y=mean, group=Treatment)) + #set up plot 
                                   hjust = 0)) #set title attributes
 All.pH #view plot
 
-##### CONTINUOUS EXPERIMENTAL TEMPERATURE DATA #####
+# CONTINUOUS EXPERIMENTAL TEMPERATURE DATA 
 #APEX_temp_data.csv
 temp <- APEX_data
 temp$Date.Time <-as.POSIXct(temp$Date.Time, format="%Y-%m-%d %H:%M:%OS") #convert date format
@@ -151,9 +151,9 @@ All.temp <- ggplot(daily.temp, aes(x=Date, y=mean, group=Treatment)) + #set up p
                                   hjust = 0)) #set title attributes
 All.temp #view plot
 
-#---------------------------------------------------------------------------------------------------
-# HEATH TRAY Flow rate data 
-########################################################################################################################
+
+#
+###  HEATH TRAY Flow rate data ##################################################################
 # NOTE: heath tray pairs were gravity-fed SW from conical overflow (1 conical to every heath tray pair)
 # conicals were set to 1 LPM and teed with PVC to target 500 LPM in each heath tray
 
@@ -166,7 +166,7 @@ EXP2 <- subset(flow, Exp.num=="EXP2") #second 6-day trial, subset entire dataset
 flow_EXP2 <- subset(EXP2, Day!=0) # ommit day 0
 flow_EXP1_2 <- rbind(flow_EXP1, flow_EXP2) # bind exp1 and 2, day 0 already ommited
 
-# EXP1 summary treat by day-----------------------
+# EXP1 summary treat by day
 #flow_EXP1.TRMT<- do.call(data.frame,aggregate(LPM ~ Treatment*Day, 
                                               #data = flow_EXP1, 
                                               #function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by treatment and Day (4 tanks ber treatment)
@@ -177,7 +177,7 @@ flow_EXP1_2 <- rbind(flow_EXP1, flow_EXP2) # bind exp1 and 2, day 0 already ommi
 flow_EXP1.treat <- summarySE(flow_EXP1, measurevar="LPM", groupvars=c("Treatment")) # summary by treatment
 flow_EXP1.treat # view table
 
-# EXP2 summary -----------------------
+# EXP2 summary 
 # grouped as 2 treatments (just Sec.treat) during reciprocal exposure
 # NOTE: this shows flow difference influenced by conical overflow to heath tray pairs
 #flow_EXP2.TRMT.2<- do.call(data.frame,aggregate(LPM ~ Sec.treat *Day, 
@@ -197,7 +197,7 @@ flow_EXP1.treat # view table
 flow_EXP2.treat <- summarySE(flow_EXP2, measurevar="LPM", groupvars=c("Sec.treat")) # summary by treatment
 flow_EXP2.treat # view summary table
 
-# EXP1 AND EXP2 summary -----------------------
+# EXP1 AND EXP2 summary 
 flow_EXP_1_2.treat <- summarySE(flow_EXP1_2, measurevar="LPM", groupvars=c("Treatment")) # summary by treatment
 flow_EXP_1_2.treat # view summary table
 # group by just day for daily flow rates
@@ -227,9 +227,8 @@ flow_EXP_1_2.treat # view summary table
 #flow_ALL.TRMT.summary.OMIT <- summarySE(flow_ALL.TRMT.OMIT, measurevar="LPM.mean", groupvars=c("Treatment")) # summary by treatment
 #flow_ALL.TRMT.summary.OMIT # view table
 
-#---------------------------------------------------------------------------------------------------
-# HEATH TRAY Discrete Seawater Chemistry Tables 
-########################################################################################################################
+
+### HEATH TRAY Discrete Seawater Chemistry Tables #######################################################################
 
 #pH Tris Calibration Curves
 #Data to calculate conversion equations from mV to total scale using tris standard for pH probe
@@ -363,9 +362,7 @@ write.table (Exposure1.long, file="C:/Users/samjg/Documents/Notebook/data/Geoduc
 write.table (Exposure2.long, file="C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Output/Seawater_chemistry_table_Output_exposure2.csv", sep=",", row.names = FALSE) #save data to output file
 
 
-#---------------------------------------------------------------------------------------------------
-# Respiration Data - Analysis, Graphs, Models  (summarized analysis from Stats_resp_analysis.R)
-###################################################################################################
+### Respiration Data - Analysis, Graphs, Models  (summarized analysis from Stats_resp_analysis.R)#############
 
 #Load BASAL Respiraiton Data before the exposures
 respBASAL<-read.csv("Data/Basal_resp_calc_and_standardized.csv", header=T, sep=",", na.string="NA", as.is=T) 
@@ -383,7 +380,6 @@ print(resp_BASAL_plot + labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1",
                             x = "Date") + 
         ggtitle("Juvenile geoduck respirometry \ Basal"))
 
-
 #Load Respiraiton Data
 resp<-read.csv("Data/All_resp_calc_and_standardized.csv", header=T, sep=",", na.string="NA", as.is=T) 
 names(resp) # view the names of the data
@@ -394,7 +390,7 @@ resp_EXP2.0 <- subset(resp, EXP.numb=="EXP2") # same under a diff name (read why
 resp_EXP2.0 <-subset(resp_EXP2.0, Day!=0) #eliminate Day0 of the second exposure for graph on cumulative exposure to OA 
 
 
-#### EXP1 ####
+### EXP1 ####
 
 # The following are condenced steps to determine a reproducible and strong dataset from LoLin R ouputs.
 # Test automated LoLin Script and the Reference data
@@ -476,10 +472,11 @@ resp_EXP1_condensed <- resp_EXP1[,c(11,12,13,14,15,16,21)] # call the columns in
 resp_EXP1_ALL <- rbind(resp_EXP1_condensed, respBASAL) # merge the two tables for the graph
 # plot below
 resp_EXP1_plot <- ggplot(resp_EXP1_ALL, aes(x = factor(resp_EXP1_ALL$Day), y = resp_EXP1_ALL$FINALresp, fill = resp_EXP1_ALL$Treat1_Treat2)) +
-    geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
-    ylim(0, 0.6) +
+    geom_boxplot(alpha = 0.1, outlier.shape = 19,
+    outlier.fill = "black", outlier.size = 1, lwd=0.2) + 
+    scale_color_grey() + scale_fill_grey() + theme_classic() + ylim(0, 0.6) +
     #geom_point(aes(fill = resp_EXP1_ALL$Treat1_Treat2), size = 1.5, shape = 21, position = position_jitterdodge(0.15)) +
-    stat_summary(fun.y=mean, geom="point", shape=4, size=2, position = position_jitterdodge(0.01)) +
+    stat_summary(fun.y=mean, geom="point", shape=19, size=2, position = position_jitterdodge(0.01)) +
     theme(legend.position = c(.9, .9), legend.text=element_text(size=8)) +
     geom_vline(xintercept=c(1.5), linetype="dotted", size=1) +
     scale_x_discrete(labels = c("prebasal",2,5,8,10))    +
@@ -488,14 +485,16 @@ resp_EXP1_plot # view the plot
 
 # plot just treatment (without prebasal)
 resp_EXP1_plot_2 <- ggplot(resp_EXP1, aes(x = factor(resp_EXP1$Treat1_Treat2), y = resp_EXP1$FINALresp, fill = resp_EXP1$Treat1_Treat2)) +
-    geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
+    geom_boxplot(alpha = 0.1, outlier.shape = 19,
+    outlier.fill = "black", outlier.size = 1, lwd=0.2) + 
+    scale_color_grey() + scale_fill_grey() + theme_classic() +
     #geom_point(aes(fill = resp_EXP1$Treat1_Treat2), size = 2, shape = 21, position = position_jitterdodge(0.15)) +
     theme(legend.position = c(.9, .9), legend.text=element_text(size=8)) +
-    stat_summary(fun.y=mean, geom="point", shape=4, size=2, position = position_jitterdodge(0.01)) +
+    stat_summary(fun.y=mean, geom="point", shape=19, size=2, position = position_jitterdodge(0.01)) +
     labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1",  x = "Treatment", fill= "") 
 resp_EXP1_plot_2
 
-#### EXP2 ####
+### EXP2 ####
 
 # The following are condenced steps to determine a reproducible and strong dataset from LoLin R ouputs.
 # Test automated LoLin Script and the Reference data (same criteria describes above for Exp 1)
@@ -504,9 +503,9 @@ plot(resp_EXP2[,1],resp_EXP2[,5], main= "Ref vs. alpha0.4_all")
 summary(lm(resp_EXP2[,1]~resp_EXP2[,5])) #Adjusted R-squared:  0.8002 
 # ggplot labeled with row numbers for individual respiration points - can can values outside of CI interval in loess curve
 ggplot(resp_EXP2, aes(x = resp_EXP2[,1], y = resp_EXP2[,5])) +
-  geom_point() +
-  geom_smooth(method = 'loess') +
-  geom_text(aes(label = resp_EXP2$ID), position = position_nudge(y = .01)) # outside of loess curve = 114, 153,155,156,150,141,105,130,152,98,188
+          geom_point() +
+          geom_smooth(method = 'loess') +
+          geom_text(aes(label = resp_EXP2$ID), position = position_nudge(y = .01)) # outside of loess curve = 114, 153,155,156,150,141,105,130,152,98,188
 tail(resp_EXP1) # end of exposure 1 is row #96
 numberID <- (c(114,153,155,156,150,141,105,130,152,98,188)) - 96 #subtract by 96 to get the actual row number in resp_exp2
 # actuall row numbers outside loess cruve = 18 57 59 60 54 45  9 34 56  2 92
@@ -542,10 +541,11 @@ Exp2.Fig.resp # view the figure
 
 #plot treatments and time (prebasal added as day 0 data)
 resp_EXP2_plot <- ggplot(resp_EXP2, aes(x = factor(resp_EXP2$Day), y = resp_EXP2$FINALresp, fill = resp_EXP2$Treat1_Treat2)) +
-  geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
-  ylim(0, 0.6) +
+  geom_boxplot(alpha = 0.1, outlier.shape = 19,
+  outlier.fill = "black", outlier.size = 1, lwd=0.2) + 
+  scale_color_grey() + scale_fill_grey() + theme_classic() + ylim(0, 0.6) +
   #geom_point(aes(fill = resp_EXP2$Treat1_Treat2), size = 1.5, shape = 21, position = position_jitterdodge(0.05)) +
-  stat_summary(fun.y=mean, geom="point", shape=4, size=2, position = position_jitterdodge(0.01)) +
+  stat_summary(fun.y=mean, geom="point", shape=19, size=2, position = position_jitterdodge(0.01)) +
   theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
   scale_x_discrete(labels = c("prebasal",2,4,6)) +
   geom_vline(xintercept=c(1.5), linetype="dotted", size=1) + labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1", x = "Day", fill="")
@@ -593,7 +593,7 @@ EXP2.lme.anovatable <- anova(m2.resp) # assign name to output table late in code
 par(mfrow=c(1,3)) #set plotting configuration
 par(mar=c(1,1,1,1)) #set margins for plots
 hist(residuals(m2.resp)) #plot histogram of residuals
-shapiro.test(residuals(m2.resp)) # residuals are  normal - ommit ouliers at row 83 and 90 allowed normal residuals
+shapiro.test(residuals(m2.resp)) # residuals are  normal 
 boxplot(residuals(m2.resp)) #plot boxplot of residuals
 plot(fitted(m2.resp),residuals(m2.resp)) #display residuals versus fitter, normal QQ plot, leverage plot
 
@@ -655,6 +655,29 @@ barplot_resp_percent <- ggplot(percent_av_resp, aes(x=as.factor(Treat1_Treat2), 
                                   size = 12, 
                                   hjust = 0))
 barplot_resp_percent # view the plot
+
+### Interaction Plots ####
+
+# anovas for all days seperately (explore difference between means within day)
+SMR_EXP2_d2 <- subset(resp_EXP2, Day==2)
+SMR_d2_EXP2 <- aov(FINALresp~Treat1_Treat2, data=SMR_EXP2_d2)
+summary(SMR_d2_EXP2)
+TukeyHSD(SMR_d2_EXP2)
+
+size_EXP2_d4 <- subset(resp_EXP2, Day==4)
+SMR_d4_EXP2 <- aov(FINALresp~Treat1_Treat2, data=size_EXP2_d4)
+summary(SMR_d4_EXP2)
+TukeyHSD(SMR_d4_EXP2)
+
+size_EXP2_d6 <- subset(resp_EXP2, Day==6)
+SMR_d6_EXP2 <- aov(FINALresp~Treat1_Treat2, data=size_EXP2_d6)
+summary(SMR_d6_EXP2)
+TukeyHSD(SMR_d6_EXP2)
+
+size_EXP2_ALL <- subset(resp_EXP2, Day!=0)
+SMR_alldays_EXP2 <- aov(FINALresp~Treat1_Treat2, data=size_EXP2_ALL)
+summary(SMR_alldays_EXP2)
+TukeyHSD(SMR_alldays_EXP2)
 
 #Day 0
 Day0 <- x2.resp_d0
@@ -845,9 +868,8 @@ LINEFig.Exp2.All.resp
 
 
 
-#---------------------------------------------------------------------------------------------------
-# Growth Data - Analysis, Graphs, Models  (summarized analysis from Stats_growth_analysis.R)
-###################################################################################################
+### Growth Data - Analysis, Graphs, Models  (summarized analysis from Stats_growth_analysis.R)#######################################
+
 
 #Load Size Data
 size<-read.csv("Data/All_growth_data.csv", header=T, sep=",", na.string="NA", as.is=T) 
@@ -861,83 +883,73 @@ size_EXP2.0 <- subset(size, Exp.Num=="Exp2")
 size_EXP2.0 <-subset(size_EXP2.0, Day!=0) # exposure 2 without day 0 
 size_Exp1.T<- merge(size_EXP1, size_EXP2, by=c("tank"))  #merge to obtained combined treatments from EXP2
 
-
 inital_size <- subset(size_EXP1, Date=="20180716") # get starting size of indiivduals from first measurements
 StartSize <- summarySE(inital_size, measurevar="shell_size", groupvars=c("Date")) #summary table for starting shell length = 5.077962 ± 0.6622871 (mean ± SD)
 end_size <- subset(size_EXP1, Date=="20180724") # get the ned size on Day 10 of exposure 1
-# overall shell size in EXP1 and EXP2
+
+# overall shell size in EXP1 
 exp1_size_all <- do.call(data.frame,aggregate(shell_size ~ treatment*Date, data = size_EXP1, function(x) c(mean = mean(x), sd = sd(x)))) # mean SD table by  treatments date EXP1
 exp1_size_summary_all <- summarySE(exp1_size_all, measurevar="shell_size.mean", groupvars=c("treatment")) # shell length by  treatments EXP1
 exp1_size_overall <- summarySE(exp1_size_all, measurevar="shell_size.mean") # overall SMR EXP2
-
 exp1_size_4.treatments <- do.call(data.frame,aggregate(shell_size.x ~ treatment.y*Date.x, data = size_Exp1.T, function(x) c(mean = mean(x), sd = sd(x)))) # mean SD table by  treatments date EXP1
 exp1_size_summary_4.treatments <- summarySE(exp1_size_4.treatments, measurevar="shell_size.x.mean", groupvars=c("treatment.y")) # shell length by  treatments EXP1
-
+# overall shell size in EXP2
 exp2_size_all <- do.call(data.frame,aggregate(shell_size ~ treatment*Date, data = size_EXP2, function(x) c(mean = mean(x), sd = sd(x)))) # mean SD table by init*sec treatments date EXP2
 exp2_size_summary_all <- summarySE(exp2_size_all, measurevar="shell_size.mean", groupvars=c("treatment")) # shell length by init*sec  treatments EXP2
-
 exp2_size_all.2 <- do.call(data.frame,aggregate(shell_size ~ Sec.Trt*Date, data = size_EXP2, function(x) c(mean = mean(x), sd = sd(x)))) # mean SD table by sec treatments date EXP2
 exp2_size_summary_all.2 <- summarySE(exp2_size_all.2, measurevar="shell_size.mean", groupvars=c("Sec.Trt")) # shell length by sec  treatments EXP2
 exp2_size_overall <- summarySE(exp2_size_all, measurevar="shell_size.mean") # overall SMR EXP2
 
 
-# Model and visualize EXP1 intiial size by treatment
-# by treatment
-treat.exp1 <- aov(shell_size~treatment,data=inital_size)
-anova(treat.exp1) # no difference in shell size with treatment
-summary(treat.exp1)
-Fig.d2.EXP1.treatment <- ggboxplot(inital_size, x = "treatment", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)",
-                              palette = c(), main= "Day 2 Exp 1") 
-# Model and visualize EXP1 end size by treatment
-# by treatment
-treat.exp1.Day10 <- aov(shell_size~treatment,data=end_size)
-anova(treat.exp1.Day10) # no difference in shell size with treatment
-Fig.d10.EXP1.treatment <- ggboxplot(end_size, x = "treatment", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)",
-                                   palette = c(), main= "Day 10 Exp 1") 
+# Model and visualize EXP1 intitial size by treatment
+treat.exp1 <- aov(shell_size~treatment,data=inital_size) # initial shell size by treatment
+summary(treat.exp1)# no difference in shell size initially between treatments
+Fig.d2.EXP1.treatment <- ggboxplot(inital_size, x = "treatment", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)", palette = c(), main= "Day 2 Exp 1") 
+Fig.d2.EXP1.treatment # plotted data
+treat.exp1.Day10 <- aov(shell_size~treatment,data=end_size) # last day of Exp1 (day 10)
+anova(treat.exp1.Day10) # no difference in shell size between  treatment
+Fig.d10.EXP1.treatment <- ggboxplot(end_size, x = "treatment", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)", palette = c(), main= "Day 10 Exp 1") 
+Fig.d10.EXP1.treatment# plotted data
 
 #plot end of exp 1 Day 10 with treatments 
 length_EXP1_Day10 <- ggplot(end_size, aes(x = treatment, y = shell_size, fill = treatment)) +
-  geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
-  ylim(2,8.2) +
-  #geom_point(aes(fill = treatment), size = 0.5, shape = 21, position = position_jitterdodge(0.05)) +
-  stat_summary(fun.y=mean, geom="point", shape=4, size=2, position = position_jitterdodge(0.01)) +
-  theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
-  labs(y="shell length", x = "Treatment", fill="") 
+      geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
+      ylim(2,8.2) +
+      #geom_point(aes(fill = treatment), size = 0.5, shape = 21, position = position_jitterdodge(0.05)) +
+      stat_summary(fun.y=mean, geom="point", shape=4, size=2, position = position_jitterdodge(0.01)) +
+      theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
+      labs(y="shell length", x = "Treatment", fill="") 
 length_EXP1_Day10
 
+# Model and visualize EXP2 intitial size 
+exp2_inital_size <- subset(size_EXP2, Date=="20180807") # starting size on Day 0 in Exp 2
+treat.exp2 <- aov(shell_size~treatment,data=exp2_inital_size) # anova by treatment on initial shell size EXP2
+summary(treat.exp2) # no difference in shell size with treatment
+Fig.d2.EXP2.treatment <- ggboxplot(exp2_inital_size, x = "treatment", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)",palette = c(), main= "Day 2 Exp 1") 
+Fig.d2.EXP2.treatment # plotted data
 
-# Model and visualize EXP2 intiial size by treatment
-exp2_inital_size <- subset(size_EXP2, Date=="20180807") # get starting size of indiivduals from first measurements on Day 0 in Exp 2
-# by treatment
-treat.exp2 <- aov(shell_size~treatment,data=exp2_inital_size)
-anova(treat.exp2) # no difference in shell size with treatment
-summary(treat.exp2)
-Fig.d2.EXP2.treatment <- ggboxplot(exp2_inital_size, x = "treatment", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)",
-                                   palette = c(), main= "Day 2 Exp 1") 
-#######################
-# OA Exposure 1
-# Visualize OA exposure 1 (with basal shell length from initial SMR readings)
-Exp1.Fig <- ggboxplot(size_EXP1_with_basal, x = "Day", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)",
-                      palette = c("blue", "red"), main= "Initial Exposure")
-Exp1.Fig # view the plot
+
+### EXP1 ####
 #plot treatments and time (with prebasal)
 length_EXP1_plot <- ggplot(size_EXP1_with_basal, aes(x = factor(Day), y = shell_size, fill = treatment)) +
-  geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
-  ylim(2,8.2) + scale_x_discrete(limits=c("prebasal",2,5,8,10)) +
-  #geom_point(aes(fill = treatment), size = 0.5, shape = 21, position = position_jitterdodge(0.05)) +
-  stat_summary(fun.y=mean, geom="point", shape=4, size=2, position = position_jitterdodge(0.01)) +
-  theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
-  geom_vline(xintercept=c(1.5), linetype="dotted", size=1) + labs(y="shell length", x = "Day", fill="")
+      geom_boxplot(alpha = 0.1, outlier.shape = 19,
+      outlier.fill = "black", outlier.size = 1, lwd=0.2) + 
+      scale_color_grey() + scale_fill_grey() + theme_classic() +
+      ylim(2,8.2) + scale_x_discrete(limits=c("prebasal",2,5,8,10)) +
+      #geom_point(aes(fill = treatment), size = 0.5, shape = 21, position = position_jitterdodge(0.05)) +
+      stat_summary(fun.y=mean, geom="point", shape=19, size=2, position = position_jitterdodge(0.01)) +
+      theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
+      geom_vline(xintercept=c(1.5), linetype="dotted", size=1) + labs(y="shell length", x = "Day", fill="")
 length_EXP1_plot
 
-# table to use for figures
+# mean and s.e. table to use for figures (all exp 1 without prebasal)
 x1 <- do.call(data.frame,aggregate(shell_size ~ Day*treatment, data = size_EXP1, function(x) c(mean = mean(x), se = std.error(x)))) #mean and st. error table
 
 # Linear mixe effects model - Test for size differences in experiment 1
 Init.lme <- lmer(shell_size ~ Init.Trt*Day + (1|Day), data = size_EXP1) # test for treatment fixed and day as a random factor
 anova(Init.lme) # anova on the model
 summary(Init.lme) # view summary
-m1 <- lme(shell_size~Init.Trt*Day,random=~1|Day,data=size_EXP1) # run same model as lme 
+m1 <- lme(shell_size~Day*treatment,random=~1|Day,data=size_EXP1) # run same model as lme 
 anova(m1) # view anova table of lme and compare to anova table from lmer
 EXP1.lme.size.anovatable <- anova(m1) # assign a name to anova table to save table output later
 # view plots and check for assumptions of normality in residuals
@@ -972,31 +984,27 @@ plot(fitted(m1.trans),residuals(m1.trans)) #display residuals versus fitter, nor
 shapiro.test(residuals(m1.trans)) # residuals normally distributed
 # NO STATISTICAL DIFFERENCE IN SIZE AFTER THE INITIAL EXPOSURE
 
-#####################
-#OA Exposure 2
+
+### EXP2 ####
 
 #Visualize OA exposure 2
-Exp2.Fig <- ggboxplot(size_EXP2, x = "Day", y = "shell_size", color = "treatment", ylab= "Size (mm)",
-                      palette = c("light blue", "darkblue", "pink", "red"))
-Exp2.Fig # view the plot
-
-#plot treatments and time
 length_EXP2_plot <- ggplot(size_EXP2, aes(x = factor(Day), y = shell_size, fill = treatment)) +
-  geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey(start = 0, end = 0.9) + theme_classic() +
-  ylim(2, 8.2) +
-  stat_summary(fun.y=mean, geom="point", shape=4, size=2, position = position_jitterdodge(0.01)) +
-  #geom_point(aes(fill = treatment), size = 0.5, shape = 21, position = position_jitterdodge(0.05)) +
-  theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
-  scale_x_discrete(labels = c("prebasal",2,4,6)) +
-  geom_vline(xintercept=c(1.5), linetype="dotted", size=1) + labs(y="shell length", x = "Day", fill="")
+      geom_boxplot(alpha = 0.1, outlier.shape = 19,
+      outlier.fill = "black", outlier.size = 1, lwd=0.2) + 
+      scale_color_grey() + scale_fill_grey(start = 0, end = 0.9) + theme_classic() +
+      ylim(2, 8.2) + stat_summary(fun.y=mean, geom="point", shape=19, size=2, position = position_jitterdodge(0.01)) +
+      #geom_point(aes(fill = treatment), size = 0.5, shape = 21, position = position_jitterdodge(0.05)) +
+      theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
+      scale_x_discrete(labels = c("prebasal",2,4,6)) +
+      geom_vline(xintercept=c(1.5), linetype="dotted", size=1) + labs(y="shell length", x = "Day", fill="")
 length_EXP2_plot
 
-
+# mean and s.e. summary tables for interaction figures 
 x2 <- do.call(data.frame,aggregate(shell_size ~ Day*Init.Trt*Sec.Trt, data = size_EXP2, function(x) c(mean = mean(x), se = std.error(x))))#mean and st. error table (used from plotting later)
 x2.1 <- do.call(data.frame,aggregate(shell_size ~ Init.Trt*Sec.Trt, data = size_EXP2.0, function(x) c(mean = mean(x), se = std.error(x))))#mean and st. error table(used from plotting later)
 x2$treatments <- paste(x2$Init.Trt, x2$Sec.Trt, sep="_") # combine treatments in a column
 
-# linea mixed effects models
+# linear mixed effects models
 Sec.lme.trans <- lmer(shell_size ~ Init.Trt*Sec.Trt + (1|Day/Init.Trt/Sec.Trt), data = size_EXP2.0) # test for treatment fixed and day as a random factor
 anova(Sec.lme.trans)
 m2 <- lme(shell_size~Init.Trt*Sec.Trt,random=~1|Day/Init.Trt/Sec.Trt,data=size_EXP2.0) # lme model with initial and secondary treatment effects fixed and time random
@@ -1011,7 +1019,6 @@ hist(residuals(m2)) #plot histogram of residuals
 boxplot(residuals(m2)) #plot boxplot of residuals
 plot( fitted(m2),residuals(m2)) #display residuals versus fitter, normal QQ plot, leverage plot
 shapiro.test(residuals(m2)) # residuals NOT normally distributed
-
 
 #Exposure2 Plotting
 
@@ -1075,6 +1082,27 @@ barplot_size_percent # view the plot
 
 
 
+### Interaction Plots ####
+
+# anovas for all days seperately (explore difference between means within day)
+size_EXP2.0_d2 <- subset(size_EXP2.0, Day==2)
+d2_EXP2 <- aov(shell_size~treatment, data=size_EXP2.0_d2)
+summary(d2_EXP2)
+TukeyHSD(d2_EXP2)
+
+size_EXP2.0_d4 <- subset(size_EXP2.0, Day==4)
+d4_EXP2 <- aov(shell_size~treatment, data=size_EXP2.0_d4)
+summary(d4_EXP2)
+TukeyHSD(d4_EXP2)
+
+size_EXP2.0_d6 <- subset(size_EXP2.0, Day==6)
+d6_EXP2 <- aov(shell_size~treatment, data=size_EXP2.0_d6)
+summary(d6_EXP2)
+TukeyHSD(d6_EXP2)
+
+alldays_EXP2 <- aov(shell_size~treatment, data=size_EXP2.0)
+summary(alldays_EXP2)
+TukeyHSD(alldays_EXP2)
 
 
 #Day 0
@@ -1191,8 +1219,10 @@ Fig.Exp2.All.size <- ggplot(x2.1, aes(x=Sec.Trt, y=shell_size.mean, group=Init.T
   geom_errorbar(aes(ymin=x2.1$shell_size.mean-x2.1$shell_size.se, ymax=x2.1$shell_size.mean+x2.1$shell_size.se), colour="black", width=.1, position = position_dodge(width = 0.05)) +
   geom_line(aes(linetype=Init.Trt), size = 0.5, position = position_dodge(width = 0.05)) +   
   geom_point(aes(shape=Init.Trt), size = 3, position = position_dodge(width = 0.05)) +
-  #annotate("text", x=0.85, y=1.3, label = "b", size = 3) + #add text to the graphic for posthoc letters
-  #annotate("text", x=c(0.85,0.85,2.2,2.2,2.25), y=c(0.9,0.95,0.88, 0.92,0.97), label = "ab", size = 3) + #add text to the graphic for posthoc letters
+  annotate("text", x="Ambient", y=6, label = "a", size = 3) + #add text to the graphic for posthoc letters
+  annotate("text", x="Ambient", y=5.8, label = "ab", size = 3) + #add text to the graphic for posthoc letters
+  annotate("text", x="Low", y=5.82, label = "a", size = 3) + 
+  annotate("text", x="Low", y=5.57, label = "b", size = 3) + 
   xlab("Secondary Treatment") +
   ylab("Shell size (mm)") +
   ylim(5,7) +
@@ -1239,7 +1269,7 @@ LINEFig.Exp2.All.size <- ggplot(x2, aes(x=Day, y=shell_size.mean , group=treatme
 LINEFig.Exp2.All.size
 
 
-
+### Ouput tables and figs ####
 
 # Saving anova tables 
 
