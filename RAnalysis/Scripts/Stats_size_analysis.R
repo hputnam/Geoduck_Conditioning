@@ -18,7 +18,7 @@ library(gridExtra)
 library(Rmisc)
 
 # Set Working Directory:
-setwd("~/MyProjects/Geoduck_Conditioning/RAnalysis/") #set working
+#setwd("~/MyProjects/Geoduck_Conditioning/RAnalysis/") #set working
 setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/") #set working
 
 #Load Size Data

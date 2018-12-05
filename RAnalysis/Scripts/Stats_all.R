@@ -44,11 +44,11 @@ APEX_2<-read.csv("Data/Apex_data/20180801_Apex_Data_Output.csv", header=T, sep="
 APEX_3<-read.csv("Data/Apex_data/20180805_Apex_Data_Output.csv", header=T, sep=",", na.string="NA", as.is=T) 
 APEX_4<-read.csv("Data/Apex_data/20180814_Apex_Data_Output.csv", header=T, sep=",", na.string="NA", as.is=T) 
 
-APEX_data<- do.call("rbind", list(APEX_1, APEX_2, APEX_3, APEX_4))
+APEX_data<- do.call("rbind", list(APEX_1, APEX_2, APEX_3, APEX_4)) # bind all data together
 
 #APEX_pH_data.csv
 #pH <- read.csv("Avtech_pH_data.csv", header=TRUE, sep=",", na.strings="NA") #load data with a header, separated by commas, with NA as NA
-pH <- APEX_data
+pH <- APEX_data # rename data as "pH"
 pH$Date.Time <-as.POSIXct(pH$Date.Time, format="%Y-%m-%d %H:%M:%OS") #convert date format
 pH$Date <- as.Date(pH$Date.Time) #convert Date only
 pH$Time <- format(as.POSIXct(pH$Date.Time) ,format = "%H:%M:%S") #convert Time only
@@ -162,71 +162,26 @@ flow # view the data
 
 EXP1 <- subset(flow, Exp.num=="EXP1") #initial 10-day trial, subset entire dataset resp by column nsame "Exp.num" == Exp1
 flow_EXP1 <- subset(EXP1, Day!=0) # ommit day 0
+
 EXP2 <- subset(flow, Exp.num=="EXP2") #second 6-day trial, subset entire dataset resp by column nsame "Exp.num" == Exp2
 flow_EXP2 <- subset(EXP2, Day!=0) # ommit day 0
+
 flow_EXP1_2 <- rbind(flow_EXP1, flow_EXP2) # bind exp1 and 2, day 0 already ommited
 
-# EXP1 summary treat by day
-#flow_EXP1.TRMT<- do.call(data.frame,aggregate(LPM ~ Treatment*Day, 
-                                              #data = flow_EXP1, 
-                                              #function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by treatment and Day (4 tanks ber treatment)
-#flow_EXP1.TRMT.summary <- summarySE(flow_EXP1.TRMT, measurevar="LPM.mean", groupvars=c("Treatment")) # summary by treatment
-#flow_EXP1.TRMT.summary # view table
-
+# EXP1 
 # flow exp by treatment
 flow_EXP1.treat <- summarySE(flow_EXP1, measurevar="LPM", groupvars=c("Treatment")) # summary by treatment
 flow_EXP1.treat # view table
 
 # EXP2 summary 
-# grouped as 2 treatments (just Sec.treat) during reciprocal exposure
-# NOTE: this shows flow difference influenced by conical overflow to heath tray pairs
-#flow_EXP2.TRMT.2<- do.call(data.frame,aggregate(LPM ~ Sec.treat *Day, 
-                                                #data = flow_EXP2, 
-                                                #function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by treatment and Day (4 tanks ber treatment)
-#flow_EXP2.TRMT.2.summary <- summarySE(flow_EXP2.TRMT.2, measurevar="LPM.mean", groupvars=c("Sec.treat")) # summary by treatment
-#flow_EXP2.TRMT.2.summary # view table
-# grouped as 4 treatments during reciprocal exposure
-# NOTE: this shows flow difference between treaments, but not influenced by the same conical overflow
-#flow_EXP2.TRMT.4<- do.call(data.frame,aggregate(LPM ~ Treatment_1_2*Day, 
-                                                #data = flow_EXP2, 
-                                                #function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by treatment and Day (4 tanks ber treatment)
-#flow_EXP2.TRMT.4.summary <- summarySE(flow_EXP2.TRMT.4, measurevar="LPM.mean", groupvars=c("Treatment_1_2")) # summary by treatment
-#flow_EXP2.TRMT.4.summary # view table
-
 # flow by treatment
 flow_EXP2.treat <- summarySE(flow_EXP2, measurevar="LPM", groupvars=c("Sec.treat")) # summary by treatment
 flow_EXP2.treat # view summary table
 
 # EXP1 AND EXP2 summary 
+# flow by treatment
 flow_EXP_1_2.treat <- summarySE(flow_EXP1_2, measurevar="LPM", groupvars=c("Treatment")) # summary by treatment
 flow_EXP_1_2.treat # view summary table
-# group by just day for daily flow rates
-#flow_ALL.Date<- do.call(data.frame,aggregate(LPM ~ Date, 
-#                                             data = flow_EXP1_2, 
-#                                             function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by Date
-#flow_ALL.Date.summary <- summarySE(flow_ALL.Date, measurevar="LPM.mean") # summary by treatment
-#flow_ALL.Date.summary # view table
-# na omited when notes read "adjusted"
-#flow_EXP1_2.OMIT <- subset(flow_EXP1_2, Notes!="adjusted") # ommit rows when flow rate was adjusted
-#flow_ALL.Date.OMIT<- do.call(data.frame,aggregate(LPM ~ Date, 
-#                                                  data = flow_EXP1_2.OMIT, 
-#                                                  function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by Date, adjusted ommited
-#flow_ALL.Date.summary.OMIT <- summarySE(flow_ALL.Date.OMIT, measurevar="LPM.mean") # summary by treatment
-#flow_ALL.Date.summary.OMIT # view table
-
-# group by treatment and day day for daily flow rates
-#flow_ALL.TRMT<- do.call(data.frame,aggregate(LPM ~ Date*Treatment, 
-#                                             data = flow_EXP1_2, 
-#                                             function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by Date
-#flow_ALL.TRMT.summary <- summarySE(flow_ALL.TRMT, measurevar="LPM.mean", groupvars=c("Treatment")) # summary by treatment
-#flow_ALL.TRMT.summary # view table
-# na omited when notes read "adjusted"
-#flow_ALL.TRMT.OMIT<- do.call(data.frame,aggregate(LPM ~ Date*Treatment, 
-#                                                  data = flow_EXP1_2.OMIT, 
-#                                                  function(x) c(mean = mean(x), sd = sd(x)))) # mean and stdev by Date, adjusted ommited
-#flow_ALL.TRMT.summary.OMIT <- summarySE(flow_ALL.TRMT.OMIT, measurevar="LPM.mean", groupvars=c("Treatment")) # summary by treatment
-#flow_ALL.TRMT.summary.OMIT # view table
-
 
 ### HEATH TRAY Discrete Seawater Chemistry Tables #######################################################################
 
@@ -347,19 +302,28 @@ SWC.Tanks <- ddply(chem.long, c("Exposure", "tank.name", "variable"), summarise,
                    mean = mean(value), #calculate average 
                    sem = sd(value)/sqrt(n)) #calcualte the standard error of the mean
 
-#Calculate descriptive stats by Treatment
+#Calculate descriptive stats by Treatment and exposure 
 SWC.Treatments <- ddply(chem.long, c("Exposure", "Treatment", "variable"), summarise,
                         N = length(na.omit(value)), #count the sample size removing NA
                         mean = mean(value), #calculate average 
                         sem = sd(value)/sqrt(N)) #calcualte the standard error of the mean
+#Calculate descriptive stats by Treatment and exposure 
+SWC.Treatments.all <- ddply(chem.long, c("Treatment", "variable"), summarise,
+                        N = length(na.omit(value)), #count the sample size removing NA
+                        mean = mean(value), #calculate average 
+                        sem = sd(value)/sqrt(N)) #calcualte the standard error of the mean
 
+#subset chem data for exp 1 and exp 2
 Exposure1.chem <-subset(SWC.Treatments, Exposure == "Exp1") #separate out exposure 1
 Exposure2.chem <-subset(SWC.Treatments, Exposure == "Exp2") #separate out exposure 2
+# create tables for exp 1 , exp2 and all data
 Exposure1.long <- reshape(Exposure1.chem, idvar="Treatment", direction="wide", timevar = "variable", drop = c("Exposure", "N")) #reshape data format for table layout
 Exposure2.long <- reshape(Exposure2.chem, idvar="Treatment", direction="wide", timevar = "variable", drop = c("Exposure", "N")) #reshape data format for table layout
-
+ALL.Exposure.long <- reshape(SWC.Treatments.all, idvar="Treatment", direction="wide", timevar = "variable", drop = c("Exposure", "N")) #reshape data format for table layout
+# write out tables
 write.table (Exposure1.long, file="C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Output/Seawater_chemistry_table_Output_exposure1.csv", sep=",", row.names = FALSE) #save data to output file
 write.table (Exposure2.long, file="C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Output/Seawater_chemistry_table_Output_exposure2.csv", sep=",", row.names = FALSE) #save data to output file
+write.table (ALL.Exposure.long, file="C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Output/Seawater_chemistry_table_Output_all.csv", sep=",", row.names = FALSE) #save data to output file
 
 
 ### Respiration Data - Analysis, Graphs, Models  (summarized analysis from Stats_resp_analysis.R)#############
@@ -380,25 +344,26 @@ print(resp_BASAL_plot + labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1",
                             x = "Date") + 
         ggtitle("Juvenile geoduck respirometry \ Basal"))
 
-#Load Respiraiton Data
+#Load Respiraiton Data for exposure 1 and 2
 resp<-read.csv("Data/All_resp_calc_and_standardized.csv", header=T, sep=",", na.string="NA", as.is=T) 
-names(resp) # view the names of the data
+names(resp) # view the names of the data 
+
 # seperate into experiment 1 and 2 for the 10-day and 6-day OA exposure
 resp_EXP1 <- subset(resp, EXP.numb=="EXP1") #initial 10-day trial, subset entire dataset resp by column nsame "Exp.num" == Exp1
 resp_EXP2 <- subset(resp, EXP.numb=="EXP2") #second 6-day trial, subset entire dataset resp by column nsame "Exp.num" == Exp2
 resp_EXP2.0 <- subset(resp, EXP.numb=="EXP2") # same under a diff name (read why on next comment)
-resp_EXP2.0 <-subset(resp_EXP2.0, Day!=0) #eliminate Day0 of the second exposure for graph on cumulative exposure to OA 
-
+resp_EXP2.0 <-subset(resp_EXP2.0, Day!=0) #delete Day0 of the second exposure for graph on cumulative exposure to OA 
 
 ### EXP1 ####
-
-# The following are condenced steps to determine a reproducible and strong dataset from LoLin R ouputs.
+# The following are condenced steps to analyze a reproducible and strong dataset from LoLin R ouputs.
 # Test automated LoLin Script and the Reference data
 # Reference = each resp value with a visial criteria and default constants  (alpha = 0.2, untruncated); adjusted to acheive peak density of regressions
 # Automated ouputs = at nine total settings of alpha= 0.2,0.4 and0.6 at three different truncations (all, 10-20 minutes, 10-25 minutes)
+
 # Below used alpha = 0.4, no truncation for automated ouput - yielded the least respiration values outside of Loess CI with Reference
-plot(resp_EXP1[,1],resp_EXP1[,5], main= "Ref vs. alpha0.4_all") # plot this relationship witht the reference 
+plot(resp_EXP1[,1],resp_EXP1[,5], main= "Ref vs. alpha0.4_all") # linear regression with the reference 
 summary(lm(resp_EXP1[,1]~resp_EXP1[,5])) #Adjusted R-squared:  0.3905
+
 # plot and label with row numbers for individual respiration points - shows values outside of CI interval in loess curve
 ggplot(resp_EXP1, aes(x = resp_EXP1[,1], y = resp_EXP1[,5])) +
   geom_point() +
@@ -408,13 +373,16 @@ ggplot(resp_EXP1, aes(x = resp_EXP1[,1], y = resp_EXP1[,5])) +
 # regress points outside loess against reference with all automated resp outputs 
 newdata_resp_EXP1_ALL <- data.frame(resp_EXP1$Date, resp_EXP1[,c(1:10)]) # new dataframe with first 11 columns, Date + nine automated outputs
 newdata_resp_EXP1_ALL_1 <-newdata_resp_EXP1_ALL[c(57,52,3,6,17,2,1,76,50,96,31,5,29,70,72,68,56,94), ] # only call points (rows) outside loess in first regression
+
+# plotted all linear regression for each automated output with the reference - strongest correlation at alpha = 0.6 truncation at 10-20 minutes
 plot(newdata_resp_EXP1_ALL_1[,2],newdata_resp_EXP1_ALL_1[,10]) # strongest correlation was with alpha = 0.6 truncation at 10-20 minutes 
 summary(lm(newdata_resp_EXP1_ALL_1[,10]~newdata_resp_EXP1_ALL_1[,2]))# strongest relationship with Reference - adj R-squared=0.7235 
 
-#create a new column 
-resp_EXP1$FINALresp <- resp_EXP1$LpcResp_alpha0.4_all.csv # base alpha 0.4, no truncation
+#create a new column merging both datasets as "Finalresp"
+resp_EXP1$FINALresp <- resp_EXP1$LpcResp_alpha0.4_all.csv # base alpha 0.4, no truncation 
 resp_EXP1$FINALresp[c(57,52,3,6,17,2,1,76,50,96,31,5,29,70,72,68,56,94)] <- resp_EXP1$LpcResp_alpha0.6_min10.20.csv[c(57,52,3,6,17,2,1,76,50,96,31,5,29,70,72,68,56,94)] #inserted new rows from alpha = 0.6 10-20 min for points outside loess curve
-# test correlation of this new column with the Ref
+
+# test correlation of Finalresp with the Ref
 plot(resp_EXP1$Resp_individually_all.csv,resp_EXP1$FINALresp, main= "Ref vs. FINALresp") # plot the relationship
 summary(lm(resp_EXP1[,1]~resp_EXP1$FINALresp)) # summarize linear model - Multiple R-squared:  0.8784,	Adjusted R-squared:  0.8771 
 ggplot(resp_EXP1, aes(x = resp_EXP1[,1], y = resp_EXP1$FINALresp)) +
@@ -427,7 +395,7 @@ exp1_resp_all <- do.call(data.frame,aggregate(FINALresp ~ Treat1_Treat2*Date, da
 exp1_resp_summary_all <- summarySE(exp1_resp_all, measurevar="FINALresp.mean", groupvars=c("Treat1_Treat2")) # SMR by treatment EXP1
 exp1_resp_overall <- summarySE(exp1_resp_all, measurevar="FINALresp.mean") # overall SMR EXP1
 
-resp_EXP2.0.T<- merge(resp_EXP1, resp_EXP2, by=c("tank"))  #merge to obtained combined treatments from EXP2
+resp_EXP2.0.T<- merge(resp_EXP1, resp_EXP2, by=c("tank")) # merge to obtained combined treatments from EXP2
 exp1_resp_4.T <- do.call(data.frame,aggregate(FINALresp ~ Treat1_Treat2.y*Date.x, data = resp_EXP2.0.T, function(x) c(mean = mean(x), sd = sd(x)))) # mean SD table by date EXP1 and 4 treatments in EXP2
 exp1_resp_summary.T <- summarySE(exp1_resp_4.T, measurevar="FINALresp.mean", groupvars=c(" Treat1_Treat2.y")) # SMR by four treatments EXP1xEXP2
 
@@ -439,13 +407,16 @@ Exp1.Fig.resp # view boxplot of all data
 
 #table mean and st derror resp by treatment for exp 1
 x1 <- do.call(data.frame,aggregate(FINALresp ~ Day*Init.treat, data = resp_EXP1, function(x) c(mean = mean(x), se = std.error(x)))) #mean and st. error table
+
 # mixed effect model
-Init.lme.resp <- lmer(FINALresp ~ Init.treat*Day + (1|Day), data = resp_EXP1) #reteatment and day with day as a random factor
+Init.lme.resp <- lmer(FINALresp ~ Init.treat*Day + (1|Day), data = resp_EXP1) # reteatment and day with day as a random factor
 anova(Init.lme.resp) # anova of lmer
 summary(Init.lme.resp) # summary of lmer
 m1.resp <- lme(FINALresp~Init.treat*Day,random=~1|Day,data=resp_EXP1) # equivent function in lme
 anova(m1.resp) # anova on lme model = an effect of treatment on metabolic rate
 EXP1.lme.anovatable <- anova(m1.resp) # assign name to output table late in code
+
+# plot the residuals
 par(mfrow=c(1,3)) #set plotting configuration
 par(mar=c(1,1,1,1)) #set margins for plots
 hist(residuals(m1.resp)) #plot histogram of residuals
@@ -456,22 +427,24 @@ plot( fitted(m1.resp),residuals(m1.resp)) #display residuals versus fitter, norm
 #summary tables to receive the percent difference between resp in treatments
 sumresp_EXP1 <- summarySE(resp_EXP1, 
                           measurevar="FINALresp", 
-                          groupvars=c("Date","Treat1_Treat2")) # summary table of resp with Date and treatment
+                          groupvars=c("Date","Init.treat")) # summary table of resp with Date and treatment
 sumresp_EXP1_means <- summarySE(sumresp_EXP1, 
                                 measurevar="FINALresp", 
-                                groupvars=c("Treat1_Treat2")) # summarize previous table for overall treatment 
+                                groupvars=c("Init.treat")) # summarize previous table for overall treatment 
+
 percentdiff <- ((sumresp_EXP1_means[1,3] - sumresp_EXP1_means[2,3])/sumresp_EXP1_means[1,3])*100 # calculate percent difference
 percentdiff # 25% lower respiration rates in low pH
 
 #plot the data
 #treatments and time (with basal added)
 colnames(respBASAL)[1] <- "FINALresp" # rename the calc resp values in Basal table to match the resp_EXP1
-respBASAL$Treat1_Treat2 <- c("Ambient") # name the treatement 
+respBASAL$Init.treat <- c("Ambient") # name the treatement 
 respBASAL$Day <- 0 # zero dafults correctly plotted position - renamed in ggplot script at "prebasal"
-resp_EXP1_condensed <- resp_EXP1[,c(11,12,13,14,15,16,21)] # call the columns in respBasal to rbind (must be the same)
+resp_EXP1_condensed <- resp_EXP1[,c(11,12,13,14,15,17,21)] # call the columns in respBasal to rbind (must be the same)
 resp_EXP1_ALL <- rbind(resp_EXP1_condensed, respBASAL) # merge the two tables for the graph
+
 # plot below
-resp_EXP1_plot <- ggplot(resp_EXP1_ALL, aes(x = factor(resp_EXP1_ALL$Day), y = resp_EXP1_ALL$FINALresp, fill = resp_EXP1_ALL$Treat1_Treat2)) +
+resp_EXP1_plot <- ggplot(resp_EXP1_ALL, aes(x = factor(resp_EXP1_ALL$Day), y = resp_EXP1_ALL$FINALresp, fill = resp_EXP1_ALL$Init.treat)) +
     geom_boxplot(alpha = 0.1, outlier.shape = 19,
     outlier.fill = "black", outlier.size = 1, lwd=0.2) + 
     scale_color_grey() + scale_fill_grey() + theme_classic() + ylim(0, 0.6) +
@@ -484,7 +457,7 @@ resp_EXP1_plot <- ggplot(resp_EXP1_ALL, aes(x = factor(resp_EXP1_ALL$Day), y = r
 resp_EXP1_plot # view the plot
 
 # plot just treatment (without prebasal)
-resp_EXP1_plot_2 <- ggplot(resp_EXP1, aes(x = factor(resp_EXP1$Treat1_Treat2), y = resp_EXP1$FINALresp, fill = resp_EXP1$Treat1_Treat2)) +
+resp_EXP1_plot_2 <- ggplot(resp_EXP1, aes(x = factor(resp_EXP1$Init.treat), y = resp_EXP1$FINALresp, fill = resp_EXP1$Init.treat)) +
     geom_boxplot(alpha = 0.1, outlier.shape = 19,
     outlier.fill = "black", outlier.size = 1, lwd=0.2) + 
     scale_color_grey() + scale_fill_grey() + theme_classic() +
@@ -495,12 +468,14 @@ resp_EXP1_plot_2 <- ggplot(resp_EXP1, aes(x = factor(resp_EXP1$Treat1_Treat2), y
 resp_EXP1_plot_2
 
 ### EXP2 ####
-
 # The following are condenced steps to determine a reproducible and strong dataset from LoLin R ouputs.
 # Test automated LoLin Script and the Reference data (same criteria describes above for Exp 1)
 par(mfrow=c(1,1)) #set plotting configuration
+
+# Below used alpha = 0.4, no truncation for automated ouput - yielded the least respiration values outside of Loess CI with Reference
 plot(resp_EXP2[,1],resp_EXP2[,5], main= "Ref vs. alpha0.4_all")
 summary(lm(resp_EXP2[,1]~resp_EXP2[,5])) #Adjusted R-squared:  0.8002 
+
 # ggplot labeled with row numbers for individual respiration points - can can values outside of CI interval in loess curve
 ggplot(resp_EXP2, aes(x = resp_EXP2[,1], y = resp_EXP2[,5])) +
           geom_point() +
@@ -509,6 +484,7 @@ ggplot(resp_EXP2, aes(x = resp_EXP2[,1], y = resp_EXP2[,5])) +
 tail(resp_EXP1) # end of exposure 1 is row #96
 numberID <- (c(114,153,155,156,150,141,105,130,152,98,188)) - 96 #subtract by 96 to get the actual row number in resp_exp2
 # actuall row numbers outside loess cruve = 18 57 59 60 54 45  9 34 56  2 92
+
 # regress points outside loess against reference with all automated resp outputs 
 newdata_resp_EXP2_ALL <- data.frame(resp_EXP2$Date , resp_EXP2[,c(1:10)]) # new dataframe with first 11 columns, Date + nine automated outputs
 newdata_resp_EXP2_ALL_1 <-newdata_resp_EXP2_ALL[c(18, 57, 59, 60 ,54 ,45 , 9 ,34 ,56,  2, 92), ]  # only call points (rows) outside loess in first regression
@@ -564,6 +540,8 @@ m2.resp <- lme(FINALresp~Init.treat*Sec.treat,random=~1|Day/Init.treat/Sec.treat
 anova(m2.resp) # anova of lmer
 summary(m2.resp) # summary of lmer
 EXP2.lme.anovatable <- anova(m2.resp) # assign name to output table late in code
+
+# plot the residuals
 par(mfrow=c(1,3)) #set plotting configuration
 par(mar=c(1,1,1,1)) #set margins for plots
 hist(residuals(m2.resp)) #plot histogram of residuals
@@ -634,8 +612,10 @@ percent_av_resp <- Table_EXP_1_2%>%
   group_by(Treat1_Treat2) %>%
   arrange(trial) %>%
   mutate(pct.chg = 100*(FINALresp.mean - lag(FINALresp.mean))/(FINALresp.mean)) # calculate the percent change from (secondary - initial / secondary) *100
+
 percent_av_resp <- percent_av_resp[5:8,] # only rows with data
 percent_av_resp # view the table
+
 # plot
 barplot_resp_percent <- ggplot(percent_av_resp, aes(x=as.factor(Treat1_Treat2), y=pct.chg)) +
   geom_bar(position=position_dodge(), stat="identity", colour='black') +
@@ -658,26 +638,42 @@ barplot_resp_percent # view the plot
 
 ### Interaction Plots ####
 
-# anovas for all days seperately (explore difference between means within day)
+# TEST FOR EFFECTS OF THE FOUR TREATMENT GROUPS EXP1 --> EXP2
+# This can decipher whether the significant effect of INITIAL treatment dcarried over into the second exposure
+# differences at the end of exp1 (day 10) and start of exp 2 (day 0)
+exp1_d10.resp  <- subset(resp_EXP1, Date=="20180724") # starting resp  on Day 10 in Exp 1
+exp2_d0.resp <- subset(resp_EXP2, Date=="20180807") # starting resp  on Day 0 in Exp 2
+
+#Day 10 in Exp 1 - anova for sig between treatments
+treat.exp1.resp.d10 <- aov(FINALresp~Treat1_Treat2,data=exp1_d10.resp) # anova by treatment on initial resp  EXP1
+summary(treat.exp1.resp.d10) # no difference in shell size between the four  treatment
+Fig.d10.EXP1.treatment.resp <- ggboxplot(exp1_d10.resp, x = "Treat1_Treat2", y = "FINALresp", color = "Treat1_Treat2", ylab= "Shell Size (mm)",palette = c(), main= "Day 10 Exp 1") 
+Fig.d10.EXP1.treatment.resp # plotted data
+
+# Day 0 in Exp 2
+treat.exp2.resp.0 <- aov(FINALresp~Treat1_Treat2,data=exp2_d0.resp) # anova by treatment on initial resp  EXP2
+summary(treat.exp2.resp.0) # no difference in shell size between the four  treatment
+Fig.d0.EXP2.treatment.resp <- ggboxplot(exp2_d0.resp, x = "Treat1_Treat2", y = "FINALresp", color = "Treat1_Treat2", ylab= "Shell Size (mm)",palette = c(), main= "Day 0 Exp 2") 
+Fig.d0.EXP2.treatment.resp # plotted data
+
+# anovas for signifcant between treatments for all days in EXP2 
 SMR_EXP2_d2 <- subset(resp_EXP2, Day==2)
 SMR_d2_EXP2 <- aov(FINALresp~Treat1_Treat2, data=SMR_EXP2_d2)
-summary(SMR_d2_EXP2)
-TukeyHSD(SMR_d2_EXP2)
+summary(SMR_d2_EXP2) # day 2 no difference between treatments
 
 size_EXP2_d4 <- subset(resp_EXP2, Day==4)
 SMR_d4_EXP2 <- aov(FINALresp~Treat1_Treat2, data=size_EXP2_d4)
-summary(SMR_d4_EXP2)
-TukeyHSD(SMR_d4_EXP2)
+summary(SMR_d4_EXP2) # day4 no difference between treatments
 
 size_EXP2_d6 <- subset(resp_EXP2, Day==6)
 SMR_d6_EXP2 <- aov(FINALresp~Treat1_Treat2, data=size_EXP2_d6)
-summary(SMR_d6_EXP2)
-TukeyHSD(SMR_d6_EXP2)
+summary(SMR_d6_EXP2) # day 6 no difference between treatments
 
 size_EXP2_ALL <- subset(resp_EXP2, Day!=0)
 SMR_alldays_EXP2 <- aov(FINALresp~Treat1_Treat2, data=size_EXP2_ALL)
-summary(SMR_alldays_EXP2)
-TukeyHSD(SMR_alldays_EXP2)
+summary(SMR_alldays_EXP2) # ALL days (aside from basal rates on day 0) no difference between treatments
+
+# NO SIG DIFF (P < 0.05) FOR EXP2 
 
 #Day 0
 Day0 <- x2.resp_d0
@@ -870,7 +866,6 @@ LINEFig.Exp2.All.resp
 
 ### Growth Data - Analysis, Graphs, Models  (summarized analysis from Stats_growth_analysis.R)#######################################
 
-
 #Load Size Data
 size<-read.csv("Data/All_growth_data.csv", header=T, sep=",", na.string="NA", as.is=T) 
 
@@ -911,7 +906,7 @@ anova(treat.exp1.Day10) # no difference in shell size between  treatment
 Fig.d10.EXP1.treatment <- ggboxplot(end_size, x = "treatment", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)", palette = c(), main= "Day 10 Exp 1") 
 Fig.d10.EXP1.treatment# plotted data
 
-#plot end of exp 1 Day 10 with treatments 
+# plot end of exp 1 Day 10 with treatments 
 length_EXP1_Day10 <- ggplot(end_size, aes(x = treatment, y = shell_size, fill = treatment)) +
       geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
       ylim(2,8.2) +
@@ -920,14 +915,6 @@ length_EXP1_Day10 <- ggplot(end_size, aes(x = treatment, y = shell_size, fill = 
       theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
       labs(y="shell length", x = "Treatment", fill="") 
 length_EXP1_Day10
-
-# Model and visualize EXP2 intitial size 
-exp2_inital_size <- subset(size_EXP2, Date=="20180807") # starting size on Day 0 in Exp 2
-treat.exp2 <- aov(shell_size~treatment,data=exp2_inital_size) # anova by treatment on initial shell size EXP2
-summary(treat.exp2) # no difference in shell size with treatment
-Fig.d2.EXP2.treatment <- ggboxplot(exp2_inital_size, x = "treatment", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)",palette = c(), main= "Day 2 Exp 1") 
-Fig.d2.EXP2.treatment # plotted data
-
 
 ### EXP1 ####
 #plot treatments and time (with prebasal)
@@ -946,6 +933,7 @@ length_EXP1_plot
 x1 <- do.call(data.frame,aggregate(shell_size ~ Day*treatment, data = size_EXP1, function(x) c(mean = mean(x), se = std.error(x)))) #mean and st. error table
 
 # Linear mixe effects model - Test for size differences in experiment 1
+size_EXP1$Day <- as.numeric(size_EXP1$Day)
 Init.lme <- lmer(shell_size ~ Init.Trt*Day + (1|Day), data = size_EXP1) # test for treatment fixed and day as a random factor
 anova(Init.lme) # anova on the model
 summary(Init.lme) # view summary
@@ -986,7 +974,6 @@ shapiro.test(residuals(m1.trans)) # residuals normally distributed
 
 
 ### EXP2 ####
-
 #Visualize OA exposure 2
 length_EXP2_plot <- ggplot(size_EXP2, aes(x = factor(Day), y = shell_size, fill = treatment)) +
       geom_boxplot(alpha = 0.1, outlier.shape = 19,
@@ -1005,6 +992,7 @@ x2.1 <- do.call(data.frame,aggregate(shell_size ~ Init.Trt*Sec.Trt, data = size_
 x2$treatments <- paste(x2$Init.Trt, x2$Sec.Trt, sep="_") # combine treatments in a column
 
 # linear mixed effects models
+size_EXP2.0$Day <- as.numeric(size_EXP2.0$Day)
 Sec.lme.trans <- lmer(shell_size ~ Init.Trt*Sec.Trt + (1|Day/Init.Trt/Sec.Trt), data = size_EXP2.0) # test for treatment fixed and day as a random factor
 anova(Sec.lme.trans)
 m2 <- lme(shell_size~Init.Trt*Sec.Trt,random=~1|Day/Init.Trt/Sec.Trt,data=size_EXP2.0) # lme model with initial and secondary treatment effects fixed and time random
@@ -1013,12 +1001,34 @@ summary(m2) # view summary of anova table
 EXP2.lme.size.anovatable <- anova(m2) # name anova table to save output later
 exp2.ph <- lsmeans(m2, pairwise ~ Init.Trt*Sec.Trt)# pariwise Tukey Post-hoc test between repeated treatments
 exp2.ph # view post hoc summary
+
+#plot the residuals
 par(mfrow=c(1,3)) #set plotting configuration
 par(mar=c(1,1,1,1)) #set margins for plots
 hist(residuals(m2)) #plot histogram of residuals
 boxplot(residuals(m2)) #plot boxplot of residuals
 plot( fitted(m2),residuals(m2)) #display residuals versus fitter, normal QQ plot, leverage plot
 shapiro.test(residuals(m2)) # residuals NOT normally distributed
+
+
+# TEST FOR EFFECTS OF THE FOUR TREATMENT GROUPS EXP1 --> EXP2
+# This can decipher whether the significant effect of secondary treatment derived from size
+# differences at the end of exp1 (day 10) and start of exp 2 (day 0)
+exp2_d0.size <- subset(size_EXP2, Date=="20180807") # starting size on Day 0 in Exp 2
+exp1_d10.size <- subset(size_EXP1, Date=="20180724") # starting size on Day 10 in Exp 1
+
+#Day 10 in Exp 1
+treat.exp1.d10 <- aov(shell_size~Treat1_Treat2,data=exp1_d10.size) # anova by treatment on initial shell size EXP2
+summary(treat.exp1.d10) # no difference in shell size between the four  treatment
+Fig.d10.EXP1.treatment <- ggboxplot(exp1_d10.size, x = "Treat1_Treat2", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)",palette = c(), main= "Day 2 Exp 1") 
+Fig.d10.EXP1.treatment # plotted data
+
+# Day 0 in Exp 2
+treat.exp2.d0 <- aov(shell_size~Treat1_Treat2,data=exp2_d0.size) # anova by treatment on initial shell size EXP2
+summary(treat.exp2.d0) # no difference in shell size between the four  treatment
+Fig.d2.EXP2.treatment <- ggboxplot(exp2_d0.size, x = "Treat1_Treat2", y = "shell_size", color = "treatment", ylab= "Shell Size (mm)",palette = c(), main= "Day 2 Exp 1") 
+Fig.d2.EXP2.treatment # plotted data
+
 
 #Exposure2 Plotting
 
