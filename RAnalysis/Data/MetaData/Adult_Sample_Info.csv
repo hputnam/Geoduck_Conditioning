@@ -1,5 +1,5 @@
 Date,Sample.ID,Chamber.Channel,Sample.Type,pH.Treatment,Chamber.Vol.mL,Adult.Vol.ml,length.cm,width.cm
-20180804,BS1,1,Sample,Broodstock,19969,850,80.9625,127
-20180804,BS2,2,Sample,Broodstock,19569,1250,85.725,142.875
-20180804,BS3,3,Sample,Broodstock,19899,920,54.61,119.0625
-20180804,BK1,4,Blank,Broodstock,20819,NA,NA,NA
+20180804,BS1,1,Adult,Ambient,19969,850,80.9625,127
+20180804,BS2,2,Adult,Ambient,19569,1250,85.725,142.875
+20180804,BS3,3,Adult,Ambient,19899,920,54.61,119.0625
+20180804,BK1,4,Blank,Ambient,20819,NA,NA,NA
