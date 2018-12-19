@@ -218,10 +218,15 @@ chem.exp2 <- chem.exp[157:204,] # exposure 2 without Day 0 (20180808 - 20180813)
 chem.exp2$Exposure <- "Exp2"
 chem.exp2$tank.name <- substr(chem.exp2$Tank, start = 10, stop = 13) # new column for tank name without date
 
-chem.exp_1_2 <- rbind(chem.exp1,chem.exp2) # exposure 1 and 2
+chem.exp_1_2 <- rbind(chem.exp1,chem.exp2) # bind exposure 1 and 2
+
+chem.common.garden <-chem.exp[132:156,] # common garden between exposure periods
+chem.common.garden$Exposure <- "Common_garden" 
+chem.common.garden$tank.name <- substr(chem.common.garden$Tank, start = 10, stop = 13) # new column for tank name without date
 
 # melt - converts wide table to long
 chem.long <- melt(chem.exp_1_2, id.vars=c("Date", "Tank", "Treatment", "tank.name", "Exposure")) # uses tidyr to make a long table from wide
+garden.chem.long <- melt(chem.common.garden, id.vars=c("Date", "Tank", "Treatment", "tank.name", "Exposure"))
 
 Exp1.chem.long <-subset(chem.long, Exposure == "Exp1") #separate out exposure 1 for all data
 Exp2.chem.long <-subset(chem.long, Exposure == "Exp2") #separate out exposure 2 for all data
@@ -307,23 +312,34 @@ SWC.Treatments <- ddply(chem.long, c("Exposure", "Treatment", "variable"), summa
                         N = length(na.omit(value)), #count the sample size removing NA
                         mean = mean(value), #calculate average 
                         sem = sd(value)/sqrt(N)) #calcualte the standard error of the mean
+
 #Calculate descriptive stats by Treatment and exposure 
 SWC.Treatments.all <- ddply(chem.long, c("Treatment", "variable"), summarise,
                         N = length(na.omit(value)), #count the sample size removing NA
                         mean = mean(value), #calculate average 
                         sem = sd(value)/sqrt(N)) #calcualte the standard error of the mean
 
+#Calculate descriptive stats by Treatment and exposure for common garden period
+SWC.common.garden <- ddply(garden.chem.long, c("Exposure", "Treatment", "variable"), summarise,
+                           N = length(na.omit(value)), #count the sample size removing NA
+                           mean = mean(value), #calculate average 
+                           sem = sd(value)/sqrt(N)) #calcualte the standard error of the mean
+
 #subset chem data for exp 1 and exp 2
 Exposure1.chem <-subset(SWC.Treatments, Exposure == "Exp1") #separate out exposure 1
 Exposure2.chem <-subset(SWC.Treatments, Exposure == "Exp2") #separate out exposure 2
+
 # create tables for exp 1 , exp2 and all data
 Exposure1.long <- reshape(Exposure1.chem, idvar="Treatment", direction="wide", timevar = "variable", drop = c("Exposure", "N")) #reshape data format for table layout
 Exposure2.long <- reshape(Exposure2.chem, idvar="Treatment", direction="wide", timevar = "variable", drop = c("Exposure", "N")) #reshape data format for table layout
 ALL.Exposure.long <- reshape(SWC.Treatments.all, idvar="Treatment", direction="wide", timevar = "variable", drop = c("Exposure", "N")) #reshape data format for table layout
+CommGard.chem <- reshape(SWC.common.garden, idvar="Treatment", direction="wide", timevar = "variable", drop = c("Exposure", "N"))
+
 # write out tables
 write.table (Exposure1.long, file="C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Output/Seawater_chemistry_table_Output_exposure1.csv", sep=",", row.names = FALSE) #save data to output file
 write.table (Exposure2.long, file="C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Output/Seawater_chemistry_table_Output_exposure2.csv", sep=",", row.names = FALSE) #save data to output file
-write.table (ALL.Exposure.long, file="C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Output/Seawater_chemistry_table_Output_all.csv", sep=",", row.names = FALSE) #save data to output file
+write.table (ALL.Exposure.long, file="C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Output/Seawater_chemistry_table_Output_exposure_1_2.csv", sep=",", row.names = FALSE) #save data to output file
+write.table (CommGard.chem, file="C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Output/Seawater_chemistry_table_common_garden.csv", sep=",", row.names = FALSE) #save data to output file
 
 
 ### Respiration Data - Analysis, Graphs, Models  (summarized analysis from Stats_resp_analysis.R)#############
@@ -447,12 +463,13 @@ resp_EXP1_ALL <- rbind(resp_EXP1_condensed, respBASAL) # merge the two tables fo
 resp_EXP1_plot <- ggplot(resp_EXP1_ALL, aes(x = factor(resp_EXP1_ALL$Day), y = resp_EXP1_ALL$FINALresp, fill = resp_EXP1_ALL$Init.treat)) +
     geom_boxplot(alpha = 0.1, outlier.shape = 19,
     outlier.fill = "black", outlier.size = 1, lwd=0.2) + 
+    geom_point(pch = 19, position = position_jitterdodge(0.05), size=1) +
     scale_color_grey() + scale_fill_grey() + theme_classic() + ylim(0, 0.6) +
     #geom_point(aes(fill = resp_EXP1_ALL$Treat1_Treat2), size = 1.5, shape = 21, position = position_jitterdodge(0.15)) +
-    stat_summary(fun.y=mean, geom="point", shape=19, size=2, position = position_jitterdodge(0.01)) +
+    stat_summary(fun.y=mean, geom="point", pch="+", size=3, position = position_jitterdodge(0.01)) +
     theme(legend.position = c(.9, .9), legend.text=element_text(size=8)) +
     geom_vline(xintercept=c(1.5), linetype="dotted", size=1) +
-    scale_x_discrete(labels = c("prebasal",2,5,8,10))    +
+    scale_x_discrete(labels = c("pre",2,5,8,10))    +
     labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1", x = "Date", fill="") 
 resp_EXP1_plot # view the plot
 
@@ -460,10 +477,11 @@ resp_EXP1_plot # view the plot
 resp_EXP1_plot_2 <- ggplot(resp_EXP1, aes(x = factor(resp_EXP1$Init.treat), y = resp_EXP1$FINALresp, fill = resp_EXP1$Init.treat)) +
     geom_boxplot(alpha = 0.1, outlier.shape = 19,
     outlier.fill = "black", outlier.size = 1, lwd=0.2) + 
+  geom_point(pch = 19, position = position_jitterdodge(0.05), size=1) +
     scale_color_grey() + scale_fill_grey() + theme_classic() +
     #geom_point(aes(fill = resp_EXP1$Treat1_Treat2), size = 2, shape = 21, position = position_jitterdodge(0.15)) +
     theme(legend.position = c(.9, .9), legend.text=element_text(size=8)) +
-    stat_summary(fun.y=mean, geom="point", shape=19, size=2, position = position_jitterdodge(0.01)) +
+    stat_summary(fun.y=mean, geom="point", pch="+", size=3, position = position_jitterdodge(0.01)) +
     labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1",  x = "Treatment", fill= "") 
 resp_EXP1_plot_2
 
@@ -519,9 +537,10 @@ Exp2.Fig.resp # view the figure
 resp_EXP2_plot <- ggplot(resp_EXP2, aes(x = factor(resp_EXP2$Day), y = resp_EXP2$FINALresp, fill = resp_EXP2$Treat1_Treat2)) +
   geom_boxplot(alpha = 0.1, outlier.shape = 19,
   outlier.fill = "black", outlier.size = 1, lwd=0.2) + 
+  geom_point(pch = 19, position = position_jitterdodge(0.05), size=1) +
   scale_color_grey() + scale_fill_grey() + theme_classic() + ylim(0, 0.6) +
   #geom_point(aes(fill = resp_EXP2$Treat1_Treat2), size = 1.5, shape = 21, position = position_jitterdodge(0.05)) +
-  stat_summary(fun.y=mean, geom="point", shape=19, size=2, position = position_jitterdodge(0.01)) +
+  stat_summary(fun.y=mean, geom="point", pch="+", size=3, position = position_jitterdodge(0.01)) +
   theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
   scale_x_discrete(labels = c("prebasal",2,4,6)) +
   geom_vline(xintercept=c(1.5), linetype="dotted", size=1) + labs(y="Standard metabolic rate µg O2 L-1 h-1 indiv-1", x = "Day", fill="")
@@ -536,10 +555,16 @@ x2.1.resp <- do.call(data.frame,aggregate(FINALresp ~ Init.treat*Sec.treat, data
 x2.resp$treatments <- paste(x2.resp$Init.treat, x2.resp$Sec.treat, sep="_") # combine treatments in a column
 
 # linear mixed effect model
-m2.resp <- lme(FINALresp~Init.treat*Sec.treat,random=~1|Day/Init.treat/Sec.treat,data=resp_EXP2_2.4.6.) #reteatment and day with day as a random factor
-anova(m2.resp) # anova of lmer
-summary(m2.resp) # summary of lmer
+Sec.lme.resp <- lmer(FINALresp ~ Init.treat*Sec.treat + (1|Day/Init.treat/Sec.treat), data = resp_EXP2_2.4.6.) # teatments with day as a random factor
+anova(Sec.lme.resp) # anova of lmer
+summary(Sec.lme.resp) # summary of lmer
+m2.resp <- lme(FINALresp~Init.treat*Sec.treat,random=~1|Day/Init.treat/Sec.treat,data=resp_EXP2_2.4.6.) # teatments with day as a random factor
+anova(m2.resp) # anova of lme
+summary(m2.resp) # summary of lme
 EXP2.lme.anovatable <- anova(m2.resp) # assign name to output table late in code
+
+# test model for normal variance
+leveneTest(FINALresp ~ Init.treat*Sec.treat, random=~1|Day/Init.treat/Sec.treat, data = resp_EXP2_2.4.6.) # p 0.1995
 
 # plot the residuals
 par(mfrow=c(1,3)) #set plotting configuration
@@ -565,8 +590,7 @@ hist(resp_EXP2_om$FINALresp) # noted that 83 and 90 ommitted gives a norm distri
 
 # mixed effect model with resp_om
 m2.resp <- lme(FINALresp~Init.treat*Sec.treat,random=~1|Day/Init.treat/Sec.treat,data=resp_EXP2_om) #reteatment and day with day as a random factor
-anova(m2.resp) # anova of lmer
-summary(m2.resp) # summary of lmer
+anova(m2.resp) # anova of lme
 EXP2.lme.anovatable <- anova(m2.resp) # assign name to output table late in code
 par(mfrow=c(1,3)) #set plotting configuration
 par(mar=c(1,1,1,1)) #set margins for plots
@@ -574,7 +598,6 @@ hist(residuals(m2.resp)) #plot histogram of residuals
 shapiro.test(residuals(m2.resp)) # residuals are  normal 
 boxplot(residuals(m2.resp)) #plot boxplot of residuals
 plot(fitted(m2.resp),residuals(m2.resp)) #display residuals versus fitter, normal QQ plot, leverage plot
-
 
 #Exposure2 Plotting
 #barplots for mean SD exp1 - exp2
@@ -603,17 +626,31 @@ barplot_resp <- ggplot(Table_EXP_1_2, aes(x=as.factor(Treat1_Treat2), y=FINALres
         legend.position='none') + #remove legend background
   ggtitle("SMR exp1 and exp 2 mean SE") +
   theme(plot.title = element_text(face = 'bold', 
-                                  size = 12, 
+                                  size = 12,
                                   hjust = 0))
 barplot_resp
 
-# barplot percent difference
-percent_av_resp <- Table_EXP_1_2%>%
-  group_by(Treat1_Treat2) %>%
-  arrange(trial) %>%
-  mutate(pct.chg = 100*(FINALresp.mean - lag(FINALresp.mean))/(FINALresp.mean)) # calculate the percent change from (secondary - initial / secondary) *100
+#  mean percent difference between exposure periods
+percent_av_resp_exposures <- Table_EXP_1_2                %>% # view the table
+                            select(trial, FINALresp.mean) %>% # select desired data
+                            group_by(trial)               %>% # group by exposure period 'trial'
+                            dplyr::summarise(mean = mean(FINALresp.mean), # summary table
+                            min = min(FINALresp.mean),
+                            sd = sd(FINALresp.mean),
+                            SEM = (sd/sqrt(n())),
+                            count =n())                   %>%
+                            mutate(pct.chg = (100*((mean[2] - (mean[1]))/(mean[1])))) # calculate the percent change 
+percent_av_resp_exposures # view summary table 
 
-percent_av_resp <- percent_av_resp[5:8,] # only rows with data
+#  percent difference between treatment
+percent_av_resp <- Table_EXP_1_2            %>% # view the table
+                    group_by(Treat1_Treat2) %>%
+                    spread(trial, FINALresp.mean)             %>% # create a horizonatal table for the mean resp in initial (n = 4 per treat) and secondary (n=3 per treat)
+                    select(Treat1_Treat2, initial, secondary) %>% # select only the treatments and the mean resp rates
+                    mutate(secondary=lag(secondary))          %>% # shift the secondary down to align with
+                    na.omit()                                 %>% # omit na 
+                    mutate(pct.chg = (100*((secondary - (initial))/(initial)))) # calculate the percent change from (secondary - initial / secondary) *100
+
 percent_av_resp # view the table
 
 # plot
@@ -621,7 +658,7 @@ barplot_resp_percent <- ggplot(percent_av_resp, aes(x=as.factor(Treat1_Treat2), 
   geom_bar(position=position_dodge(), stat="identity", colour='black') +
   xlab("treatment initial*secondary") +
   ylab("Respiration rate") +
-  ylim(0,40) +
+  ylim(0,60) +
   theme_bw() + #Set the background color
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), #Set the text angle
         axis.line = element_line(color = 'black'), #Set the axes color
@@ -910,8 +947,9 @@ Fig.d10.EXP1.treatment# plotted data
 length_EXP1_Day10 <- ggplot(end_size, aes(x = treatment, y = shell_size, fill = treatment)) +
       geom_boxplot(alpha = 0.1) + scale_color_grey() + scale_fill_grey() + theme_classic() +
       ylim(2,8.2) +
+      geom_point(pch = 19, position = position_jitterdodge(0.1), size=1) +
       #geom_point(aes(fill = treatment), size = 0.5, shape = 21, position = position_jitterdodge(0.05)) +
-      stat_summary(fun.y=mean, geom="point", shape=4, size=2, position = position_jitterdodge(0.01)) +
+      stat_summary(fun.y=mean, geom="point", pch="+", size=3, position = position_jitterdodge(0.01)) +
       theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
       labs(y="shell length", x = "Treatment", fill="") 
 length_EXP1_Day10
@@ -923,8 +961,9 @@ length_EXP1_plot <- ggplot(size_EXP1_with_basal, aes(x = factor(Day), y = shell_
       outlier.fill = "black", outlier.size = 1, lwd=0.2) + 
       scale_color_grey() + scale_fill_grey() + theme_classic() +
       ylim(2,8.2) + scale_x_discrete(limits=c("prebasal",2,5,8,10)) +
+      geom_point(pch = 19, position = position_jitterdodge(0.1), size=0.5) +
       #geom_point(aes(fill = treatment), size = 0.5, shape = 21, position = position_jitterdodge(0.05)) +
-      stat_summary(fun.y=mean, geom="point", shape=19, size=2, position = position_jitterdodge(0.01)) +
+      stat_summary(fun.y=mean, geom="point", pch="+", size=3, position = position_jitterdodge(0.01)) +
       theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
       geom_vline(xintercept=c(1.5), linetype="dotted", size=1) + labs(y="shell length", x = "Day", fill="")
 length_EXP1_plot
@@ -979,7 +1018,8 @@ length_EXP2_plot <- ggplot(size_EXP2, aes(x = factor(Day), y = shell_size, fill 
       geom_boxplot(alpha = 0.1, outlier.shape = 19,
       outlier.fill = "black", outlier.size = 1, lwd=0.2) + 
       scale_color_grey() + scale_fill_grey(start = 0, end = 0.9) + theme_classic() +
-      ylim(2, 8.2) + stat_summary(fun.y=mean, geom="point", shape=19, size=2, position = position_jitterdodge(0.01)) +
+      geom_point(pch = 19, position = position_jitterdodge(0.05), size=0.5) +
+      ylim(2, 8.2) + stat_summary(fun.y=mean, geom="point", pch="+", size=3, position = position_jitterdodge(0.01)) +
       #geom_point(aes(fill = treatment), size = 0.5, shape = 21, position = position_jitterdodge(0.05)) +
       theme(legend.position = c(.92, .9), legend.text=element_text(size=8)) +
       scale_x_discrete(labels = c("prebasal",2,4,6)) +
@@ -1063,13 +1103,30 @@ barplot_size <- ggplot(SIZETable_EXP_1_2, aes(x=as.factor(treatment), y=shell_si
                                   hjust = 0))
 barplot_size
 
-# barplot percent difference
-percent_av_size <- SIZETable_EXP_1_2%>%
-  group_by(treatment) %>%
-  arrange(trial) %>%
-  mutate(pct.chg = 100*(shell_size.mean - lag(shell_size.mean))/(shell_size.mean)) # calculate the percent change from (secondary - initial / secondary) *100
-percent_av_size <- percent_av_size[5:8,] # only rows with data
-percent_av_size # view the table
+#  mean percent difference between exposure periods
+percent_av_size_exposures <- SIZETable_EXP_1_2            %>% # view the table
+                            select(trial, shell_size.mean  ) %>% # select desired data
+                            group_by(trial)               %>% # group by exposure period 'trial'
+                            dplyr::summarise(mean = mean(shell_size.mean), # summary table
+                            min = min(shell_size.mean),
+                            sd = sd(shell_size.mean),
+                            SEM = (sd/sqrt(n())),
+                            count =n())                   %>%
+                            mutate(pct.chg = (100*((mean[2] - (mean[1]))/(mean[1])))) # calculate the percent change 
+percent_av_size_exposures # view summary table 
+
+# percent difference between treatment
+percent_av_size <- SIZETable_EXP_1_2        %>% # view the table
+                  group_by(treatment)                       %>%
+                  spread(trial, shell_size.mean)            %>% # create a horizonatal table for the mean size in initial (n = 4 per treat) and secondary (n=4 per treat)
+                  select(treatment, initial, secondary)    %>% # select only the treatments and the mean shell size  
+                  mutate(secondary=lag(secondary))          %>% # shift the secondary down to align with
+                  na.omit()                                 %>% # omit na 
+                  mutate(pct.chg = (100*((secondary - (initial))/(initial)))) # calculate the percent change from (secondary - initial / secondary) *100
+
+percent_av_size  # view the table
+
+
 # plot
 barplot_size_percent <- ggplot(percent_av_size, aes(x=as.factor(treatment), y=pct.chg)) +
   geom_bar(position=position_dodge(), stat="identity", colour='black') +
@@ -1231,7 +1288,7 @@ Fig.Exp2.All.size <- ggplot(x2.1, aes(x=Sec.Trt, y=shell_size.mean, group=Init.T
   geom_point(aes(shape=Init.Trt), size = 3, position = position_dodge(width = 0.05)) +
   annotate("text", x="Ambient", y=6, label = "a", size = 3) + #add text to the graphic for posthoc letters
   annotate("text", x="Ambient", y=5.8, label = "ab", size = 3) + #add text to the graphic for posthoc letters
-  annotate("text", x="Low", y=5.82, label = "a", size = 3) + 
+  annotate("text", x="Low", y=5.82, label = "ab", size = 3) + 
   annotate("text", x="Low", y=5.57, label = "b", size = 3) + 
   xlab("Secondary Treatment") +
   ylab("Shell size (mm)") +
@@ -1251,7 +1308,6 @@ Fig.Exp2.All.size <- ggplot(x2.1, aes(x=Sec.Trt, y=shell_size.mean, group=Init.T
                                   hjust = 0))
 
 Fig.Exp2.All.size
-
 
 # plot all data with mean standard error and time
 LINEFig.Exp2.All.size <- ggplot(x2, aes(x=Day, y=shell_size.mean , group=treatments)) + 
