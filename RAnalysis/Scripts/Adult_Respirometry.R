@@ -97,7 +97,7 @@ Data <- merge(Resp.R, Sample.Info, by="Sample.ID")
 #correct for the size of the chamber
 Data$micromol.s <- Data$umol.L.sec * (Data$Chamber.Vol.mL/1000)
 
-#calculate the average of the blanks from each time step
+#calculate the average of the blanks 
 blnks <- subset(Data, Sample.Type=="Blank")
 blnks <- aggregate(micromol.s ~ pH.Treatment, data=blnks, FUN=mean)
 Data <- merge(Data, blnks, by="pH.Treatment")
@@ -106,11 +106,14 @@ colnames(Data)[colnames(Data) == 'micromol.s.y'] <- 'blank.micromol.s'
 
 #subtract the average of the blanks from each time step
 Data$corr.micromol.s <- Data$sample.micromol.s - Data$blank.micromol.s
+
+#Correct for the biovolume as a proxy for adult size - NEED TO GET CLOSER TO BIOMASS
 Data$micromol.bivol.s <- Data$corr.micromol.s/Data$Adult.Vol.ml
+
+#convert to µmol ml-1 h-1
 Data$micromol.bivol.h <- Data$micromol.bivol.s*3600
 
-GeoResp <- cbind(Data$Date, Data$Sample.ID, Data$pH.Treatment, Data$Sample.Type, Data$micromol.bivol.h)
 
-write.csv(GeoResp,"~/MyProjects/Geoduck_Conditioning/RAnalysis/Output/Adult.Resp.Test.csv")
+write.csv(Data,"~/MyProjects/Geoduck_Conditioning/RAnalysis/Output/Adult.Resp.Test.csv")
 
 
