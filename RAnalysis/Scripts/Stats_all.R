@@ -29,11 +29,10 @@ library(gridExtra)
 library(multcompView)
 library(lsmeans)
 library(tidyr)
+library(Rcmdr)
 
 #set working directory--------------------------------------------------------------------------------------------------
 setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/") #set working
-
-
 
 ### CONICAL Seawater chemistry Data - Analysis, Graphs, Tables (APEX DATA) ####
 
@@ -96,6 +95,7 @@ All.pH <- ggplot(daily.pH, aes(x=Date, y=mean, group=Treatment)) + #set up plot 
   theme(plot.title = element_text(face = 'bold', 
                                   size = 12, 
                                   hjust = 0)) #set title attributes
+  
 All.pH #view plot
 
 # CONTINUOUS EXPERIMENTAL TEMPERATURE DATA 
@@ -562,9 +562,15 @@ m2.resp <- lme(FINALresp~Init.treat*Sec.treat,random=~1|Day/Init.treat/Sec.treat
 anova(m2.resp) # anova of lme
 summary(m2.resp) # summary of lme
 EXP2.lme.anovatable <- anova(m2.resp) # assign name to output table late in code
+exp2.resp.ph <- lsmeans(m2.resp, pairwise ~ Init.treat*Sec.treat)# pariwise Tukey Post-hoc test between repeated treatments
+exp2.resp.ph # view post hoc summary
+E2.pairs.RESP.05 <- cld(exp2.resp.ph, alpha=.05, Letters=letters) #list pairwise tests and letter display p < 0.05
+E2.pairs.RESP.05 #view results
+E2.pairs.RESP.1 <- cld(exp2.resp.ph, alpha=.1, Letters=letters) #list pairwise tests and letter display p < 0.1
+E2.pairs.RESP.1 #view results
 
 # test model for normal variance
-leveneTest(FINALresp ~ Init.treat*Sec.treat, random=~1|Day/Init.treat/Sec.treat, data = resp_EXP2_2.4.6.) # p 0.1995
+leveneTest(FINALresp ~ Init.treat*Sec.treat, random=~1|Day, data = resp_EXP2_2.4.6.) # p 0.1995
 
 # plot the residuals
 par(mfrow=c(1,3)) #set plotting configuration
@@ -1041,6 +1047,10 @@ summary(m2) # view summary of anova table
 EXP2.lme.size.anovatable <- anova(m2) # name anova table to save output later
 exp2.ph <- lsmeans(m2, pairwise ~ Init.Trt*Sec.Trt)# pariwise Tukey Post-hoc test between repeated treatments
 exp2.ph # view post hoc summary
+E2.pairs.SIZE.05 <- cld(exp2.ph, alpha=.05, Letters=letters) #list pairwise tests and letter display p < 0.05
+E2.pairs.SIZE.05 #view results
+E2.pairs.SIZE.1 <- cld(exp2.ph, alpha=.1, Letters=letters) #list pairwise tests and letter display p < 0.1
+E2.pairs.SIZE.1 #view results
 
 #plot the residuals
 par(mfrow=c(1,3)) #set plotting configuration
