@@ -615,9 +615,7 @@ Exp1.Fig.resp.A <- ggplot(resp_EXP1_ALL, aes(x = factor(resp_EXP1_ALL$Day),
                                width = 0.6, size=0.4, linetype = "dashed", position = position_dodge(preserve = "single")) +
                   theme(legend.position = c(0.55,0.9),legend.direction="horizontal", legend.title=element_blank(), 
                         axis.line = element_line(color = 'black'), #Set the axes color
-                        axis.ticks.length=unit(0.2, "cm"), #turn ticks inward
-                        axis.text.y = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")), #set margins on labels
-                        axis.text.x = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm"), angle = 90, vjust = 0.5, hjust=1)) +
+                        axis.ticks.length=unit(0.2, "cm")) + #turn ticks inward
                   geom_vline(xintercept=c(1.5), linetype="dotted", size=1) +
                   scale_x_discrete(labels = c("0",2,5,8,10))    +
                   labs(y=expression("Respiration rate"~(~µg~O[2]*hr^{-1}*mm^{-1})), x=expression("Days"),fill= "")  
@@ -733,6 +731,7 @@ Exp2.Fig.resp.B <-
                   theme(axis.text.x = element_text(angle = 0, hjust = 0.5, size=13,color="black"),
                         axis.text.y = element_text(angle = 0, hjust = 0.5, size=13,color="black"),
                         axis.line = element_line(color = 'black'),
+                        axis.ticks.length=unit(0.2, "cm"),
                         axis.title.x = element_text(size = 14),
                         axis.title.y = element_text(size = 14)) +
                   scale_y_continuous(limits = c(0, 0.65), expand = c(0, 0))
@@ -909,20 +908,26 @@ Exp1.Fig.size.A <- ggplot(size_EXP1_all, aes(x = factor(Day), y = shell_size, fi
                   ylim(2,8.2) + 
                   scale_x_discrete(limits=c("0",2,5,8,10)) +
                   labs(y=expression("Shell length"~(mm)), x=expression("Days"))
-Exp1.Fig.size.FINAL <- Exp1.Fig.size.A + 
+Exp1.Fig.size.B <- Exp1.Fig.size.A + 
                   theme(axis.text.x = element_text(angle = 0, hjust = 0.5, size=13,color="black"),
                   axis.text.y = element_text(angle = 0, hjust = 0.5, size=13,color="black"),
                   axis.line = element_line(color = 'black'),
+                  axis.ticks.length=unit(0.2, "cm"),
                   axis.title.x = element_text(size = 14),
                   axis.title.y = element_text(size = 14)) +
                   scale_y_continuous(limits = c(2, 8), expand = c(0, 0))
-Exp1.Fig.size.FINAL # view the plot
+Exp1.Fig.size.B # view the plot
 
 # Two-Way anova for shell size under Initial OA Exposure
 EXP1.size.aov.mod <- aov(shell_size ~ Init.Trt * Day, data = size_EXP1) # run anova on treatment and time
 anova(EXP1.size.aov.mod) # significant effect of time; no effect from treatment
 # Levene's test for homogeneity 
 leveneTest(EXP1.size.aov.mod) # p 0.5609
+# post-hoc
+exp1.size.ph <- lsmeans(EXP1.size.aov.mod, pairwise ~  Day)# pariwise Tukey Post-hoc test between repeated treatments
+exp1.size.ph # view post hoc summary
+E1.pairs.SIZE.05 <- cld(exp1.size.ph, alpha=.05, Letters=letters) #list pairwise tests and letter display p < 0.05
+E1.pairs.SIZE.05 #view results
 # plot the residuals
 par(mfrow=c(1,3)) #set plotting configuration
 par(mar=c(1,1,1,1)) #set margins for plots
@@ -930,6 +935,18 @@ hist(residuals(EXP1.size.aov.mod)) #plot histogram of residuals
 boxplot(residuals(EXP1.size.aov.mod)) #plot boxplot of residuals
 plot(fitted(EXP1.size.aov.mod),residuals(EXP1.size.aov.mod)) 
 
+Exp1.Fig.size_FINAL <- 
+  Exp1.Fig.size.B +
+  geom_segment(aes(x = 1.6, y = 7.3, xend = 2.4, yend = 7.3)) +
+  geom_segment(aes(x = 2.6, y = 7.3, xend = 3.4, yend = 7.3)) + 
+  geom_segment(aes(x = 3.6, y = 7.3, xend = 4.4, yend = 7.3)) +
+  geom_segment(aes(x = 4.6, y = 7.3, xend = 5.4, yend = 7.3)) +
+  annotate("text", x="2", y=7.2, label = "a", size = 4) + # t-test with p < 0.05 between treatments at day 0
+  annotate("text", x="5", y=7.2, label = "ab", size = 4) + # add text to the graphic for posthoc letters - effect of time
+  annotate("text", x="8", y=7.2, label = "ab", size = 4) + # add text to the graphic for posthoc letters - effect of time
+  annotate("text", x="10", y=7.2, label = "b", size = 4) # add text to the graphic for posthoc letters - effect of time
+Exp1.Fig.size_FINAL
+  
 ### EXP2 ####
 #PLOTTING
 Exp2.Fig.size.A <- ggplot(size_EXP2_all, aes(x = factor(Day), y = shell_size, fill = Treat1_Treat2)) +
@@ -953,6 +970,7 @@ Exp2.Fig.size.FINAL <- Exp2.Fig.size.A  +
                   theme(axis.text.x = element_text(angle = 0, hjust = 0.5, size=13,color="black"),
                         axis.text.y = element_text(angle = 0, hjust = 0.5, size=13,color="black"),
                         axis.line = element_line(color = 'black'),
+                        axis.ticks.length=unit(0.2, "cm"),
                         axis.title.x = element_text(size = 14),
                         axis.title.y = element_text(size = 14)) +
                   scale_y_continuous(limits = c(2, 8), expand = c(0, 0))
@@ -985,14 +1003,13 @@ E2.pairs.SIZE.05 #view results
 # effect of initial exposure
 exp2.size.ph.initial <- lsmeans(EXP2.size.aov.mod, pairwise ~  Init.Trt)# pariwise Tukey Post-hoc test between repeated treatments
 exp2.size.ph.initial # view post hoc summary
-E2.pairs.SIZE.05 <- cld(exp2.size.ph.initial, alpha=.05, Letters=letters) #list pairwise tests and letter display p < 0.05
-E2.pairs.SIZE.05 #view results
+E2.pairs.SIZE.05.initial <- cld(exp2.size.ph.initial, alpha=.05, Letters=letters) #list pairwise tests and letter display p < 0.05
+E2.pairs.SIZE.05.initial #view results
 # effect of initial exposure
 exp2.size.ph.sec <- lsmeans(EXP2.size.aov.mod, pairwise ~  Sec.Trt)# pariwise Tukey Post-hoc test between repeated treatments
 exp2.size.ph.sec  # view post hoc summary
-E2.pairs.SIZE.05 <- cld(exp2.size.ph.sec, alpha=.05, Letters=letters) #list pairwise tests and letter display p < 0.05
-E2.pairs.SIZE.05 #view results
-
+E2.pairs.SIZE.05.sec <- cld(exp2.size.ph.sec, alpha=.05, Letters=letters) #list pairwise tests and letter display p < 0.05
+E2.pairs.SIZE.05.sec #view results
 
 # #  mean percent difference between exposure periods
 # percent_av_size_exposures <- SIZETable_EXP_1_2            %>% # view the table
@@ -1021,7 +1038,7 @@ figure_1 <- ggarrange(Exp1.Fig.resp_FINAL, Exp2.Fig.resp_FINAL,
                                  ncol = 1, nrow = 2)
 figure_1 # view the figure
 
-figure_2 <- ggarrange(Exp1.Fig.size.FINAL, Exp2.Fig.size.FINAL,
+figure_2 <- ggarrange(Exp1.Fig.size_FINAL, Exp2.Fig.size.FINAL,
                       ncol = 1, nrow = 2)
 figure_2 # view the figure
 
