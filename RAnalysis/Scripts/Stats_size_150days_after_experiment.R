@@ -23,7 +23,7 @@ library(Rmisc)
 setwd("C:/Users/samjg/Documents/Notebook/data/photos_size_and_misc/geoduck_pics/") #set working
 
 #Load Size Data
-size<-read.csv("20190115_heathstack_commongarden/20190115_shell_length.csv", header=T, sep=",", na.string="NA", as.is=T) 
+size<-read.csv("20190115_size_150days_after_experiment/20190116_shell_size_150d_after_experiment.csv", header=T, sep=",", na.string="NA", as.is=T) 
 
 size # look at the data
 names(size) # look at names of data
@@ -53,7 +53,7 @@ percentdiff <- ((sumLENGTH_means[2,3] - sumLENGTH_means[1,3])/sumLENGTH_means[2,
 percentdiff # 5.8% greater shell length from animals initally exposed to low pH in initial exp trial
 
 # significant effect graph
-size_graph <- ggplot(size, aes(x = factor(size$Init_treat), y = size$Length_mm, fill = size$Init_treat)) +
+size_graph_INITIAL <- ggplot(size, aes(x = factor(size$Init_treat), y = size$Length_mm, fill = size$Init_treat)) +
               geom_boxplot(alpha = 0.1, outlier.shape = 19,
                            outlier.fill = "black", outlier.size = 1, lwd=0.2) + 
               geom_point(pch = 19, position = position_jitterdodge(0.05), size=1) +
@@ -62,4 +62,16 @@ size_graph <- ggplot(size, aes(x = factor(size$Init_treat), y = size$Length_mm, 
               theme(legend.position = c(.9, .9), legend.text=element_text(size=8)) +
               stat_summary(fun.y=mean, geom="point", pch="+", size=3, position = position_jitterdodge(0.01)) +
               labs(y="Shell length (mm)",  x = "Initial Treatment", fill= "") 
-size_graph # view the graph
+size_graph_INITIAL # view the graph
+
+size_graph_INITIAL.SECOND <- ggplot(size, aes(x = factor(size$Treat1_Treat2), y = size$Length_mm, fill = size$Treat1_Treat2)) +
+  geom_boxplot(alpha = 0.1, outlier.shape = 19,
+               outlier.fill = "black", outlier.size = 1, lwd=0.2) + 
+  geom_point(pch = 19, position = position_jitterdodge(0.05), size=1) +
+  scale_color_grey() + scale_fill_grey() + theme_classic() +
+  #geom_point(aes(fill = resp_EXP1$Treat1_Treat2), size = 2, shape = 21, position = position_jitterdodge(0.15)) +
+  theme(legend.position = c(.9, .9), legend.text=element_text(size=8)) +
+  stat_summary(fun.y=mean, geom="point", pch="+", size=3, position = position_jitterdodge(0.01)) +
+  labs(y="Shell length (mm)",  x = "Initial Treatment", fill= "") 
+size_graph_INITIAL.SECOND # view the graph
+
