@@ -2,18 +2,17 @@
 #Project: FFAR
 #Author: HM Putnam & Sam Gurr
 #Edited by: Sam Gurr
-#Date Last Modified: 20181226
+#Date Last Modified: 20190310
 #See Readme file for details
 
 rm(list=ls())
+
 ## Install packages if not already in your library
 if ("dplyr" %in% rownames(installed.packages()) == 'FALSE') install.packages('dplyr') 
 if ("plyr" %in% rownames(installed.packages()) == 'FALSE') install.packages('plyr') 
 if ("ggplot2" %in% rownames(installed.packages()) == 'FALSE') install.packages('ggplot2') 
 if ("ggpubr" %in% rownames(installed.packages()) == 'FALSE') install_github('ggpubr') 
 if ("Rmisc" %in% rownames(installed.packages()) == 'FALSE') install.packages('Rmisc') 
-#if ("nlme" %in% rownames(installed.packages()) == 'FALSE') install.packages('nlme') 
-#if ("lme4" %in% rownames(installed.packages()) == 'FALSE') install.packages('lme4') 
 if ("plotrix" %in% rownames(installed.packages()) == 'FALSE') install.packages('plotrix') 
 if ("lsmeans" %in% rownames(installed.packages()) == 'FALSE') install.packages('lsmeans') 
 if ("gridExtra" %in% rownames(installed.packages()) == 'FALSE') install.packages('gridExtra') 
@@ -22,14 +21,13 @@ if ("multcompView" %in% rownames(installed.packages()) == 'FALSE') install.packa
 if ("tidyr" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyr') 
 if ("Rcmdr" %in% rownames(installed.packages()) == 'FALSE') install.packages('Rcmdr') 
 if ("rlang" %in% rownames(installed.packages()) == 'FALSE') install.packages('rlang') 
+
 # Load packages and pacage version/date/import/depends info
 library(dplyr)          # Version 0.7.6, Packaged: 2018-06-27, Depends: R (>= 3.1.2)Imports: assertthat (>= 0.2.0), bindrcpp (>= 0.2.0.9000), glue (>=1.1.1), magrittr (>= 1.5), methods, pkgconfig (>= 2.0.1), R6(>= 2.2.2), Rcpp (>= 0.12.15), rlang (>= 0.2.0), tibble (>=1.3.1), tidyselect (>= 0.2.3), utils
 library(plyr)           # Version 1.8.4, Packaged: 2016-06-07, Depends: R (>= 3.1.0) Imports: Rcpp (>= 0.11.0)
 library(ggplot2)        # Version 3.1.0, Date/Publication: 2018-10-25, Depends: R (>= 3.1)Imports: digest, grid, gtable (>= 0.1.1), lazyeval, MASS, mgcv, plyr(>= 1.7.1), reshape2, rlang (>= 0.2.1), scales (>= 0.5.0),stats, tibble, viridisLite, withr (>= 2.0.0)
 library(ggpubr)         # Version: 0.1.8 Date: 2018-08-30, Depends: R (>= 3.1.0), ggplot2, magrittrImports: ggrepel, grid, ggsci, stats, utils, tidyr, purrr, dplyr(>=0.7.1), cowplot, ggsignif, scales, gridExtra, glue, polynom
 library(Rmisc)          # Version: 1.5 Packaged: 2013-10-21, Depends: lattice, plyr
-#library(nlme)           # Version: 3.1-137, Date: 2018-04-07, Depends: R (>= 3.4.0) Imports: graphics, stats, utils, lattice
-#library(lme4)           # Version: 1.1-17, Date/Publication: 2018-04-03, Depends: R (>= 3.2.0), Matrix (>= 1.2-1), methods, stats
 library(plotrix)        # Version: 3.7-4, Date/Publication: 2018-10-03
 library(lsmeans)        # Version: 2.27-62, Date/Publication: 2018-05-11, Depends: methods, R (>= 3.2)
 library(gridExtra)      # Version: 2.3, Date/Publication: 2017-09-09, Imports: gtable, grid, grDevices, graphics, utils
@@ -38,6 +36,7 @@ library(multcompView)   # Version: 0.1-7, Date/Publication: 2015-07-31, Imports:
 library(tidyr)          # Version: 0.8.1, Date/Publication: 2018-05-18, Depends: R (>= 3.1) Imports: dplyr (>= 0.7.0), glue, magrittr, purrr, Rcpp, rlang, stringi, tibble, tidyselect
 library(Rcmdr)          # Version: 2.5-1. Date/Publication: 2018-09-11, Depends: R (>= 3.5.0), grDevices, graphics, methods, stats, utils,splines, RcmdrMisc (>= 2.5-0), car (>= 3.0-1), effects (>=4.0-3) Imports: tcltk, tcltk2 (>= 1.2-6), abind, relimp (>= 1.0-5)
 library(rlang)          # Version: 0.3.0.1 Date/Publication: 2018-10-25, Depends: R (>= 3.1.0)
+library(Rmisc)
 
 #Required Data files
 # ----Conical Chemistry (APEX data)
@@ -1047,3 +1046,220 @@ ggsave(file="Output/Supplem.Fig.conical.pH.temp.pdf", Supplem.Fig.conical.pH.tem
 ggsave(file="Output/Output_Figure_1.pdf", figure_1, width = 12, height = 8, units = c("in"))
 ggsave(file="Output/Output_Figure_2.pdf", figure_2, width = 12, height = 8, units = c("in"))
 
+
+
+# 157 days post experiment in common garden heathstack
+
+# Shell Size
+size_157days_postEXP<-read.csv("Data/Shell_size_157d_post.csv", header=T, sep=",", na.string="NA", as.is=T) 
+size_157days_postEXP <- na.omit(size_157days_postEXP)
+size_157days_postEXP # look at the data
+names(size_157days_postEXP) # look at names of data
+
+# both Treat1_Treat2
+size_table_Treat1Treat2 <- do.call(data.frame,aggregate(Length_mm ~ Treat1_Treat2,
+                                                        data = size_157days_postEXP, function(x) c(mean = mean(x), se = std.error(x))))
+size_table_Treat1Treat2 # view the table
+
+# analysis
+size_157days_postEXP.aov.mod <- aov(Length_mm ~ Init_treat*Sec_treat, data = size_157days_postEXP) # run anova on Treat1_Treat2 and time
+anova(size_157days_postEXP.aov.mod) # significant effect of initial treatment
+# plot the residuals and test with levene's test
+par(mfrow=c(1,3)) #set plotting configuration
+par(mar=c(1,1,1,1)) #set margins for plots
+leveneTest(size_157days_postEXP.aov.mod) # p = 0.4317
+hist(residuals(size_157days_postEXP.aov.mod)) #plot histogram of residuals
+boxplot(residuals(size_157days_postEXP.aov.mod)) #plot boxplot of residuals
+plot(fitted(size_157days_postEXP.aov.mod),residuals(size_157days_postEXP.aov.mod))
+
+#summary table based on the anova results of a significant effect of initial treatment
+sumLENGTH_means.157days <- summarySE(size_157days_postEXP, 
+                                     measurevar="Length_mm", 
+                                     groupvars=c("Init_treat")) # summarize previous table for overall Treat1_Treat2 
+sumLENGTH_means.157days # view the table
+percentdiff.157days <- ((sumLENGTH_means.157days[2,3] - sumLENGTH_means.157days[1,3])/sumLENGTH_means.157days[2,3])*100 # calculate percent difference
+percentdiff.157days # 5.8% greater shell length from animals initally exposed to low pH in initial exp trial
+
+# significant effect graph
+size_graph_INITIAL.157days <- ggplot(size_157days_postEXP, aes(x = factor(Init_treat), y = Length_mm, fill = Init_treat)) +
+  theme_classic() +
+  scale_fill_manual(values=c("white", "grey3"), 
+                    labels=c("Ambient", "Elevated")) +
+  geom_boxplot(alpha = 0.5, # color hue
+               width=0.6, # boxplot width
+               outlier.size=0, # make outliers small
+               position = position_dodge(preserve = "single")) + 
+  geom_point(pch = 19, position = position_jitterdodge(.05), size=1) +
+  stat_summary(fun.y=mean, geom = "errorbar", aes(ymax = ..y.., ymin = ..y..), 
+               width = 0.6, size=0.4, linetype = "dashed", position = position_dodge(preserve = "single")) +
+  theme(legend.position = c(0.55,0.96), legend.direction="horizontal", legend.title=element_blank()) +
+  ylim(4,13) + 
+  scale_x_discrete(labels = c("Ambient","Elevated")) +
+  labs(y=expression("Shell size"~(mm)), x=expression("Initial treatment"))
+size_graph_INITIAL.157days
+
+#Both treatments from secnondary exposure graph
+size_graph_INITIAL.SECOND.157days <- ggplot(size_157days_postEXP, aes(x = factor(Treat1_Treat2), y = Length_mm, fill = Treat1_Treat2)) +
+  theme_classic() +
+  scale_fill_manual(values=c("white", "grey80",  "gray50", "grey3"), 
+                    labels=c("Ambient × Ambient","Ambient × Elevated","Elevated × Ambient","Elevated × Elevated")) +
+  geom_boxplot(alpha = 0.5, # color hue
+               width=0.6, # boxplot width
+               outlier.size=0, # make outliers small
+               position = position_dodge(preserve = "single")) + 
+  geom_point(pch = 19, position = position_jitterdodge(.05), size=1) +
+  stat_summary(fun.y=mean, geom = "errorbar", aes(ymax = ..y.., ymin = ..y..), 
+               width = 0.6, size=0.4, linetype = "dashed", position = position_dodge(preserve = "single")) +
+  theme(legend.position = c(0.55,0.96), legend.direction="horizontal", legend.title=element_blank()) +
+  ylim(4,13) + 
+  scale_x_discrete(labels = c("Ambient × Ambient","Ambient × Elevated","Elevated × Ambient","Elevated × Elevated")) +
+  labs(y=expression("Shell size"~(mm)), x=expression("Initial×Secondary treatment"))
+size_graph_INITIAL.SECOND.157days
+
+# Respiration
+# call the whole record NOTE: initial data in first 5 minutes shows higher respriration rates
+# than the rest of the record due to mixing, this leads to outliers in automated analysis
+# used a truncated 5-20 minute record to pull representative data after vials were thorougly mixed
+# line below is the whole record
+# RESP.reference.resp157days.postEXP<-read.csv("Data/SDR_data/All_data_csv/Output_157d_post/Respiration/Resp_157d_post_alpha0.4_whole_record.csv", header=T, sep=",", na.string="NA", as.is=T) 
+
+# call the truncated 5-20 minute record
+RESP.reference.resp157days.postEXP<-read.csv("Data/SDR_data/All_data_csv/Output_157d_post/Respiration/Resp_157d_post_alpha0.4_10-20mins.csv", header=T, sep=",", na.string="NA", as.is=T) 
+SIZE.reference.resp157days.postEXP<-read.csv("Data/SDR_data/All_data_csv/Output_157d_post/Size_reference/Size_reference_157days_post.csv", header=T, sep=",", na.string="NA", as.is=T) 
+RESP.CALC.157.days.postEXP <- merge(RESP.reference.resp157days.postEXP, SIZE.reference.resp157days.postEXP, by=c("Date","SDR_position", "RUN")) # merge the individual info (size, estimate number of larvae) by common columns 
+RESP.CALC.157.days.postEXP # view new file
+
+# from visual of Lolin plots - RUN1 C1, C4, and C5 were bad data, non linear and likely an error (air bubble)
+x <- RESP.CALC.157.days.postEXP[-c(25,31,33),] # x = Resp data with out these points (stated above)
+JUVresp_all <- x %>% 
+  filter((substr(x$Notes, 1,9)) == "juveniles") # call only resp values of juveniles
+
+JUVresp_RUN1 <- JUVresp_all %>%  filter(JUVresp_all$RUN == 1) # call run 1
+JUVresp_RUN2 <- JUVresp_all %>%  filter(JUVresp_all$RUN == 2)  # call run 2
+
+#blanks Run1 
+JUVresp_blanks_RUN1 <- JUVresp_RUN1 %>% 
+  filter(JUVresp_RUN1$Tank.ID == "Blank") # call only blanks
+JUVresp_blankMEANS_RUN1 <- JUVresp_blanks_RUN1 %>% 
+  summarise(mean_Lpc = mean(abs(Lpc)),mean_Leq = mean(abs(Leq)), mean_Lz = mean(abs(Lz))) # summarize the blanks into a mean value
+
+#blanks Run2
+JUVresp_blanks_RUN2 <- JUVresp_RUN2 %>% 
+  filter(JUVresp_RUN2$Tank.ID == "Blank") # call only blanks
+JUVresp_blankMEANS_RUN2 <- JUVresp_blanks_RUN2 %>% 
+  summarise(mean_Lpc = mean(abs(Lpc)),mean_Leq = mean(abs(Leq)), mean_Lz = mean(abs(Lz))) # summarize the blanks into a mean value
+
+# resp rates Run1
+JUVresp_geoduck_RUN1 <- JUVresp_RUN1 %>% 
+  filter(!is.na(length_number.individuals))
+
+JUVresp_geoduck_RUN1$Resp_rate_ug.mol <-
+  ((((((abs(JUVresp_geoduck_RUN1$Lpc)) - (JUVresp_blankMEANS_RUN1$mean_Lpc))*(4/1000))*(60))*31.998)/(JUVresp_geoduck_RUN1$length_number.individuals))
+JUVresp_geoduck_RUN1$Resp_rate_ug.mol
+
+# resp rates Run2
+JUVresp_geoduck_RUN2 <- JUVresp_RUN2 %>% 
+  filter(!is.na(length_number.individuals))
+
+JUVresp_geoduck_RUN2$Resp_rate_ug.mol <-
+  ((((((abs(JUVresp_geoduck_RUN2$Lpc)) - (JUVresp_blankMEANS_RUN2$mean_Lpc))*(4/2000))*(60))*32.998)/(JUVresp_geoduck_RUN2$length_number.individuals))
+JUVresp_geoduck_RUN2$Resp_rate_ug.mol
+
+# merge the two datasets
+JUVresp_geoduck <- rbind(JUVresp_geoduck_RUN1,JUVresp_geoduck_RUN2)
+
+JUVresp_geoduck <- JUVresp_geoduck %>% filter(JUVresp_geoduck$Resp_rate_ug.mol > 0) # only resp rates over zero
+
+#summary tables for both exposures
+JUVresp_table_treatments_ALL <- JUVresp_geoduck %>%
+  group_by(Treatment) %>% #group the dataset by BOTH INITIAL AND SECONDARY TREATMENT
+  summarise(mean_resp = mean(Resp_rate_ug.mol),
+            min_resp = min(Resp_rate_ug.mol),
+            sd_resp = sd(Resp_rate_ug.mol),
+            SEM = ((sd(Resp_rate_ug.mol))/sqrt(n())),
+            count =n()) %>% # get the count by leaving n open
+  arrange(desc(min_resp)) # makes table in descending order 
+JUVresp_table_treatments_ALL # view table
+# table for initial exposure
+JUVresp_table_treatments_INITIAL <- JUVresp_geoduck %>%
+  group_by(Treat.initial) %>% #group the dataset by INITIAL TREATMENT
+  summarise(mean_resp = mean(Resp_rate_ug.mol),
+            min_resp = min(Resp_rate_ug.mol),
+            sd_resp = sd(Resp_rate_ug.mol),
+            SEM = ((sd(Resp_rate_ug.mol))/sqrt(n())),
+            count =n()) %>% # get the count by leaving n open
+  arrange(desc(min_resp)) # makes table in descending order 
+JUVresp_table_treatments_INITIAL # view table
+# table for secondary exposure
+JUVresp_table_treatments_SECONDARY<- JUVresp_geoduck %>%
+  group_by(Treat.Secondary) %>% #group the dataset by SECONDARY TREATMENT
+  summarise(mean_resp = mean(Resp_rate_ug.mol),
+            min_resp = min(Resp_rate_ug.mol),
+            sd_resp = sd(Resp_rate_ug.mol),
+            SEM = ((sd(Resp_rate_ug.mol))/sqrt(n())),
+            count =n()) %>% # get the count by leaving n open
+  arrange(desc(min_resp)) # makes table in descending order 
+JUVresp_table_treatments_SECONDARY # view table
+
+# run the two way anova 
+JUVresp.mod  <- aov(Resp_rate_ug.mol~Treat.initial*Treat.Secondary*Treatment, data = JUVresp_geoduck)
+anova(JUVresp.mod) # anova results
+par(mfrow=c(1,3)) #set plotting configuration
+par(mar=c(1,1,1,1)) #set margins for plots
+leveneTest(JUVresp.mod) # p = 0.9491
+hist(residuals(JUVresp.mod)) #plot histogram of residuals
+boxplot(residuals(JUVresp.mod)) #plot boxplot of residuals
+plot(fitted(JUVresp.mod),residuals(JUVresp.mod))
+library(Rmisc)
+sum_JUVresp_means <- summarySE(JUVresp_geoduck, 
+                               measurevar="Resp_rate_ug.mol", 
+                               groupvars=c("Treat.Secondary")) # summarize previous table for overall treatment 
+sum_JUVresp_means # view the table
+percentdiff.JUVresp <- ((sum_JUVresp_means[2,3] - sum_JUVresp_means[1,3])/sum_JUVresp_means[2,3])*100 # calculate percent difference
+percentdiff.JUVresp # 52.37839% greater respiration rate from animals under secondary exposure to elevated conditions
+
+
+# significant effect graph
+JUVresp_geoduck_INITIAL.157days <- ggplot(JUVresp_geoduck, aes(x = factor(Treat.initial ), y = Resp_rate_ug.mol, fill = Treat.initial )) +
+  theme_classic() +
+  scale_fill_manual(values=c("white", "grey3"), 
+                    labels=c("Ambient", "Elevated")) +
+  geom_boxplot(alpha = 0.5, # color hue
+               width=0.6, # boxplot width
+               outlier.size=0, # make outliers small
+               position = position_dodge(preserve = "single")) + 
+  geom_point(pch = 19, position = position_jitterdodge(.05), size=1) +
+  stat_summary(fun.y=mean, geom = "errorbar", aes(ymax = ..y.., ymin = ..y..), 
+               width = 0.6, size=0.4, linetype = "dashed", position = position_dodge(preserve = "single")) +
+  theme(legend.position = c(0.55,0.96), legend.direction="horizontal", legend.title=element_blank()) +
+  ylim(0,3) + 
+  scale_x_discrete(labels = c("Ambient","Elevated")) +
+  labs(y=expression("Respiration rate"~(~µg~O[2]*hr^{-1}*mm^{-1})), x=expression("Initial treatment"))
+JUVresp_geoduck_INITIAL.157days # view the graph
+
+#Both treatments from secnondary exposure graph
+JUVresp_geoduck_INITIAL.SECOND.157days <- ggplot(JUVresp_geoduck, aes(x = factor(Treatment), y = Resp_rate_ug.mol, fill = Treatment)) +
+  theme_classic() +
+  scale_fill_manual(values=c("white",  "grey80", "gray50", "grey3"), 
+                    labels=c("Ambient × Ambient","Ambient × Elevated","Elevated × Ambient","Elevated × Elevated")) +
+  geom_boxplot(alpha = 0.5, # color hue
+               width=0.6, # boxplot width
+               outlier.size=0, # make outliers small
+               position = position_dodge(preserve = "single")) + 
+  geom_point(pch = 19, position = position_jitterdodge(.05), size=1) +
+  stat_summary(fun.y=mean, geom = "errorbar", aes(ymax = ..y.., ymin = ..y..), 
+               width = 0.6, size=0.4, linetype = "dashed", position = position_dodge(preserve = "single")) +
+  theme(legend.position = c(0.55,0.96), legend.direction="horizontal", legend.title=element_blank()) +
+  ylim(0,3) + 
+  scale_x_discrete(labels = c("Ambient × Ambient","Ambient × Elevated","Elevated × Ambient","Elevated × Elevated")) +
+  labs(y=expression("Respiration rate"~(~µg~O[2]*hr^{-1}*mm^{-1})),  x = "Initial×Secondary treatment", fill= "") 
+JUVresp_geoduck_INITIAL.SECOND.157days # view the graph
+
+figure_supplementary_157d <- ggarrange(size_graph_INITIAL.157days, 
+                                       size_graph_INITIAL.SECOND.157days,
+                                       JUVresp_geoduck_INITIAL.157days,
+                                       JUVresp_geoduck_INITIAL.SECOND.157days,
+                                       ncol = 2, nrow = 2)
+figure_supplementary_157d # view the figure
+# Saving output plots
+ggsave(file="Output/Supplem.Fig.resp.size.157d.postEXP.pdf", figure_supplementary_157d, width = 14, height = 8, units = c("in"))
