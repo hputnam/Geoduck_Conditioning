@@ -1,42 +1,43 @@
-# Project: Geoduck Conditioning
-# Title: SDR_LoLinR.R
+# Project: Juvenile_Geoduck_OA
+# Title: SDR_LoLinR_datasets.R
 # Supported by: FFAR
 # Author: Sam Gurr
-# Date Updated: 20181002
+# Date Updated: 20190410
 # Contact: samuel_gurr@uri.edu
 
-# OBJECTIVE: use the LoLinR package for respiration measurements with a Presens SDR SensorDish (24-vial plate)
-# This script was first written for experiments on juvenile (~5mm shell width) Pacific geoduck (Panopea genorosa)
+# OBJECTIVE: This script was used to assemble datasets at different LoLin.R parameters. Instead of tediously
+# going through each diagnostic plot for every respiration run (as in the script, "SDR_LoLinR_Reference"), 
+# this scirpt was  written in order to change alpha, truncate, and run all respiration data for a cumunaltive csv.
+# We decided to run the following perameters:
+# alpha = 0.2 + no truncation of 30 minute record
+# alpha = 0.2 + truncation for minute 10 - 20
+# alpha = 0.2 + truncation for minute 10 - 25
+# alpha = 0.4 + no truncation of 30 minute record
+# alpha = 0.4 + truncation for minute 10 - 20
+# alpha = 0.4 + truncation for minute 10 - 25
+# alpha = 0.6 + no truncation of 30 minute record
+# alpha = 0.6 + truncation for minute 10 - 20
+# alpha = 0.6 + truncation for minute 10 - 25
 
-# WHY LoLinR package?: respiration rate is often misinterpreted due to visual bias or use of entire datasets that
-# include noise due to intrumentation error, poor mixing, physiological thresholds (decelione of resp or oxyconformity), etc.
-# the Lolin package minimizes this error and allows for a relatively non-bias criteria 
+rm(list=ls()) # removes all prior objects
 
-# This script allows for AUTOMATED and REPRODUCIBLE output for the LoLinR package from several output files
-# script targets use of Lpc with the ability to easily change constants for alpha and truncated datasets (time time based on row numbers)
+# Install packages if not already in your library
+if ("LoLinR" %in% rownames(installed.packages()) == 'FALSE') install.packages('LoLinR') 
+# Load packages and pacage version/date/import/depends info
+library(LoLinR) # Version: version 0.0.0.9000
 
-# Assumption: raw SDR ouput files are edited for headers (row1) in vial order A1....D1, A2, ...D2, etc.  
-####################################################
-rm(list=ls())
+rm(list=ls()) # removes all prior objects
 
-#set working directory--------------------------------------------------------------------------------------------------
-setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Data/SDR_data")
+setwd("C:/Users/samjg/Documents/Notebook/data/Geoduck_Conditioning/RAnalysis/Data/SDR_data") # set working directory
 main<-getwd()
 
-#LIBRARY-----------------------------------------------------------------------------------------------------------
-library(LoLinR)
 
-# path used in the loop to each file name indicated in Table_files (matrix of filenames created below)
-path<-"All_data_csv" #the location of all your respiration files
+path<-"All_data_csv" # the location of all respiration files
 
-# assign your alpha value
-a <- 0.4 #---------------------------------------------------------------------CHANGE THE NAME HERE EVERY TIME ( AND in the model itself!)
-#assign your "Notes" column - refer to the amount of data used 
-n <- "min10-25" #---------------------------------------------------------------CHANGE THE NAME HERE EVERY TIME
-# time gap for assigned resp vials
-# write this for minutes 10-25 resp_vials[40:100,] min10-25_2
-# write this for minutes 10-20 resp_vials[40:80,] min10-20_2
-ouputNAME<-"Cumulative_resp_alpha0.4_min10-25_2.csv" # -------------------------CHANGE THE NAME HERE EVERY TIME
+
+a <- 0.4 # assign alpha and add a comment on truncation 
+n <- "min10-25" # assign your "Notes" column - refer to the amount of data used / truncation info
+ouputNAME<-"Cumulative_resp_alpha0.4_min10-25.csv" # name this cumunative sheet with the alpha and truncation (i.e. "Cumulative_resp_alpha0.4_min10-25.csv")
 
 # size data to merge to output
 path2<-"All_data_csv/Cumulative_output"
@@ -84,66 +85,40 @@ TABLE_files$filenames <- c(
 "20180813_resp_Day6_RUN1_Oxygen.csv",
 "20180813_resp_Day6_RUN2_Oxygen.csv")
 
+df_total = data.frame() # start a data frame
 
-df_total = data.frame()
-
-# FOR loop calls from LoLin, models sequencially for each ind.var column, 
-# calls Lpc from summary table, writes to a dataframe (24 rows / file - 1 row populated per column)
+# for loop to analyze all respirtion data 
 for(i in 1:nrow(TABLE_files)){
   resp<-read.csv(file.path("All_data_csv", (TABLE_files[i,4])), header=T, sep=",", na.string="NA", as.is=T) 
-  # omit the Date.Time from the dataframe
   resp$Date.Time <-NULL
-
   Date <- TABLE_files[i,3]
-  
   RUN <- TABLE_files[i,2]
-
-  # your predicted values
-  resp_vials <- resp[40:100, !(colnames(resp) %in% c("Time.Min."))] 
+  resp_vials <- resp[40:100, !(colnames(resp) %in% c("Time.Min."))]  # TRUNCATION CHANGE HERE! no trunc = [,], min10-20 = [40:80,], and min10-25 = [40:100,]
   resp_vials 
 
-  # inside for loop calls the 24 columns individually for the LoLin model
-  # ouputs the Lpc individually to the created dataframe and rbinds it to df_total 
+  # inside for loop calls each individual respiration vial (column) individually  for the LoLin model
   for(j in t(1:ncol(resp_vials))){
     model <- rankLocReg(
-  xall=resp$Time.Min.[40:100], yall=resp_vials[, j],
-  alpha=0.4, method="pc", verbose=TRUE)
+  xall=resp$Time.Min.[40:100], yall=resp_vials[, j], # TRUNCATION CHANGE HERE! no trunc = [,], min10-20 = [40:80,], and min10-25 = [40:100,]
+  alpha= 0.4, method="pc", verbose=TRUE) # ALPHA CHANGE HERE! run the model for your asssigned alpha value
+    sum.table<-summary(model) # call the summary data
+    resp.table <- data.frame(matrix(nrow = 1, ncol = 6)) # create a new data table
+    colnames(resp.table)<-c('Date', 'RUN', 'SDR_position', 'b1.Lpc', 'alpha', 'Notes') # assign headers
+    resp.table$Date <- Date # fill date
+    resp.table$RUN <- RUN # fill run number 
+    resp.table$alpha <- a # fill with the chosen alpha value (assigned at start of script)
+    resp.table$Notes <- n # fill with the note (assigned at start os script)
+    resp.table$b1.Lpc<-sum.table$Lcompare[3,6] # save the Lpc calculation for respiration rate 
 
-    sum.table<-summary(model)
-
-    resp.table <- data.frame(matrix(nrow = 1, ncol = 6))
-
-    colnames(resp.table)<-c('Date', 'RUN', 'SDR_position', 'b1.Lpc', 'alpha', 'Notes')
-    
-    resp.table$Date <- Date
-
-    resp.table$RUN <- RUN
-
-    resp.table$alpha <- a
-    
-    resp.table$Notes <- n
-    
-    #take data from your model summary (example is the slope and range of confidence interval)
-    #resp.table$b1.Lz<-sum.table$Lcompare[1,6]
-    #resp.table$b1.Leq<-sum.table$Lcompare[2,6]
-    resp.table$b1.Lpc<-sum.table$Lcompare[3,6]
-    #resp.table$ci.Lz<-sum.table$Lcompare[1,9]
-    #resp.table$ci.Leq<-sum.table$Lcompare[2,9]
-    #resp.table$ci.Lpc<-sum.table$Lcompare[3,9]
-
-    #name dataframe for this single row
-    df <- data.frame(resp.table)
-    #bind to a cumulative list dataframe
-    df_total <- rbind(df_total,df)
- print(df_total)
+    df <- data.frame(resp.table) # name dataframe for this single row
+    df_total <- rbind(df_total,df) # bind to a cumulative list dataframe
+ print(df_total) # show loop progress in the console
    }
 }
 
-#look at your cumulative dataframe
-df_total
+df_total # view data - this will contain all respirtion rates from exposure 1 and exposure 2 for the assigned alpha value and truncation
 
-#### THIS SHOULD COME FROM YOUR SAMPLE INFO FILE####
-#names from a1 to D6 in order of default in SDR sensor dish - X16 for the 16 files
+# vial ID for 24 resp vial in each of the 16 files(fixed order in raw output from Presens)
       names <- c("A1", "B1", "C1", "D1", "A2", "B2", "C2", "D2", 
                  "A3", "B3", "C3", "D3", "A4", "B4" ,"C4", "D4", 
                  "A5", "B5", "C5", "D5", "A6", "B6", "C6", "D6",
@@ -193,22 +168,7 @@ df_total
                  "A3", "B3", "C3", "D3", "A4", "B4" ,"C4", "D4", 
                  "A5", "B5", "C5", "D5", "A6", "B6", "C6", "D6")
     
-    # name the SDR position in the cumulative dataframe to merge with size
-    df_total$SDR_position <- names
-    # create a column in the cumulative dataframe that matches the size dataframe
-    # generate new row with concatenated sample id
-    df_total$Sample.ID <- paste(df_total$Date, df_total$SDR_position, df_total$RUN, sep='_') 
-    # merge the cumulative dataframe from the loop with the size dataframe
-    update.data <- merge(df_total,size, by="Sample.ID", all = TRUE, sort = T) 
-    # write out to the path names outputNAME
-    write.table(update.data,ouputNAME,sep=",", row.names=FALSE)
-    
-    
-    
-
-  
-
-
-
-
-
+df_total$SDR_position <- names # name the SDR position in the cumulative dataframe to merge with size
+df_total$Sample.ID <- paste(df_total$Date, df_total$SDR_position, df_total$RUN, sep='_')  # generate new row with concatenated sample id
+update.data <- merge(df_total,size, by="Sample.ID", all = TRUE, sort = T)  # merge the cumulative dataframe from the loop with the size dataframe
+write.table(update.data,ouputNAME,sep=",", row.names=FALSE) # write table to the path name
